@@ -22,7 +22,6 @@ namespace Dashboard
     {
 
         private readonly PalpiteService _palpiteService;
-        //    private readonly LotofacilService _lotofacilService; // Adicionado o serviço da Lotofácil
 
         private readonly IMLLogger _logger;
         private readonly MLNetModel _modelSS;
@@ -34,13 +33,7 @@ namespace Dashboard
         public MainWindow()
         {
             InitializeComponent();
-            Infra.CarregarConcursos(); // Removido - substituído pelo LotofacilService
-                                       // Infra.CombinarGeral(); // Manter se necessário para outras partes do código que dependem de Infra.arGeral
-
-            //_lotofacilService = new LotofacilService(); // Inicializa o serviço da Lotofácil
-            //_lotofacilService.UpdateFromAPI(); // Carrega/Atualiza os dados da Lotofácil
-
-            //T1.Text = _lotofacilService.GetTotalConcursos().ToString(); // Atualiza o texto com o total de concursos carregados
+            Infra.CarregarConcursos();
 
             T1.Text = Infra.arLoto.Count().ToString(); // Inicializa o campo de texto com 0
 
@@ -383,6 +376,13 @@ namespace Dashboard
         /// </summary>
         private void Treze_Click(object sender, RoutedEventArgs e)
         {
+            int alvo = Convert.ToInt32(T1.Text);
+
+
+            Lances A = Estudos.Estudo13(alvo);
+
+            Infra.SalvaSaidaW(A, Infra.NomeSaida("ListaEstudo13", alvo));
+
             TerminarPrograma();
         }
 

@@ -19,23 +19,29 @@ namespace LotoLibrary.Services
 
             Lances resultado = new();
             List<int> combinacaoAtual = new(tamanhoCombinacao);
-            GerarCombinacoesRecursivo(elementos, tamanhoCombinacao, 0, combinacaoAtual, resultado);
+
+            // Iniciar com contador de ID em 0
+            int contadorId = 0;
+
+            GerarCombinacoesRecursivo(elementos, tamanhoCombinacao, 0, combinacaoAtual, resultado, ref contadorId);
             return resultado;
         }
 
         private static void GerarCombinacoesRecursivo(List<int> elementos, int tamanhoCombinacao, int indiceInicial,
-            List<int> combinacaoAtual, Lances resultado)
+            List<int> combinacaoAtual, Lances resultado, ref int contadorId)
         {
             if (combinacaoAtual.Count == tamanhoCombinacao)
             {
-                resultado.Add(new Lance(resultado.Count, new List<int>(combinacaoAtual)));
+                // Usar o contador como ID e depois incrementá-lo
+                resultado.Add(new Lance(contadorId, new List<int>(combinacaoAtual)));
+                contadorId++;
                 return;
             }
 
             for (int i = indiceInicial; i < elementos.Count; i++)
             {
                 combinacaoAtual.Add(elementos[i]);
-                GerarCombinacoesRecursivo(elementos, tamanhoCombinacao, i + 1, combinacaoAtual, resultado);
+                GerarCombinacoesRecursivo(elementos, tamanhoCombinacao, i + 1, combinacaoAtual, resultado, ref contadorId);
                 combinacaoAtual.RemoveAt(combinacaoAtual.Count - 1);
             }
         }

@@ -328,23 +328,6 @@ public static class Estudos
 
         List<int> l6paraContagem = lances.Select(o => Infra.Contapontos(o, oGrupoNNmaisFrequente)).ToList();
 
-        //List<int> l6Posicao = new();
-
-        //foreach(Lance q in ars6)
-        //{
-        //    List<int> list = lances.Select(o => Infra.Contapontos(o, q)).ToList();
-
-        //    int t = 0;
-
-        //    for(int i = 0; i < list.Count; i++)
-        //    {
-        //      t += list[i]-l6paraContagem[i];
-        //    }
-
-        //    l6Posicao.Add(t);
-
-        //}
-
 
         List<int> l6Posicao = ars6.Select(q => lances.Select((o, i) => Infra.Contapontos(o, q) - l6paraContagem[i]).Sum()).ToList();
         //
@@ -423,6 +406,120 @@ public static class Estudos
         return lances;
     }
 
+    public static Lances Estudo13(int alvo)
+    {
+
+        Infra.CombinarGeral();
+
+        Lances ars = new();
+        Lances ars1 = new();
+        Lances ars2 = new();
+        Lances ars3 = new();
+
+
+        Lance oAlvo = Infra.arLoto[alvo - 2];
+
+
+        Lances ars9 = GerarCombinacoes.Combinar15a9(oAlvo.Lista);
+
+        Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+
+        Lances arBase = Infra.DevolveBaseCombinada(ars9, ars6);
+
+
+        List<int> l9 = Enumerable.Repeat(0, ars9.Count).ToList();
+        List<int> l6 = Enumerable.Repeat(0, ars6.Count).ToList();
+
+
+
+        Random random = new Random();
+
+        int ax = 1000;
+        Lances lances = Infra.DevolveBaseAleatoria(arBase, ax);
+
+        ParesXY paresXY = new ParesXY();
+
+        foreach (Lance o in lances)
+        {
+            paresXY.Add(new ParXY(o.M, o.N));
+
+            foreach (Lance p in ars9)
+            {
+                if (Infra.Contapontos(o, p) == 9)
+                {
+                    p.X++;
+                    break;
+                }
+            }
+
+            foreach (Lance p in ars6)
+            {
+                if (Infra.Contapontos(o, p) == 6)
+                {
+                    p.Y++;
+                    break;
+                }
+            }
+        }
+
+
+        Lance oXmaisFrequente = ars9.ObterLanceMaiorX();
+        Lance oYmaisFrequente = ars6.ObterLanceMaiorY();
+
+
+        Lances avaliaY5 = new(); avaliaY5.AddRange(ars6.Where(o => Infra.Contapontos(o, oYmaisFrequente) == 5).ToList());
+        Lances avaliaY4 = new(); avaliaY4.AddRange(ars6.Where(o => Infra.Contapontos(o, oYmaisFrequente) == 4).ToList());
+        Lances avaliaY3 = new(); avaliaY3.AddRange(ars6.Where(o => Infra.Contapontos(o, oYmaisFrequente) == 3).ToList());
+        Lances avaliaY2 = new(); avaliaY2.AddRange(ars6.Where(o => Infra.Contapontos(o, oYmaisFrequente) == 2).ToList());
+
+
+        Lances drs5 = new();
+        Lances drs4 = new();
+        Lances drs3 = new();
+        Lances drs2 = new();
+
+        int ix = oYmaisFrequente.Id;
+
+        foreach (ParXY o in paresXY)
+        {
+
+            //if (o.Y == ix) { drs5.Add(Infra.CriaLanceAPartirDoPar(ars9[o.X], oYmaisFrequente)); }
+            //else
+            //{ drs5.Add(Infra.CriaLanceAPartirDoPar(ars9[o.X], avaliaY5[random.Next(avaliaY5.Count)])); }
+
+
+            drs5.Add(Infra.CriaLanceAPartirDoPar(ars9[o.X], o.Y == ix ? oYmaisFrequente : avaliaY5[random.Next(avaliaY5.Count)]));
+            drs4.Add(Infra.CriaLanceAPartirDoPar(ars9[o.X], o.Y == ix ? oYmaisFrequente : avaliaY4[random.Next(avaliaY4.Count)]));
+            drs3.Add(Infra.CriaLanceAPartirDoPar(ars9[o.X], o.Y == ix ? oYmaisFrequente : avaliaY3[random.Next(avaliaY3.Count)]));
+            drs2.Add(Infra.CriaLanceAPartirDoPar(ars9[o.X], o.Y == ix ? oYmaisFrequente : avaliaY2[random.Next(avaliaY2.Count)]));
+
+        }
+
+
+        foreach (Lance a in lances)
+        {
+            l9[a.M]++;
+            l6[a.N]++;
+
+            List<int> list = new List<int>();
+            list.Add(a.M);
+            list.Add(a.N);
+
+
+        }
+
+
+        Infra.SalvaSaidaW(drs5, Infra.NomeSaida("VersaoParaCinco", alvo));
+        Infra.SalvaSaidaW(drs4, Infra.NomeSaida("VersaoParaQuatro", alvo));
+        Infra.SalvaSaidaW(drs3, Infra.NomeSaida("VersaoParaTres", alvo));
+        Infra.SalvaSaidaW(drs2, Infra.NomeSaida("VersaoParaDois", alvo));
+
+
+        Infra.SalvaSaidaW(l9, Infra.NomeSaida("Lista9PT", alvo));
+        Infra.SalvaSaidaW(l6, Infra.NomeSaida("Lista6PT", alvo));
+
+        return lances;
+    }
 
     private static void Treinamento(Lances arLotoTreino)
     {

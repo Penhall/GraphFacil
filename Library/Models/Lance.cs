@@ -140,6 +140,28 @@ namespace LotoLibrary.Models
             return result;
         }
 
+
+        // Método para encontrar o Lance com o maior valor X
+        public static Lance ObterLanceMaiorX(this Lances lances)
+        {
+            if (lances == null || lances.Count == 0)
+                return null;
+
+            // Garantir que estamos retornando o objeto Lance completo
+            return lances.OrderByDescending(lance => lance.X).First();
+        }
+
+        // Método para encontrar o Lance com o maior valor Y
+        public static Lance ObterLanceMaiorY(this Lances lances)
+        {
+            if (lances == null || lances.Count == 0)
+                return null;
+
+            // Garantir que estamos retornando o objeto Lance completo
+            return lances.OrderByDescending(lance => lance.Y).First();
+        }
+
+
     }
 
 }

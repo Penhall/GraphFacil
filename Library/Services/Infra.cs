@@ -3687,7 +3687,13 @@ namespace LotoLibrary.Services
                     list.AddRange(o.Lista);
                     list.AddRange(p.Lista);
                     list.Sort();
-                    saida.Add(new Lance(saida.Count, list));
+
+                    Lance z = new Lance(saida.Count, list);
+
+                    z.M = o.Id;
+                    z.N = p.Id;
+
+                    saida.Add(z);
                 }
             }
 
@@ -3714,7 +3720,18 @@ namespace LotoLibrary.Services
             return saida;
         }
 
+        internal static Lance CriaLanceAPartirDoPar(Lance lance, Lance oYmaisFrequente)
+        {
+            List<int> ints = new();
 
+            ints.AddRange(lance.Lista);
+            ints.AddRange(oYmaisFrequente.Lista);
+
+            ints.Sort();
+
+            return new Lance(0, ints);
+
+        }
 
 
         #endregion
