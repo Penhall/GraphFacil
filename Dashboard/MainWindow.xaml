@@ -1,0 +1,292 @@
+﻿<Window x:Class="Dashboard.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:Dashboard.Controls"
+        mc:Ignorable="d"
+        Height="700" Width="1080" WindowStartupLocation="CenterScreen" WindowStyle="None">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <Grid Grid.Row="1" Grid.Column="1" Background="#FFB6B6CA">
+
+            <ScrollViewer Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="6*"/>
+                        <RowDefinition Height="9*"/>
+                    </Grid.RowDefinitions>
+
+                    <Rectangle Height="150" Margin="20" Fill="White" RadiusY="10" RadiusX="10"></Rectangle>
+                    <Grid>
+                        <local:TesteControl Height="200" Margin="20" Grid.Column="3"/>
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+
+
+
+
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFC8C8C8" Offset="1"/>
+                    <GradientStop Color="#FFDEDEDE"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="20" RenderingBias="Quality" Color="#FFDEDEDE" ShadowDepth="1"/>
+            </Grid.Effect>
+
+            <Grid Background="#FFAC88D8">
+                <TextBlock Text="DASHOARD" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center" FontStyle="Oblique" />
+            </Grid>
+
+            <!--BOTÕES DO LADO ESQUERDO -->
+
+            <StackPanel  Grid.Row="1">
+
+                <Button x:Name="Primeiro" Margin="10" BorderBrush="#FF8522BD" Click="Primeiro_Click" >
+                    <Grid Width="150">
+
+                        <md:PackIcon Kind="People"/>
+                        <TextBlock HorizontalAlignment="Center" Text="PRIMEIRO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+                </Button>
+
+                <Button x:Name="Segundo"  Margin="10" BorderBrush="#FF8522BD" Click="Segundo_Click">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="Graphql"/>
+                        <TextBlock HorizontalAlignment="Center" Text="SEGUNDO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+                </Button>
+
+                <Button x:Name="Terceiro"  Margin="10" BorderBrush="#FF8522BD" Click="Terceiro_Click">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="Business"/>
+                        <TextBlock HorizontalAlignment="Center" Text="TERCEIRO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+                </Button>
+
+                <Button x:Name="Quarto"  Margin="10" BorderBrush="#FF8522BD" Click="Quarto_Click">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="Finance"/>
+                        <TextBlock HorizontalAlignment="Center" Text="QUARTO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+                </Button>
+
+                <Button x:Name="Quinto"  Margin="10" BorderBrush="#FF8522BD" Click="Quinto_Click">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="Settings"/>
+                        <TextBlock HorizontalAlignment="Center" Text="QUINTO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+                </Button>
+
+                <Button x:Name="Sexto" Margin="10" BorderBrush="#FF8522BD" Click="Sexto_Click">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="Schedule"/>
+                        <TextBlock HorizontalAlignment="Center" Text="SEXTO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Setimo" Margin="10" BorderBrush="#FF8522BD" Click="Setimo_Click">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="GaugeFull"/>
+                        <TextBlock HorizontalAlignment="Center" Text="SÉTIMO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Oitavo"  Margin="10" BorderBrush="#FF8522BD" Click="Oitavo_Click">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="OITAVO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Nono"  Margin="10" BorderBrush="#FF8522BD" Click="Nono_Click">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="NONO" VerticalAlignment="Center" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+            </StackPanel>
+
+            <!--FIM BOTÕES DO LADO ESQUERDO -->
+
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="3">
+
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFC8C8C8" Offset="1"/>
+                    <GradientStop Color="#FFDEDEDE"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="20" RenderingBias="Quality" Color="#FFDEDEDE" ShadowDepth="1"/>
+            </Grid.Effect>
+
+            <Grid Background="#FFAC88D8">
+                <TextBox  x:Name="T1" Text="2020" FontSize="20" FontWeight="ExtraBold"  HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFAC88D8" FontStyle="Oblique"  />
+            </Grid>
+
+            <!--BOTÕES DO LADO DIREITO-->
+
+            <StackPanel  Grid.Row="2">
+
+                <Button x:Name="Dez"  Margin="10" BorderBrush="#FA8555CD" Click="Dez_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="DEZ" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Onze"  Margin="10" BorderBrush="#FA8555CD" Click="Onze_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="ONZE" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Doze"  Margin="10" BorderBrush="#FA8555CD" Click="Doze_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="DOZE" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Treze"  Margin="10" BorderBrush="#FA8555CD" Click="Treze_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="TREZE" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Catorze"  Margin="10" BorderBrush="#FA8555CD" Click="Catorze_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="CATORZE" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Quinze"  Margin="10" BorderBrush="#FA8555CD" Click="Quinze_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="QUINZE" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Dezesseis"  Margin="10" BorderBrush="#FA8555CD" Click="Dezesseis_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="DEZESSEIS" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Dezessete"  Margin="10" BorderBrush="#FA8555CD" Click="Dezessete_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="DEZESSETE" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Dezoito"  Margin="10" BorderBrush="#FA8555CD" Click="Dezoito_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="DEZOITO" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+                <Button x:Name="Dezenove"  Margin="10" BorderBrush="#FA8555CD" Click="Dezenove_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="DEZENOVE" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+
+                <Button x:Name="Vinte"  Margin="10" BorderBrush="#FA8555CD" Click="Vinte_Click" Background="#FF202878">
+                    <Grid Width="150">
+                        <md:PackIcon Kind="ChartLineStacked"/>
+                        <TextBlock HorizontalAlignment="Center" Text="VINTE" VerticalAlignment="Center"  FontStretch="Expanded" FontFamily="Candara"/>
+                    </Grid>
+
+                </Button>
+
+            </StackPanel>
+
+
+            <!--FIM BOTÕES DO LADO DIREITO-->
+
+        </Grid>
+
+        <Grid x:Name="GridBarraTitulo" Grid.ColumnSpan="3" Background="#FF8522BD" MouseDown="GridBarraTitulo_MouseDown" >
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"  >
+                <Button  x:Name="btnLembrete" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" Margin="10,0"  Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Click="BtnLembrete_Click">
+                    <md:PackIcon Kind="Bell"/>
+                </Button>
+
+                <Button x:Name="btnPerfil"  Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Click="BtnPerfil_Click">
+                    <md:PackIcon Kind="Account"/>
+                </Button>
+
+                <Button x:Name="btnFechar" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"  Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Click="BtnFechar_Click">
+                    <md:PackIcon Kind="Power"/>
+                </Button>
+
+            </StackPanel>
+
+
+        </Grid>
+    </Grid>
+</Window>

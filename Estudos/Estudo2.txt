@@ -1,0 +1,47 @@
+ public static Lances Estudo2(int alvo)
+ {
+
+     Infra.CombinarGeral();
+
+     Lances ars1 = new();
+     Lances ars2 = new();
+     Lances ars3 = new();
+
+     Lance oAnterior = Infra.arLoto[alvo - 3];
+     Lance oAlvo = Infra.arLoto[alvo - 2];
+
+     Lances ars9 = Infra.Combinar15a9(oAlvo.Lista);
+     Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+
+
+     List<int> l9 = Enumerable.Repeat(0, ars9.Count).ToList();
+     List<int> l6 = Enumerable.Repeat(0, ars6.Count).ToList();
+
+
+     Lances arGeral1 = Infra.DevolveBaseGeralFiltrada(Infra.arGeral, oAlvo, 9);
+
+     Lances arGeral = Infra.DevolveBaseAleatoria(arGeral1, 10000);
+
+     foreach (Lance o in ars9) { if (Infra.Contapontos(o, oAnterior) == 8) ars2.Add(o); }
+
+     foreach (Lance o in arGeral)
+     {
+         foreach (Lance p in ars9) { if (Infra.Contapontos(o, p) == 9) { l9[p.Id]++; break; } }
+         foreach (Lance p in ars6) { if (Infra.Contapontos(o, p) == 6) { l6[p.Id]++; break; } }
+         foreach (Lance p in ars2) { if (Infra.Contapontos(o, p) == 9) { ars3.Add(o); break; } }
+
+     }
+
+
+     Infra.SalvaSaidaW(ars9, Infra.NomeSaida("Base9", alvo));
+     Infra.SalvaSaidaW(l9, Infra.NomeSaida("Base9PT", alvo));
+
+     Infra.SalvaSaidaW(ars6, Infra.NomeSaida("Base6", alvo));
+     Infra.SalvaSaidaW(l6, Infra.NomeSaida("Base6PT", alvo));
+
+     Infra.SalvaSaidaW(arGeral, Infra.NomeSaida("Controle", alvo));
+     Infra.SalvaSaidaW(ars3, Infra.NomeSaida("Predecessor", alvo));
+
+
+     return ars1;
+ }
