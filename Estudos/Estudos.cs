@@ -27,7 +27,7 @@ namespace Busisness
 
 
 
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
 
             Lances arBase = Infra.DevolveBaseCompleta(oAlvo, 9);
 
@@ -35,7 +35,7 @@ namespace Busisness
 
             Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
-            string arq1 = "SixSeletos-"+alvo.ToString();
+            string arq1 = "SixSeletos-" + alvo.ToString();
 
             Lances arJson = Infra.AbrirArquivoJson(arq1);
 
@@ -46,7 +46,7 @@ namespace Busisness
 
             int ax = 200000;
 
-            while (ars.Count<10000)
+            while (ars.Count < 10000)
             {
 
                 Lance a = arBase[ax];
@@ -54,8 +54,8 @@ namespace Busisness
 
                 List<int> list = new List<int>();
 
-                foreach (Lance o in ars9) { if (Infra.Contapontos(o, a)==9) { list.Add(o.Id); l9[o.Id]++; a.M=o.Id; break; } }
-                foreach (Lance o in ars6) { if (Infra.Contapontos(o, a)==6) { list.Add(o.Id); l6[o.Id]++; a.N=o.Id; break; } }
+                foreach (Lance o in ars9) { if (Infra.Contapontos(o, a) == 9) { list.Add(o.Id); l9[o.Id]++; a.M = o.Id; break; } }
+                foreach (Lance o in ars6) { if (Infra.Contapontos(o, a) == 6) { list.Add(o.Id); l6[o.Id]++; a.N = o.Id; break; } }
                 ars.Add(a);
                 ars1.Add(new Lance(ars1.Count, list));
 
@@ -138,17 +138,17 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            Lance oAnterior = Infra.arLoto[alvo-3];
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAnterior = Infra.arLoto[alvo - 3];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
 
             Lances ars9 = Infra.Combinar15a9(oAlvo.Lista);
             Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
-            int s = alvo-3;
-            while (anteriores.Count<10)
+            int s = alvo - 3;
+            while (anteriores.Count < 10)
             {
                 Lance o = Infra.arLoto[s];
-                if (Infra.Contapontos(o, oAlvo)==9) { anteriores.Add(o); }
+                if (Infra.Contapontos(o, oAlvo) == 9) { anteriores.Add(o); }
 
                 s--;
             }
@@ -161,11 +161,11 @@ namespace Busisness
             foreach (Lance z in anteriores)
             {
 
-                Lance Encontrado9 = ars9.FirstOrDefault(o => Infra.Contapontos(o, z)==9);
-                Lance Encontrado6 = ars6.FirstOrDefault(o => Infra.Contapontos(o, z)==6);
+                Lance Encontrado9 = ars9.FirstOrDefault(o => Infra.Contapontos(o, z) == 9);
+                Lance Encontrado6 = ars6.FirstOrDefault(o => Infra.Contapontos(o, z) == 6);
 
-                Lances osPares9 = new(); osPares9.AddRange(ars9.Where(o => Infra.Contapontos(o, Encontrado9)==8).ToList());
-                Lances osPares6 = new(); osPares6.AddRange(ars6.Where(o => Infra.Contapontos(o, Encontrado6)==5).ToList());
+                Lances osPares9 = new(); osPares9.AddRange(ars9.Where(o => Infra.Contapontos(o, Encontrado9) == 8).ToList());
+                Lances osPares6 = new(); osPares6.AddRange(ars6.Where(o => Infra.Contapontos(o, Encontrado6) == 5).ToList());
 
                 osPares9.Insert(0, Encontrado9);
                 osPares6.Insert(0, Encontrado6);
@@ -177,19 +177,19 @@ namespace Busisness
                 {
                     foreach (Lance p in osPares9)
                     {
-                        if (Infra.Contapontos(o, p)==9)
+                        if (Infra.Contapontos(o, p) == 9)
                         {
                             foreach (Lance q in osPares6)
                             {
-                                if (Infra.Contapontos(o, q)==6)
+                                if (Infra.Contapontos(o, q) == 6)
                                 { ar9.Add(p); ar6.Add(q); break; }
                             }
                         }
                     }
                 }
 
-                string s1 = "Pares9-v"+z.Id.ToString();
-                string s2 = "Pares6-v"+z.Id.ToString();
+                string s1 = "Pares9-v" + z.Id.ToString();
+                string s2 = "Pares6-v" + z.Id.ToString();
                 //string s3 = "Saida6-v" + z.Id.ToString();
                 //string s4 = "Saida9-v" + z.Id.ToString();
 
@@ -214,8 +214,8 @@ namespace Busisness
 
             Lances anteriores = new Lances();
 
-            Lance oAnterior = Infra.arLoto[alvo-3];
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAnterior = Infra.arLoto[alvo - 3];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
 
             Lances ars9 = Infra.Combinar15a9(oAlvo.Lista);
             Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
@@ -225,29 +225,29 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            int ix = Infra.arLoto.Count-1;
-            int ax = ix-1;
+            int ix = Infra.arLoto.Count - 1;
+            int ax = ix - 1;
 
-            while ((ix>1)&&(ax>0))
+            while ((ix > 1) && (ax > 0))
             {
                 Lance o = Infra.arLoto[ix];
                 Lance p = Infra.arLoto[ax];
 
                 int m = Infra.Contapontos(o, p);
 
-                if (m==9)
+                if (m == 9)
                 {
                     Lances ars9Tmp = Infra.Combinar15a9(p.Lista);
                     Lances ars6Tmp = Infra.Combinar10a6(Infra.DevolveOposto(p).Lista);
 
-                    Lances Encontrado9 = ars9Tmp.Where(q => Infra.Contapontos(q, o)==6).ToLances();
-                    Lances Encontrado6 = ars6Tmp.Where(q => Infra.Contapontos(q, o)==4).ToLances();
+                    Lances Encontrado9 = ars9Tmp.Where(q => Infra.Contapontos(q, o) == 6).ToLances();
+                    Lances Encontrado6 = ars6Tmp.Where(q => Infra.Contapontos(q, o) == 4).ToLances();
 
                     foreach (Lance z in Encontrado9) { L9[z.Id]++; }
                     foreach (Lance z in Encontrado6) { L6[z.Id]++; }
 
                     ix--;
-                    ax=ix-1;
+                    ax = ix - 1;
 
 
                 }
@@ -274,14 +274,14 @@ namespace Busisness
 
             Lances anteriores = new Lances();
 
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
 
-            while (ars.Count<5000)
+            while (ars.Count < 5000)
             {
 
-                if (ars.Count==0)
+                if (ars.Count == 0)
                 {
-                    Lances Encontrado9 = Infra.arLoto.Where(q => Infra.Contapontos(q, oAlvo)==9).ToLances();
+                    Lances Encontrado9 = Infra.arLoto.Where(q => Infra.Contapontos(q, oAlvo) == 9).ToLances();
 
                     Lance a = Infra.DevolveMaisFrequentes(Encontrado9, 15);
 
@@ -289,9 +289,9 @@ namespace Busisness
                 }
                 else
                 {
-                    Lance b = ars[ars.Count-1];
+                    Lance b = ars[ars.Count - 1];
 
-                    Lances Encontrado9 = Infra.arLoto.Where(q => Infra.Contapontos(q, b)==9).ToLances();
+                    Lances Encontrado9 = Infra.arLoto.Where(q => Infra.Contapontos(q, b) == 9).ToLances();
 
                     Lance a = Infra.DevolveMaisFrequentes(Encontrado9, 15);
 
@@ -320,9 +320,9 @@ namespace Busisness
             foreach (Lance z in Infra.arLoto)
             {
 
-                if (Infra.Contapontos(z, ar)==6)
+                if (Infra.Contapontos(z, ar) == 6)
                 {
-                    Lance Encontrado6 = ars6.FirstOrDefault(o => Infra.Contapontos(o, z)==6);
+                    Lance Encontrado6 = ars6.FirstOrDefault(o => Infra.Contapontos(o, z) == 6);
                     l6[Encontrado6.Id]++;
                 }
             }
@@ -341,17 +341,17 @@ namespace Busisness
             Lance Prime = new(0, Constante.Prime);
 
 
-            Lance oAlvo = Infra.arLoto[alvo-2];
-            Lance Anterior = Infra.arLoto[alvo-3];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
+            Lance Anterior = Infra.arLoto[alvo - 3];
 
             Lances arBase9 = Infra.Combinar15a9(oAlvo.Lista);
             Lances arBase6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
-            Lance Encontrado9 = arBase9.FirstOrDefault(o => Infra.Contapontos(o, Anterior)==9);
-            Lance Encontrado6 = arBase6.FirstOrDefault(o => Infra.Contapontos(o, Anterior)==6);
+            Lance Encontrado9 = arBase9.FirstOrDefault(o => Infra.Contapontos(o, Anterior) == 9);
+            Lance Encontrado6 = arBase6.FirstOrDefault(o => Infra.Contapontos(o, Anterior) == 6);
 
-            Lances ars9 = arBase9.Where(o => Infra.Contapontos(o, Encontrado9)==5).ToLances();
-            Lances ars6 = arBase6.Where(o => Infra.Contapontos(o, Encontrado6)==4).ToLances();
+            Lances ars9 = arBase9.Where(o => Infra.Contapontos(o, Encontrado9) == 5).ToLances();
+            Lances ars6 = arBase6.Where(o => Infra.Contapontos(o, Encontrado6) == 4).ToLances();
 
 
             Random random = new Random();
@@ -373,11 +373,11 @@ namespace Busisness
                 int b = Infra.Contapontos(o, L2);
                 int c = Infra.Contapontos(o, L3);
 
-                if ((a==2)&&(b==2)&&(c==4)) ars8.Add(o);
+                if ((a == 2) && (b == 2) && (c == 4)) ars8.Add(o);
             }
 
             Lances ars2 = new();
-            while (ars2.Count<10000)
+            while (ars2.Count < 10000)
             {
                 ars2.Add(ars1[random.Next(ars1.Count)]);
             }
@@ -385,9 +385,9 @@ namespace Busisness
             Lances ars3 = new();
             foreach (Lance lance in ars8)
             {
-                Lances tmp = ars1.Where(o => Infra.Contapontos(o, lance)==0).ToLances();
+                Lances tmp = ars1.Where(o => Infra.Contapontos(o, lance) == 0).ToLances();
 
-                if (tmp.Count>0) { ars3.Add(lance); }
+                if (tmp.Count > 0) { ars3.Add(lance); }
             }
 
             Lances ars4 = new();
@@ -397,7 +397,7 @@ namespace Busisness
 
             Lances ars5 = new();
 
-            while (ars5.Count<1000) { ars5.Add(ars4[random.Next(ars4.Count)]); }
+            while (ars5.Count < 1000) { ars5.Add(ars4[random.Next(ars4.Count)]); }
 
             Infra.SalvaSaidaW(ars3, Infra.NomeSaida("Controle", alvo));
             Infra.SalvaSaidaW(ars4, Infra.NomeSaida("Prime", alvo));
@@ -426,7 +426,7 @@ namespace Busisness
 
 
 
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
             //  Lance oCerto = Infra.arLoto[alvo - 1];
 
             Lances arBase9 = Infra.Combinar15a9(oAlvo.Lista);
@@ -437,8 +437,8 @@ namespace Busisness
 
             Lances arBase6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
-            int i = alvo-2;
-            while (arBasesAnteriores.Count<70) { Lance a = Infra.arLoto[i]; int b = Infra.Contapontos(a, oAlvo); if (b==9) arBasesAnteriores.Add(a); i--; }
+            int i = alvo - 2;
+            while (arBasesAnteriores.Count < 70) { Lance a = Infra.arLoto[i]; int b = Infra.Contapontos(a, oAlvo); if (b == 9) arBasesAnteriores.Add(a); i--; }
 
             foreach (Lance o in arBase9)
             {
@@ -447,9 +447,9 @@ namespace Busisness
                 foreach (Lance p in arBasesAnteriores)
                 {
                     int x = Infra.Contapontos(o, p);
-                    int y = pesos[x-3];
+                    int y = pesos[x - 3];
 
-                    if (y==0) ars1.Add(o);
+                    if (y == 0) ars1.Add(o);
 
                     ints.Add(y);
                 }
@@ -464,9 +464,9 @@ namespace Busisness
                 int s = 0;
                 foreach (Lance p in ars1)
                 {
-                    if (Infra.Contapontos(o, p)==5) s++; break;
+                    if (Infra.Contapontos(o, p) == 5) s++; break;
                 }
-                if (s==0) ars2.Add(o);
+                if (s == 0) ars2.Add(o);
             }
 
 
@@ -494,9 +494,9 @@ namespace Busisness
             Infra.CombinarGeral();
 
 
-            Lance oCerto = Infra.arLoto[alvo-1];
-            Lance oAlvo = Infra.arLoto[alvo-2];
-            Lance oAnterior = Infra.arLoto[alvo-3];
+            Lance oCerto = Infra.arLoto[alvo - 1];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
+            Lance oAnterior = Infra.arLoto[alvo - 3];
 
             Lance oControle1 = Infra.arLoto[1699];
             Lance oControle2 = Infra.arLoto[1098];
@@ -508,8 +508,8 @@ namespace Busisness
             Lances arBase9 = Infra.Combinar15a9(oAlvo.Lista);
             Lances arBase6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
-            Lance Encontrado9tmp = arBase9.FirstOrDefault(o => Infra.Contapontos(o, oAnterior)==9);
-            Lance Encontrado6tmp = arBase6.FirstOrDefault(o => Infra.Contapontos(o, oAnterior)==6);
+            Lance Encontrado9tmp = arBase9.FirstOrDefault(o => Infra.Contapontos(o, oAnterior) == 9);
+            Lance Encontrado6tmp = arBase6.FirstOrDefault(o => Infra.Contapontos(o, oAnterior) == 6);
 
             int oEncontrado9Id = Encontrado9tmp.Id;
             int oEncontrado6Id = Encontrado6tmp.Id;
@@ -521,11 +521,11 @@ namespace Busisness
             Lance oSense = Infra.UnirLances(Encontrado9, Encontrado6);
 
 
-            Lances osMelhores = Infra.arGeral.Where(o => Infra.Contapontos(o, oSense)==5).ToLances();
-            Lances osMelhoresRef = Infra.arGeral.Where(o => Infra.Contapontos(o, oCerto)==5).ToLances();
+            Lances osMelhores = Infra.arGeral.Where(o => Infra.Contapontos(o, oSense) == 5).ToLances();
+            Lances osMelhoresRef = Infra.arGeral.Where(o => Infra.Contapontos(o, oCerto) == 5).ToLances();
 
-            Lances osMelhoresRef1 = Infra.arGeral.Where(o => Infra.Contapontos(o, oControle1)==5).ToLances();
-            Lances osMelhoresRef2 = Infra.arGeral.Where(o => Infra.Contapontos(o, oControle2)==5).ToLances();
+            Lances osMelhoresRef1 = Infra.arGeral.Where(o => Infra.Contapontos(o, oControle1) == 5).ToLances();
+            Lances osMelhoresRef2 = Infra.arGeral.Where(o => Infra.Contapontos(o, oControle2) == 5).ToLances();
 
 
             //Lance Encontrado9Comp = Infra.DevolveComplementar(oAlvo, Encontrado9);
@@ -625,8 +625,8 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            Lance oAnterior = Infra.arLoto[alvo-3];
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAnterior = Infra.arLoto[alvo - 3];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
 
 
             Lances arBase = Infra.DevolveBaseGeralFiltrada(Infra.arGeral, oAlvo, 9);
@@ -636,19 +636,19 @@ namespace Busisness
             Lances arBase6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
 
-            Lance Encontrado9tmp = arBase9.FirstOrDefault(o => Infra.Contapontos(o, oAnterior)==9);
+            Lance Encontrado9tmp = arBase9.FirstOrDefault(o => Infra.Contapontos(o, oAnterior) == 9);
 
             Lances aleatorios = Infra.Aleatorios(arBase, 5000);
 
-            Lances osMelhores = aleatorios.Where(o => Infra.Contapontos(o, oAlvo)==9).ToLances();
+            Lances osMelhores = aleatorios.Where(o => Infra.Contapontos(o, oAlvo) == 9).ToLances();
 
             ConcurrentBag<Lance> ars = new ConcurrentBag<Lance>();
             ConcurrentBag<Lance> ars1 = new ConcurrentBag<Lance>();
 
             osMelhores.AsParallel().ForAll(o =>
             {
-                bool condicaoA = osMelhores.Any(p => Infra.Contapontos(o, p)==5);
-                bool condicaoB = osMelhores.Any(p => Infra.Contapontos(o, p)==13);
+                bool condicaoA = osMelhores.Any(p => Infra.Contapontos(o, p) == 5);
+                bool condicaoB = osMelhores.Any(p => Infra.Contapontos(o, p) == 13);
 
                 if (!condicaoA) ars.Add(o);
                 if (!condicaoB) ars1.Add(o);
@@ -675,7 +675,7 @@ namespace Busisness
                 int a = Infra.Contapontos(o, oMelhor5);
                 int b = Infra.Contapontos(o, oMelhor13);
 
-                if (a==9&&b==9)
+                if (a == 9 && b == 9)
                 {
                     ars3Concurrent.Add(o);
                 }
@@ -720,7 +720,7 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
 
 
             Lances arBase1 = Infra.DevolveBaseGeralFiltrada(Infra.arGeral, oAlvo, 5);
@@ -732,12 +732,12 @@ namespace Busisness
 
             Random random = new Random();
 
-            while (ars1.Count<50)
+            while (ars1.Count < 50)
             {
-                while (ars.Count<3000)
+                while (ars.Count < 3000)
                 {
 
-                    while (ints2.Count<5)
+                    while (ints2.Count < 5)
                     {
                         int a = random.Next(arBase2.Count);
                         if (!ints2.Contains(a)) ints2.Add(a);
@@ -758,7 +758,7 @@ namespace Busisness
                         int d = Infra.Contapontos(p, e4);
                         int e = Infra.Contapontos(p, e5);
 
-                        if (a==5&&b==5&&c==5&&d==5&&e==5&&!ints1.Contains(p.Id)) { ars.Add(p); ints1.Add(p.Id); }
+                        if (a == 5 && b == 5 && c == 5 && d == 5 && e == 5 && !ints1.Contains(p.Id)) { ars.Add(p); ints1.Add(p.Id); }
 
                     }
 
@@ -794,15 +794,15 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
 
-            Lance oAnterior = Infra.arLoto[alvo-3];
+            Lance oAnterior = Infra.arLoto[alvo - 3];
 
             Lances arBase9 = Infra.Combinar15a9(oAlvo.Lista);
             Lances arBase6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
 
-            Lance Encontrado9tmp = arBase9.FirstOrDefault(o => Infra.Contapontos(o, oAnterior)==9);
+            Lance Encontrado9tmp = arBase9.FirstOrDefault(o => Infra.Contapontos(o, oAnterior) == 9);
             Lances arAnteriores = Infra.DevolveBaseGeralFiltrada(arBase9, Encontrado9tmp, 8);
 
             Lance Encontrado9tmp2 = arBase9[351];
@@ -823,11 +823,11 @@ namespace Busisness
 
 
 
-            while (ars.Count<10000) { ars.Add(arBase1[random.Next(arBase1.Count)]); }
-            while (ars1.Count<10000) { ars1.Add(arBase1[random.Next(arBase1.Count)]); }
-            while (ars2.Count<10000) { ars2.Add(arBase2[random.Next(arBase2.Count)]); }
-            while (ars3.Count<10000) { ars3.Add(arBase3[random.Next(arBase3.Count)]); }
-            while (ars4.Count<10000) { ars4.Add(arBase4[random.Next(arBase4.Count)]); }
+            while (ars.Count < 10000) { ars.Add(arBase1[random.Next(arBase1.Count)]); }
+            while (ars1.Count < 10000) { ars1.Add(arBase1[random.Next(arBase1.Count)]); }
+            while (ars2.Count < 10000) { ars2.Add(arBase2[random.Next(arBase2.Count)]); }
+            while (ars3.Count < 10000) { ars3.Add(arBase3[random.Next(arBase3.Count)]); }
+            while (ars4.Count < 10000) { ars4.Add(arBase4[random.Next(arBase4.Count)]); }
 
 
             //Infra.SalvaSaidaW(ints1, Infra.NomeSaida("Base6PT-1", alvo));
@@ -854,7 +854,7 @@ namespace Busisness
 
             int n = 3014;
 
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
             Lance oAnterior = Infra.arLoto[n];
 
             //  Lance oCerto = Infra.arLoto[alvo - 1];
@@ -868,8 +868,8 @@ namespace Busisness
             Lances arBase9 = Infra.Combinar15a9(oAlvo.Lista);
             Lances arBase6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
-            Lance Encontrado9tmp = arBase9.FirstOrDefault(o => Infra.Contapontos(o, oAnterior)==9);
-            Lance Encontrado6tmp = arBase6.FirstOrDefault(o => Infra.Contapontos(o, oAnterior)==6);
+            Lance Encontrado9tmp = arBase9.FirstOrDefault(o => Infra.Contapontos(o, oAnterior) == 9);
+            Lance Encontrado6tmp = arBase6.FirstOrDefault(o => Infra.Contapontos(o, oAnterior) == 6);
 
             Lances ars4 = new();
             Lances ars5 = new();
@@ -879,8 +879,8 @@ namespace Busisness
             ars44.Add(Encontrado9tmp);
             ars55.Add(Encontrado6tmp);
 
-            ars4.AddRange(arBase9.Where(o => Infra.Contapontos(Encontrado9tmp, o)>7));
-            ars5.AddRange(arBase6.Where(o => Infra.Contapontos(Encontrado6tmp, o)>4));
+            ars4.AddRange(arBase9.Where(o => Infra.Contapontos(Encontrado9tmp, o) > 7));
+            ars5.AddRange(arBase6.Where(o => Infra.Contapontos(Encontrado6tmp, o) > 4));
 
 
 
@@ -896,15 +896,15 @@ namespace Busisness
             Lances ars88 = new();
             Lances ars9 = new();
 
-            foreach (Lance o in ars4) { ars8.AddRange(arBase9.Where(o => Infra.Contapontos(Encontrado9tmp, o)>7)); }
+            foreach (Lance o in ars4) { ars8.AddRange(arBase9.Where(o => Infra.Contapontos(Encontrado9tmp, o) > 7)); }
             foreach (Lance o in arBase9)
             {
                 int a = 0;
                 foreach (Lance p in ars8)
                 {
-                    if (Infra.Contapontos(o, p)==9) { a++; break; }
+                    if (Infra.Contapontos(o, p) == 9) { a++; break; }
                 }
-                if (a==0) { ars9.Add(o); }
+                if (a == 0) { ars9.Add(o); }
 
             }
 
@@ -953,7 +953,7 @@ namespace Busisness
 
             Random rnd = new Random();
 
-            int n = alvo-3;
+            int n = alvo - 3;
 
             List<int> ints = new();
 
@@ -963,16 +963,16 @@ namespace Busisness
 
             Random random = new Random();
 
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
             Lance oposto = Infra.DevolveOposto(oAlvo);
 
-            Lance oAnterior = Infra.arLoto[alvo-3];
+            Lance oAnterior = Infra.arLoto[alvo - 3];
 
             Lances arBase9 = Infra.Combinar15a9(oAlvo.Lista);
             Lances arBase6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
-            Lances Encontrado6 = new(); Encontrado6.AddRange(arBase6.Where(o => Infra.Contapontos(oAnterior, o)==2));
-            Lances Encontrado9 = new(); Encontrado9.AddRange(arBase9.Where(o => Infra.Contapontos(oAnterior, o)==3));
+            Lances Encontrado6 = new(); Encontrado6.AddRange(arBase6.Where(o => Infra.Contapontos(oAnterior, o) == 2));
+            Lances Encontrado9 = new(); Encontrado9.AddRange(arBase9.Where(o => Infra.Contapontos(oAnterior, o) == 3));
 
             //  Lances ars3 = Infra.Aleatorios(Infra.arGeral, 10000);
 
@@ -995,13 +995,13 @@ namespace Busisness
                     }
                 }
                 int s = 0;
-                for (int z = 0; z<l.Count; z++) { if (l[z]!=lt[z]) s++; break; };
-                if (s==0) ars5.Add(o);
+                for (int z = 0; z < l.Count; z++) { if (l[z] != lt[z]) s++; break; };
+                if (s == 0) ars5.Add(o);
             }
 
 
             Lances ars4 = new();
-            while (ars4.Count<10000) { Lance a = Infra.arGeral[rnd.Next(Infra.arGeral.Count)]; if (Infra.Contapontos(a, oAlvo)==9) ars4.Add(a); }
+            while (ars4.Count < 10000) { Lance a = Infra.arGeral[rnd.Next(Infra.arGeral.Count)]; if (Infra.Contapontos(a, oAlvo) == 9) ars4.Add(a); }
 
 
 
@@ -1040,8 +1040,8 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            Lance anterior = Infra.arLoto[alvo-3];
-            Lance oAlvo = Infra.arLoto[alvo-2];
+            Lance anterior = Infra.arLoto[alvo - 3];
+            Lance oAlvo = Infra.arLoto[alvo - 2];
 
             Lances arBase = Infra.Combinar15a9(oAlvo.Lista);
 
@@ -1049,23 +1049,23 @@ namespace Busisness
 
 
             Random random = new();
-            while (ars2.Count<1890)
+            while (ars2.Count < 1890)
             {
                 ars.Clear();
 
-                while (ars.Count<10000) { ars.Add(Infra.arGeral[random.Next(Infra.arGeral.Count)]); }
+                while (ars.Count < 10000) { ars.Add(Infra.arGeral[random.Next(Infra.arGeral.Count)]); }
 
                 Lance frequentes = Infra.DevolveMaisFrequentes(ars, 15);
 
                 foreach (Lance o in arBase)
                 {
-                    if ((Infra.Contapontos(o, frequentes)==9)&&(!Infra.ListagemContemSequencia(ars2, o))) { ars2.Add(o); break; }
+                    if ((Infra.Contapontos(o, frequentes) == 9) && (!Infra.ListagemContemSequencia(ars2, o))) { ars2.Add(o); break; }
                 }
             }
 
             foreach (Lance o in arBase) { if (!Infra.ListagemContemSequencia(ars2, o)) ars1.Add(o); }
 
-            while (ars3.Count<10000)
+            while (ars3.Count < 10000)
             {
                 Lance a = arsB[random.Next(arsB.Count)];
 
@@ -1073,7 +1073,7 @@ namespace Busisness
 
                 foreach (Lance p in arBase)
                 {
-                    if ((Infra.Contapontos(a, p)==9)&&(Infra.Contapontos(a, anterior)==9)) { ars3.Add(p); ars4.Add(a); }
+                    if ((Infra.Contapontos(a, p) == 9) && (Infra.Contapontos(a, anterior) == 9)) { ars3.Add(p); ars4.Add(a); }
 
 
                 }
@@ -1107,7 +1107,7 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            string arqNome = "ListaPossivel11-"+"-"+alvo.ToString();
+            string arqNome = "ListaPossivel11-" + "-" + alvo.ToString();
 
             Lances arBonds = Infra.AbrirArquivo(arqNome);
 
@@ -1124,17 +1124,17 @@ namespace Busisness
 
             foreach (Lance o in Infra.arGeral)
             {
-                if (Infra.Contapontos(o, frequente)==14) { ars.Add(o); }
+                if (Infra.Contapontos(o, frequente) == 14) { ars.Add(o); }
             }
 
 
-            while (ars1.Count<300)
+            while (ars1.Count < 300)
             {
 
                 Lance o = Infra.arGeral[random.Next(0, Infra.arGeral.Count)];
                 //foreach (Lance o in Infra.arGeral)
                 //{
-                if (Infra.Contapontos(o, lb)==lb.Lista.Count)
+                if (Infra.Contapontos(o, lb) == lb.Lista.Count)
                 {
 
                     int a = 0;
@@ -1144,12 +1144,12 @@ namespace Busisness
                     foreach (Lance p in ars)
                     {
                         int t = Infra.Contapontos(o, p);
-                        if (t==8) { a++; }
-                        if (t==9) { b++; }
-                        if (t==10) { c++; }
+                        if (t == 8) { a++; }
+                        if (t == 9) { b++; }
+                        if (t == 10) { c++; }
                     }
 
-                    if ((a==36)&&(b==78)&&(c==36)) { ars1.Add(o); }
+                    if ((a == 36) && (b == 78) && (c == 36)) { ars1.Add(o); }
 
                     //         if (ars1.Count > 10000) { break; }
 
@@ -1177,7 +1177,7 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            string arqNome = "ListaPossivel11-"+"-"+alvo.ToString();
+            string arqNome = "ListaPossivel11-" + "-" + alvo.ToString();
 
             Lances arBonds = Infra.AbrirArquivo(arqNome);
 
@@ -1192,7 +1192,7 @@ namespace Busisness
 
             foreach (Lance o in Infra.arGeral)
             {
-                if (Infra.Contapontos(o, frequente)==14) { ars.Add(o); }
+                if (Infra.Contapontos(o, frequente) == 14) { ars.Add(o); }
             }
 
 
@@ -1202,7 +1202,7 @@ namespace Busisness
             //    Lance o = Infra.arGeral[random.Next(0, Infra.arGeral.Count)];
             foreach (Lance o in Infra.arGeral)
             {
-                if (Infra.Contapontos(o, lb)==lb.Lista.Count)
+                if (Infra.Contapontos(o, lb) == lb.Lista.Count)
                 {
 
                     int a = 0;
@@ -1212,12 +1212,12 @@ namespace Busisness
                     foreach (Lance p in ars)
                     {
                         int t = Infra.Contapontos(o, p);
-                        if (t==8) { a++; }
-                        if (t==9) { b++; }
-                        if (t==10) { c++; }
+                        if (t == 8) { a++; }
+                        if (t == 9) { b++; }
+                        if (t == 10) { c++; }
                     }
 
-                    if ((a==36)&&(b==78)&&(c==36)) { ars1.Add(o); }
+                    if ((a == 36) && (b == 78) && (c == 36)) { ars1.Add(o); }
 
                     // if (ars1.Count > 10000) { break; }
 
@@ -1235,7 +1235,7 @@ namespace Busisness
         {
             Lances ars1 = new();
 
-            string arqNome = "Estudo14"+"-"+alvo.ToString();
+            string arqNome = "Estudo14" + "-" + alvo.ToString();
             // string arqNome1 = "Bases" + "-" + alvo.ToString();
 
 
@@ -1256,7 +1256,7 @@ namespace Busisness
                 foreach (Lance p in arBonds)
                 {
                     int t = Infra.Contapontos(o, p);
-                    if (t==9) { a++; }
+                    if (t == 9) { a++; }
                 }
                 inteiros.Add(a);
 
@@ -1277,7 +1277,7 @@ namespace Busisness
 
             Infra.CombinarGeral();
 
-            string arqNome = "Estudo14"+"-"+alvo.ToString();
+            string arqNome = "Estudo14" + "-" + alvo.ToString();
 
             Lances arBonds = Infra.AbrirArquivo(arqNome);
 
@@ -1288,9 +1288,9 @@ namespace Busisness
             foreach (Lance o in arBonds)
             {
 
-                if (Infra.Contapontos(o, numeros)==numeros.Count) { ars1.Add(o); }
+                if (Infra.Contapontos(o, numeros) == numeros.Count) { ars1.Add(o); }
 
-                if (ars1.Count==150000) { break; }
+                if (ars1.Count == 150000) { break; }
             }
 
 
@@ -1309,21 +1309,21 @@ namespace Busisness
 
             Infra.CarregarConcursos();
 
-            Lance oAlvo = Infra.arLoto[alvo-1];
+            Lance oAlvo = Infra.arLoto[alvo - 1];
 
 
-            string arqNome = "Estudo14"+"-"+alvo.ToString();
+            string arqNome = "Estudo14" + "-" + alvo.ToString();
 
             Lances arBonds = Infra.AbrirArquivo(arqNome);
 
-            string arqNome1 = "Bases"+"-"+alvo.ToString();
+            string arqNome1 = "Bases" + "-" + alvo.ToString();
 
             Lances arBases = Infra.AbrirArquivo(arqNome1);
 
 
-            for (int i = 0; i<15; i++)
+            for (int i = 0; i < 15; i++)
             {
-                int ini = i*10;
+                int ini = i * 10;
 
                 List<int> numeros = Enumerable.Range(ini, 10).ToList();
 
@@ -1342,7 +1342,7 @@ namespace Busisness
                     int xz = 0;
                     foreach (Lance lance in ars)
                     {
-                        if (Infra.Contapontos(lance, oAlvo)==9) xz++;
+                        if (Infra.Contapontos(lance, oAlvo) == 9) xz++;
                     }
                     NinesPT.Add(xz);
 
@@ -1352,7 +1352,7 @@ namespace Busisness
                         int b = Infra.Contapontos(o, ars[1]);
                         int c = Infra.Contapontos(o, ars[2]);
 
-                        if ((a==9)&&(b==9)&&(c==9)) { arstmp.Add(o); }
+                        if ((a == 9) && (b == 9) && (c == 9)) { arstmp.Add(o); }
                     }
                     ints.Add(arstmp.Count);
 
@@ -1381,17 +1381,17 @@ namespace Busisness
             //     Lance oAlvo = Infra.arLoto[alvo - 1];
 
 
-            string arqNome = "Estudo14"+"-"+alvo.ToString();
+            string arqNome = "Estudo14" + "-" + alvo.ToString();
 
             Lances arBonds = Infra.AbrirArquivo(arqNome);
 
-            string arqNome1 = "Bases"+"-"+alvo.ToString();
+            string arqNome1 = "Bases" + "-" + alvo.ToString();
 
             Lances arBases = Infra.AbrirArquivo(arqNome1);
 
             int ini = 0;
 
-            string pt = Constante.PT+"\\Saida\\"+alvo.ToString()+"\\TMP";
+            string pt = Constante.PT + "\\Saida\\" + alvo.ToString() + "\\TMP";
 
             if (!Directory.Exists(pt)) Directory.CreateDirectory(pt);
 
@@ -1423,11 +1423,11 @@ namespace Busisness
                     int b = Infra.Contapontos(o, ars[1]);
                     int c = Infra.Contapontos(o, ars[2]);
 
-                    if ((a==9)&&(b==9)&&(c==9)) { arstmp.Add(o); }
+                    if ((a == 9) && (b == 9) && (c == 9)) { arstmp.Add(o); }
                 }
                 ints.Add(arstmp.Count);
 
-                Infra.SalvaSaidaW(arstmp, Infra.NomeSaida("TMP\\"+"BaseLegitimaInicial-V"+p.Id.ToString(), alvo));
+                Infra.SalvaSaidaW(arstmp, Infra.NomeSaida("TMP\\" + "BaseLegitimaInicial-V" + p.Id.ToString(), alvo));
 
                 ars2.Add(Infra.DevolveMaisFrequentes(arstmp, 4));
             }
@@ -1458,12 +1458,12 @@ namespace Busisness
                 int s = 0;
                 foreach (Lance p in arEstudo)
                 {
-                    if (Infra.Contapontos(o, p)==v) { s++; }
+                    if (Infra.Contapontos(o, p) == v) { s++; }
                 }
-                if (s==arEstudo.Count) { ar.Add(o); }
+                if (s == arEstudo.Count) { ar.Add(o); }
             }
 
-            if (ar.Count==1) { saida=ar[0].Id; } else { saida=-1; }
+            if (ar.Count == 1) { saida = ar[0].Id; } else { saida = -1; }
 
             return saida;
         }
@@ -1478,9 +1478,9 @@ namespace Busisness
                 int s = 0;
                 foreach (Lance p in arEstudo)
                 {
-                    if (Infra.Contapontos(o, p)==5) { s++; }
+                    if (Infra.Contapontos(o, p) == 5) { s++; }
                 }
-                if (s==arEstudo.Count)
+                if (s == arEstudo.Count)
                 {
                     o.M++;
                     foreach (int z in arEstudo[0].ListaM) { if (!o.ListaM.Contains(z)) o.ListaM.Add(z); };
