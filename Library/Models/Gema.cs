@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 
 namespace LotoLibrary.Models
 {
-   public class Gema : IComparable
+    public class Gema : IComparable
     {
 
-        public int Id;       
+        public int Id;
         public List<int> Lista;
 
         public Lances Grupo = new();
@@ -17,18 +16,18 @@ namespace LotoLibrary.Models
 
         public Gema(int id, List<int> lista)
         {
-            Id = id;
-            Lista = lista;           
+            Id=id;
+            Lista=lista;
         }
 
         public void Pontos()
         {
             int m = 0;
-            if (this.Grupo.Count > 0)
-            {               
+            if (this.Grupo.Count>0)
+            {
 
                 List<int> S = new();
-                for (int i = 0; i < 25; i++) { S.Add(0); }
+                for (int i = 0; i<25; i++) { S.Add(0); }
 
                 foreach (Lance o in Grupo)
                 {
@@ -38,15 +37,15 @@ namespace LotoLibrary.Models
                     }
                 }
 
-                for (int i = 0; i < 25; i++)
+                for (int i = 0; i<25; i++)
                 {
-                    if (S[i] == 15) { m++; }
+                    if (S[i]==15) { m++; }
                 }
 
 
             }
 
-            this.N = m;
+            this.N=m;
         }
 
 
@@ -58,6 +57,5 @@ namespace LotoLibrary.Models
         }
     }
 
-
-    public class Gemas : List<Gema>{}
+    public class Gemas : List<Gema> { }
 }

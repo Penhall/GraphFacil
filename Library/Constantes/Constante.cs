@@ -1,7 +1,5 @@
 ﻿using LotoLibrary.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace LotoLibrary.Constantes
 {
@@ -12,7 +10,10 @@ namespace LotoLibrary.Constantes
 
         public static string PT1 = "C:\\Users\\Reginaldo.souza\\Downloads\\Projetos\\GraphFacil";
 
-        public const string ArqLoto = "lotofacil";
+        public const string ArqLoto = "Lotofacil";
+
+        public const string ArqLotoJson = "Lotofacil.json";
+
 
         public const string Seven = "seven";
 
