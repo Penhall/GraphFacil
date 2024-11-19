@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>Dashboard.App</StartupObject>
   </PropertyGroup>
@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="MaterialDesignColors" Version="2.0.3" />
     <PackageReference Include="MaterialDesignThemes.Wpf" Version="1.0.1" />
+    <PackageReference Include="TensorFlow.NET" Version="0.150.0" />
   </ItemGroup>
 
   <ItemGroup>
