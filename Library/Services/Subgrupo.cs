@@ -60,3 +60,4 @@ public class Subgrupo
         return TF.np.array(caracteristicas.ToArray());
     }
 }
+

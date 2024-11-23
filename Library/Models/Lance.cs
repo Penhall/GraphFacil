@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace LotoLibrary.Models
 {
@@ -17,6 +14,7 @@ namespace LotoLibrary.Models
         public int X = 0;
         public int Y = 0;
         public int PT = 0;
+        public Dictionary<int, int> ContagemAcerto = new();
 
         public int Anel = 0;
 
@@ -96,6 +94,8 @@ namespace LotoLibrary.Models
             this.ListaN = O.Lista.Except(this.Lista).ToList();
             this.ListaN.Sort();
         }
+
+        public void AtualizaContagemAcerto(int i, int j) { this.ContagemAcerto.Add(i, j); }
     }
 
     public class Lances : List<Lance>
@@ -141,4 +141,5 @@ namespace LotoLibrary.Models
         }
 
     }
+
 }
