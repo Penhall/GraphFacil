@@ -104,9 +104,15 @@ namespace LotoLibrary.Models
         {
         }
 
+
         public Lances(IEnumerable<Lance> collection) : base(collection)
         {
         }
+
+        public List<Lance> Lista { get; set; } = new List<Lance>();
+
+
+
     }
 
     public static class EnumerableExtensions

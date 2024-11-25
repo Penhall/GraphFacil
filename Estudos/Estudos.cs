@@ -205,7 +205,7 @@ namespace Busisness
         }
 
 
-        public static Lances Estudo3(int alvo, Lances arLotoTreino)
+        public static Lances Estudo3(Lances arLotoTreino)
         {
             Lances ars1 = new Lances();
             Lances anteriores = new Lances();
@@ -275,9 +275,6 @@ namespace Busisness
             fileService.SalvarDados("ContagemSS.json", contagemSS);
             fileService.SalvarDados("ContagemNS.json", contagemNS);
 
-            // Salvar bases dos subgrupos
-            Infra.SalvaSaidaW(ars9, Infra.NomeSaida("Base9", alvo));
-            Infra.SalvaSaidaW(ars6, Infra.NomeSaida("Base6", alvo));
 
             return ars1;
         }
@@ -296,189 +293,10 @@ namespace Busisness
         #region MÉTODOS AUXILIARES
 
 
-        public static void ExecutarAnalise(int alvo)
-        {
-            // Separar dados de treinamento e validação
-            SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios);
-
-            // Realizar o estudo de contagem usando apenas os dados de treinamento
-            Lances resultadoEstudo = Estudo3(alvo, trainSorteios);
-
-            // Carregar as contagens dos arquivos JSON e atualizar o repositório de subgrupos
-            FileService fileService = new FileService();
-            string filePathContagemSS = "ContagemSS.json";
-            string filePathContagemNS = "ContagemNS.json";
-            int totalSorteiosTreinamento = trainSorteios.Count;
-
-            CalcularValoresPercentuaisDoArquivo(filePathContagemSS, filePathContagemNS, totalSorteiosTreinamento);
-
-            // Salvar subgrupos atualizados no repositório em um arquivo JSON
-            var todosSubgrupos = SubgrupoRepository.ListarSubgrupos();
-            fileService.SalvarDados("SubgruposAtualizados.json", todosSubgrupos);
-
-            // (Opcional) Avaliar o modelo usando os dados de validação
-            // AvaliarModelo(valSorteios);
-        }
-
-        public static void CalcularValoresPercentuaisDoArquivo(string filePathContagemSS, string filePathContagemNS, int totalSorteios)
-        {
-            // Carregar os dicionários de contagem dos arquivos JSON
-            FileService fileService = new FileService();
-            var contagemSS = fileService.CarregarDados<Dictionary<int, Dictionary<int, int>>>(filePathContagemSS);
-            var contagemNS = fileService.CarregarDados<Dictionary<int, Dictionary<int, int>>>(filePathContagemNS);
-
-            if (contagemSS == null || contagemNS == null)
-            {
-                Console.WriteLine("Erro ao carregar contagens dos arquivos JSON.");
-                return;
-            }
-
-            // Calcular percentuais para os subgrupos SS
-            foreach (var subgrupoEntry in contagemSS)
-            {
-                int subgrupoId = subgrupoEntry.Key;
-                var contagens = subgrupoEntry.Value;
-
-                // Criar um novo dicionário para armazenar os percentuais
-                var percentuais = new Dictionary<int, double>();
-
-                foreach (var contagem in contagens)
-                {
-                    int acertos = contagem.Key;
-                    int frequencia = contagem.Value;
-
-                    // Calcular o percentual em relação ao total de sorteios
-                    double percentual = (double)frequencia / totalSorteios * 100.0;
-                    percentuais[acertos] = percentual;
-                }
-
-                // Atualizar o subgrupo no repositório com os valores percentuais
-                SubgrupoRepository.AtualizarSubgrupo(subgrupoId, subgrupo =>
-                {
-                    subgrupo.ContagemPercentual = percentuais;
-                });
-            }
-
-            // Calcular percentuais para os subgrupos NS
-            foreach (var subgrupoEntry in contagemNS)
-            {
-                int subgrupoId = subgrupoEntry.Key;
-                var contagens = subgrupoEntry.Value;
-
-                // Criar um novo dicionário para armazenar os percentuais
-                var percentuais = new Dictionary<int, double>();
-
-                foreach (var contagem in contagens)
-                {
-                    int acertos = contagem.Key;
-                    int frequencia = contagem.Value;
-
-                    // Calcular o percentual em relação ao total de sorteios
-                    double percentual = (double)frequencia / totalSorteios * 100.0;
-                    percentuais[acertos] = percentual;
-                }
-
-                // Atualizar o subgrupo no repositório com os valores percentuais
-                SubgrupoRepository.AtualizarSubgrupo(subgrupoId, subgrupo =>
-                {
-                    subgrupo.ContagemPercentual = percentuais;
-                });
-            }
-        }
-
-
-        public static void SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios)
-        {
-            int totalSorteios = Infra.arLoto.Count;
-
-            // Definir os índices para treinamento e validação
-            int quantidadeValidacao = 100;
-            int quantidadeTreinamento = totalSorteios - quantidadeValidacao;
-
-            // Separar os sorteios para treinamento e validação
-            trainSorteios = Infra.arLoto.Take(quantidadeTreinamento).ToLances();
-            valSorteios = Infra.arLoto.Skip(quantidadeTreinamento).ToLances();
-        }
 
 
 
 
-
-        public static void CalcularValoresPercentuaisDoArquivo(int totalSorteios)
-        {
-
-            string filePathContagemSS = "ContagemSS.json";
-            string filePathContagemNS = "ContagemNS.json";
-
-            // Carregar os dicionários de contagem dos arquivos JSON
-            FileService fileService = new FileService();
-            var contagemSS = fileService.CarregarDados<Dictionary<int, Dictionary<int, int>>>(filePathContagemSS);
-            var contagemNS = fileService.CarregarDados<Dictionary<int, Dictionary<int, int>>>(filePathContagemNS);
-
-            if (contagemSS == null || contagemNS == null)
-            {
-                Console.WriteLine("Erro ao carregar contagens dos arquivos JSON.");
-                return;
-            }
-
-            // Calcular percentuais para os subgrupos SS
-            foreach (var subgrupoEntry in contagemSS)
-            {
-                int subgrupoId = subgrupoEntry.Key;
-                var contagens = subgrupoEntry.Value;
-
-                // Criar um novo dicionário para armazenar os percentuais
-                var percentuais = new Dictionary<int, double>();
-
-                foreach (var contagem in contagens)
-                {
-                    int acertos = contagem.Key;
-                    int frequencia = contagem.Value;
-
-                    // Calcular o percentual em relação ao total de sorteios
-                    double percentual = (double)frequencia / totalSorteios * 100.0;
-                    percentuais[acertos] = percentual;
-                }
-
-                // Atualizar o subgrupo no repositório com os valores percentuais
-                if (SubgrupoRepository.TryGetSubgrupoById(subgrupoId, out Subgrupo subgrupo))
-                {
-                    subgrupo.ContagemPercentual = percentuais;
-                    SubgrupoRepository.AtualizarSubgrupo(subgrupo);
-                }
-            }
-
-            // Calcular percentuais para os subgrupos NS
-            foreach (var subgrupoEntry in contagemNS)
-            {
-                int subgrupoId = subgrupoEntry.Key;
-                var contagens = subgrupoEntry.Value;
-
-                // Criar um novo dicionário para armazenar os percentuais
-                var percentuais = new Dictionary<int, double>();
-
-                foreach (var contagem in contagens)
-                {
-                    int acertos = contagem.Key;
-                    int frequencia = contagem.Value;
-
-                    // Calcular o percentual em relação ao total de sorteios
-                    double percentual = (double)frequencia / totalSorteios * 100.0;
-                    percentuais[acertos] = percentual;
-                }
-
-                // Atualizar o subgrupo no repositório com os valores percentuais
-                if (SubgrupoRepository.TryGetSubgrupoById(subgrupoId, out Subgrupo subgrupo))
-                {
-                    subgrupo.ContagemPercentual = percentuais;
-                    SubgrupoRepository.AtualizarSubgrupo(subgrupo);
-                }
-            }
-
-            // Opcionalmente, salvar os subgrupos atualizados no repositório para um novo arquivo JSON
-            var todosSubgrupos = SubgrupoRepository.ListarSubgrupos();
-            fileService.SalvarDados("SubgruposAtualizados.json", todosSubgrupos);
-        }
 
 
         #endregion

@@ -1,124 +1,98 @@
-﻿using System.Collections.Generic;
+﻿using LotoLibrary.Interfaces;
+using LotoLibrary.Models;
+using System.Collections.Generic;
 using System.Linq;
-using TF = Tensorflow.NumPy;
 
 namespace LotoLibrary.Services;
 
-public class AnaliseService
+
+public static class AnaliseService
 {
-    private List<Subgrupo> _subgruposSS;
-    private List<Subgrupo> _subgruposNS;
-
-    public AnaliseService()
+    public static void ExecutarAnalise()
     {
-        _subgruposSS = new List<Subgrupo>();
-        _subgruposNS = new List<Subgrupo>();
+        // Separar dados de treinamento e validação
+        SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios);
+
+        // Realizar o estudo de contagem usando apenas os dados de treinamento
+        ISubgrupoRepository subgrupoRepository = new SubgrupoRepository();
+        SubgrupoService subgrupoService = new SubgrupoService(subgrupoRepository);
+        int totalSorteiosTreinamento = trainSorteios.Count;
+
+        // Executar treinamento e gerar subgrupos identificados pelo ID
+        ExecutarTreinamento(trainSorteios);
+
+        // Processar os sorteios para atualizar frequências e calcular valores percentuais
+        subgrupoService.ProcessarSorteiosECalcularPercentuais(trainSorteios, totalSorteiosTreinamento);
+
+        // (Opcional) Avaliar o modelo usando os dados de validação
+        // AvaliarModelo(valSorteios);
     }
 
-    // Método para adicionar um subgrupo SS
-    public void AdicionarSubgrupoSS(List<int> numeros)
+    public static void ExecutarTreinamento(Lances sorteios)
     {
-        _subgruposSS.Add(new Subgrupo(numeros));
-    }
+        // Gerar subgrupos SS e NS
+        Dictionary<int, Dictionary<int, int>> contagemSS = new Dictionary<int, Dictionary<int, int>>();
+        Dictionary<int, Dictionary<int, int>> contagemNS = new Dictionary<int, Dictionary<int, int>>();
 
-    // Método para adicionar um subgrupo NS
-    public void AdicionarSubgrupoNS(List<int> numeros)
-    {
-        _subgruposNS.Add(new Subgrupo(numeros));
-    }
-
-    // Método para processar os sorteios e calcular a frequência dos subgrupos
-    public void ProcessarSorteios(List<List<int>> sorteios)
-    {
-        foreach (var sorteio in sorteios)
+        foreach (var sorteio in sorteios.Lista)
         {
-            // Verificar frequência dos subgrupos SS
-            foreach (var subgrupo in _subgruposSS)
+            // Gerar subgrupos de 9 números a partir de 15 sorteados (SS)
+            Lances ars9 = Infra.Combinar15a9(sorteio.Lista);
+            foreach (var subgrupo in ars9.Lista)
             {
-                int acertos = subgrupo.Numeros.Count(n => sorteio.Contains(n));
-                if (acertos >= 3)
+                if (!contagemSS.ContainsKey(subgrupo.Id))
                 {
-                    subgrupo.IncrementarFrequencia();
-                    subgrupo.AtualizarContagemAcertos(acertos);
+                    contagemSS[subgrupo.Id] = new Dictionary<int, int>();
+                }
+                // Incrementar contagem para acertos de 3 a 9
+                int acertos = Infra.Contapontos(sorteio, subgrupo);
+                if (acertos >= 3 && acertos <= 9)
+                {
+                    if (!contagemSS[subgrupo.Id].ContainsKey(acertos))
+                    {
+                        contagemSS[subgrupo.Id][acertos] = 0;
+                    }
+                    contagemSS[subgrupo.Id][acertos]++;
                 }
             }
 
-            // Verificar frequência dos subgrupos NS
-            foreach (var subgrupo in _subgruposNS)
+            // Gerar subgrupos de 6 números a partir dos 10 não sorteados (NS)
+            Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(sorteio).Lista);
+            foreach (var subgrupo in ars6.Lista)
             {
-                int acertos = subgrupo.Numeros.Count(n => sorteio.Contains(n));
-                if (acertos >= 2)
+                if (!contagemNS.ContainsKey(subgrupo.Id))
                 {
-                    subgrupo.IncrementarFrequencia();
-                    subgrupo.AtualizarContagemAcertos(acertos);
+                    contagemNS[subgrupo.Id] = new Dictionary<int, int>();
+                }
+                // Incrementar contagem para acertos de 2 a 6
+                int acertos = Infra.Contapontos(sorteio, subgrupo);
+                if (acertos >= 2 && acertos <= 6)
+                {
+                    if (!contagemNS[subgrupo.Id].ContainsKey(acertos))
+                    {
+                        contagemNS[subgrupo.Id][acertos] = 0;
+                    }
+                    contagemNS[subgrupo.Id][acertos]++;
                 }
             }
         }
+
+        // Salvar contagens geradas nos arquivos JSON
+        FileService fileService = new FileService();
+        fileService.SalvarDados("ContagemSS.json", contagemSS);
+        fileService.SalvarDados("ContagemNS.json", contagemNS);
     }
 
-    // Método para calcular o valor associado de cada subgrupo (exemplo simples de cálculo)
-    public void CalcularValorAssociado()
+    public static void SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios)
     {
-        foreach (var subgrupo in _subgruposSS)
-        {
-            // Exemplo: valor associado pode ser a frequência multiplicada por um fator arbitrário
-            subgrupo.ValorAssociado = subgrupo.Frequencia * 1.5;
-        }
+        int totalSorteios = Infra.arLoto.Count;
 
-        foreach (var subgrupo in _subgruposNS)
-        {
-            // Exemplo: valor associado pode ser a frequência multiplicada por um fator diferente
-            subgrupo.ValorAssociado = subgrupo.Frequencia * 1.2;
-        }
-    }
+        // Definir os índices para treinamento e validação
+        int quantidadeValidacao = 100;
+        int quantidadeTreinamento = totalSorteios - quantidadeValidacao;
 
-    // Método para calcular o percentual de acertos de cada subgrupo
-    public void CalcularPercentuais(int totalSorteios)
-    {
-        foreach (var subgrupo in _subgruposSS)
-        {
-            subgrupo.CalcularPercentual(totalSorteios);
-        }
-
-        foreach (var subgrupo in _subgruposNS)
-        {
-            subgrupo.CalcularPercentual(totalSorteios);
-        }
-    }
-
-    // Método para obter os melhores agrupamentos de SS e NS
-    public List<(Subgrupo SS, Subgrupo NS)> ObterMelhoresAgrupamentos(int quantidade)
-    {
-        var combinacoes = from ss in _subgruposSS
-                          from ns in _subgruposNS
-                          select (SS: ss, NS: ns, ValorTotal: ss.ValorAssociado + ns.ValorAssociado);
-
-        return combinacoes.OrderByDescending(c => c.ValorTotal)
-                          .Take(quantidade)
-                          .Select(c => (c.SS, c.NS))
-                          .ToList();
-    }
-
-    // Método para preparar os dados para a rede neural
-    public (TF.NDArray inputs, TF.NDArray labels) PrepararDadosParaTreinamento()
-    {
-        var inputs = new List<TF.NDArray>();
-        var labels = new List<TF.NDArray>();
-
-        foreach (var subgrupo in _subgruposSS)
-        {
-            inputs.Add(subgrupo.ObterVetorCaracteristicas());
-            // Exemplo: aqui definimos o label, você pode ajustar isso conforme necessário
-            labels.Add(TF.np.array(new double[] { subgrupo.ValorAssociado }));
-        }
-
-        foreach (var subgrupo in _subgruposNS)
-        {
-            inputs.Add(subgrupo.ObterVetorCaracteristicas());
-            // Exemplo: aqui definimos o label, você pode ajustar isso conforme necessário
-            labels.Add(TF.np.array(new double[] { subgrupo.ValorAssociado }));
-        }
-
-        return (TF.np.concatenate(inputs.ToArray(), axis: 0), TF.np.concatenate(labels.ToArray(), axis: 0));
+        // Separar os sorteios para treinamento e validação
+        trainSorteios = Infra.arLoto.Take(quantidadeTreinamento).ToLances();
+        valSorteios = Infra.arLoto.Skip(quantidadeTreinamento).ToLances();
     }
 }

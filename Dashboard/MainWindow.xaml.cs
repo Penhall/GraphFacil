@@ -71,12 +71,9 @@ namespace Dashboard
         {
             int alvo = Convert.ToInt32(T1.Text);
 
-            Estudos.ExecutarAnalise(alvo);
-
-            // Lances A = Estudos.Estudo3(alvo);
+            AnaliseService.ExecutarAnalise();
 
 
-            //  Infra.SalvaSaidaW(A, Infra.NomeSaida("ListaEstudo3", alvo));
 
             TerminarPrograma();
 

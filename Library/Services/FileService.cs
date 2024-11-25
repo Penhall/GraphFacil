@@ -100,3 +100,5 @@ public class FileService
 // var dadosCarregados = fileService.CarregarDados<tipoDados>("dadosTreinamento.json");
 // fileService.SalvarModelo("modelo.bin", modeloEmBytes);
 // var modeloCarregado = fileService.CarregarModelo("modelo.bin");
+
+
