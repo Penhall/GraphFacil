@@ -1,7 +1,13 @@
 using Busisness;
+using LotoLibrary.Infrastructure.Logging;
+using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
+using LotoLibrary.NeuralNetwork;
 using LotoLibrary.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -12,12 +18,26 @@ namespace Dashboard
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private readonly IMLLogger _logger;
+        private readonly MLNetModel _modelSS;
+        private readonly MLNetModel _modelNS;
         public MainWindow()
         {
             InitializeComponent();
             Infra.CarregarConcursos();
 
             T1.Text = Infra.arLoto.Count.ToString();
+            // Configurar logger com configuração simplificada
+            _logger = new MLLogger(LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole(); // Removida a configuração redundante do formatter
+            }).CreateLogger<MLLogger>());
+
+            // Inicializar modelos
+            _modelSS = new MLNetModel(_logger, "ModeloSS.zip");
+            _modelNS = new MLNetModel(_logger, "ModeloNS.zip");
+
         }
 
         /// <summary>
@@ -97,11 +117,41 @@ namespace Dashboard
         /// <summary>
         /// Método associado ao clique no botão Quarto. Atualmente não implementado.
         /// </summary>
-        private void Quarto_Click(object sender, RoutedEventArgs e)
+        private async void Quarto_Click(object sender, RoutedEventArgs e)
         {
+            await MLAnalise();
+        }
 
-            TerminarPrograma();
+        private async Task MLAnalise()
+        {
+            try
+            {
+                _logger.LogInformation("Iniciando análise completa");
 
+                // Executar análise tradicional primeiro para gerar os percentuais
+                AnaliseService.ExecutarAnalise();
+
+                // Treinar modelos ML.NET com os percentuais gerados
+                _logger.LogInformation("Iniciando treinamento dos modelos ML.NET");
+
+                await Task.Run(() =>
+                                {
+                                    // Treinar modelo SS
+                                    _modelSS.Train("PercentuaisSS.json", usarCrossValidation: true);
+
+                                    // Treinar modelo NS
+                                    _modelNS.Train("PercentuaisNS.json", usarCrossValidation: true);
+                                });
+
+                _logger.LogInformation("Análise e treinamento concluídos com sucesso");
+
+                TerminarPrograma();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Erro durante a execução da análise", ex);
+                MessageBox.Show($"Erro durante a execução: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         /// <summary>
@@ -253,6 +303,9 @@ namespace Dashboard
         {
             Application.Current.Shutdown();
         }
+
         #endregion
+
+
     }
 }

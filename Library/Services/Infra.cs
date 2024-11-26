@@ -604,6 +604,12 @@ public class Infra
         return list;
     }
 
+    public static void CombinarGeral()
+    {
+        List<int> N = Enumerable.Range(1, 25).ToList();
+        GerarCombinacoes.Combinar25a15(N);
+    }
+
 
 
 

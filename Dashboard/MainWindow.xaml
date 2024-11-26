@@ -39,7 +39,7 @@
 
                     <Rectangle Height="150" Margin="20" Fill="White" RadiusY="10" RadiusX="10"></Rectangle>
                     <Grid>
-                        <local:TesteControl Height="200" Margin="20" Grid.Column="3"/>
+                        <!--<local:TesteControl Height="200" Margin="20" Grid.Column="3"/>-->
                     </Grid>
                 </Grid>
             </ScrollViewer>

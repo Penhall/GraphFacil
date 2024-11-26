@@ -31,9 +31,9 @@ public static class Estudos
 
         Lances arBase = Infra.DevolveBaseCompleta(oAlvo, 9);
 
-        Lances ars9 = Infra.Combinar15a9(oAlvo.Lista);
+        Lances ars9 = GerarCombinacoes.Combinar15a9(oAlvo.Lista);
 
-        Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+        Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
         string arq1 = "SixSeletos-" + alvo.ToString();
 
@@ -88,7 +88,7 @@ public static class Estudos
         ars9Principais.AddRange(ars9.Take(101));
         ars6Principais.AddRange(ars6.Take(45));
 
-        List<int> ints6 = new()
+        List<int> ints6 = new();
 
         foreach (Lance o in ars9Principais) { foreach (Lance p in o.ListaX) ars2.Add(p); }
 
@@ -128,7 +128,7 @@ public static class Estudos
         Lances ar9 = new Lances();
         Lances ar6 = new Lances();
 
-        Lances anteriores = new Lances()
+        Lances anteriores = new Lances();
 
 
         Infra.CombinarGeral();
@@ -136,8 +136,8 @@ public static class Estudos
         Lance oAnterior = Infra.arLoto[alvo - 3];
         Lance oAlvo = Infra.arLoto[alvo - 2];
 
-        Lances ars9 = Infra.Combinar15a9(oAlvo.Lista);
-        Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+        Lances ars9 = GerarCombinacoes.Combinar15a9(oAlvo.Lista);
+        Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
         int s = alvo - 3;
         while (anteriores.Count < 10)
@@ -218,8 +218,8 @@ public static class Estudos
     private static void Treinamento(Lances arLotoTreino)
     {
         Lance oAlvo = arLotoTreino[0];
-        Lances ars9 = Infra.Combinar15a9(arLotoTreino[0].Lista);
-        Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+        Lances ars9 = GerarCombinacoes.Combinar15a9(arLotoTreino[0].Lista);
+        Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
         // Inicializar dicionários de contagem
         Dictionary<int, Dictionary<int, int>> contagemSS = ars9.ToDictionary(lance => lance.Id, lance => Enumerable.Range(3, 7).ToDictionary(i => i, i => 0));
@@ -237,8 +237,8 @@ public static class Estudos
 
             if (m == 9)
             {
-                Lances ars9Tmp = Infra.Combinar15a9(p.Lista);
-                Lances ars6Tmp = Infra.Combinar10a6(Infra.DevolveOposto(p).Lista);
+                Lances ars9Tmp = GerarCombinacoes.Combinar15a9(p.Lista);
+                Lances ars6Tmp = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(p).Lista);
 
                 // Loop para contagem de 3 a 9 acertos (Subgrupo SS)
                 for (int h = 3; h <= 9; h++)

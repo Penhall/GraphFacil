@@ -1,149 +1,108 @@
 ﻿using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
+using LotoLibrary.NeuralNetwork;
+using LotoLibrary.Infrastructure.Logging;
+using Microsoft.Extensions.Logging;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace LotoLibrary.Services;
 
-
 public static class AnaliseService
 {
-    public static void ExecutarAnalise()
+    private static readonly IMLLogger _logger = new MLLogger(
+        LoggerFactory.Create(builder => builder.AddConsole())
+        .CreateLogger<MLLogger>());
+
+    static AnaliseService()
     {
-        // Separar dados de treinamento e validação
-        SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios);
-
-        // Realizar o estudo de contagem usando apenas os dados de treinamento
-        ISubgrupoRepository subgrupoRepository = new SubgrupoRepository();
-        SubgrupoService subgrupoService = new SubgrupoService(subgrupoRepository);
-
-        int totalSorteiosTreinamento = trainSorteios.Count;
-
-        // Executar treinamento e gerar subgrupos identificados pelo ID
-        // ExecutarTreinamento(trainSorteios);
-
-
-        // Executar treinamento e gerar subgrupos identificados pelo ID
-
-        TreinamentoComPercentuais(trainSorteios);
-
-        // Processar os sorteios para atualizar frequências e calcular valores percentuais
-        //   subgrupoService.ProcessarSorteiosECalcularPercentuais(trainSorteios, totalSorteiosTreinamento);
-
-        // (Opcional) Avaliar o modelo usando os dados de validação
-        // AvaliarModelo(valSorteios);
-
-
+        // Definir cultura padrão para invariant
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
     }
 
-    public static void ExecutarTreinamento(Lances sorteios)
+    public static void ExecutarAnalise()
     {
-        // Gerar subgrupos SS e NS
-        Dictionary<int, Dictionary<int, int>> contagemSS = new Dictionary<int, Dictionary<int, int>>();
-        Dictionary<int, Dictionary<int, int>> contagemNS = new Dictionary<int, Dictionary<int, int>>();
-
-        foreach (var sorteio in sorteios.Lista)
+        try
         {
-            // Gerar subgrupos de 9 números a partir de 15 sorteados (SS)
-            Lances ars9 = Infra.Combinar15a9(sorteio.Lista);
-            foreach (var subgrupo in ars9.Lista)
-            {
-                if (!contagemSS.ContainsKey(subgrupo.Id))
-                {
-                    contagemSS[subgrupo.Id] = new Dictionary<int, int>();
-                }
-                // Incrementar contagem para acertos de 3 a 9
-                int acertos = Infra.Contapontos(sorteio, subgrupo);
-                if (acertos >= 3 && acertos <= 9)
-                {
-                    if (!contagemSS[subgrupo.Id].ContainsKey(acertos))
-                    {
-                        contagemSS[subgrupo.Id][acertos] = 0;
-                    }
-                    contagemSS[subgrupo.Id][acertos]++;
-                }
-            }
+            _logger.LogInformation("Iniciando análise com ML.NET");
 
-            // Gerar subgrupos de 6 números a partir dos 10 não sorteados (NS)
-            Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(sorteio).Lista);
-            foreach (var subgrupo in ars6.Lista)
-            {
-                if (!contagemNS.ContainsKey(subgrupo.Id))
-                {
-                    contagemNS[subgrupo.Id] = new Dictionary<int, int>();
-                }
-                // Incrementar contagem para acertos de 2 a 6
-                int acertos = Infra.Contapontos(sorteio, subgrupo);
-                if (acertos >= 2 && acertos <= 6)
-                {
-                    if (!contagemNS[subgrupo.Id].ContainsKey(acertos))
-                    {
-                        contagemNS[subgrupo.Id][acertos] = 0;
-                    }
-                    contagemNS[subgrupo.Id][acertos]++;
-                }
-            }
+            // Separar dados de treinamento e validação
+            SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios);
+
+            // Gerar percentuais de treinamento
+            TreinamentoComPercentuais(trainSorteios);
+
+            // Criar e treinar modelos ML.NET
+            var modelSS = new MLNetModel(_logger, "ModeloSS.zip");
+            var modelNS = new MLNetModel(_logger, "ModeloNS.zip");
+
+            // Treinar modelos
+            _logger.LogInformation("Iniciando treinamento do modelo SS");
+            modelSS.Train("PercentuaisSS.json", usarCrossValidation: true);
+
+            _logger.LogInformation("Iniciando treinamento do modelo NS");
+            modelNS.Train("PercentuaisNS.json", usarCrossValidation: true);
+
+            // Validar modelos com dados de validação
+            ValidarModelos(modelSS, modelNS, valSorteios);
         }
-
-        // Salvar contagens geradas nos arquivos JSON
-        FileService fileService = new FileService();
-        fileService.SalvarDados("ContagemSS.json", contagemSS);
-        fileService.SalvarDados("ContagemNS.json", contagemNS);
+        catch (Exception ex)
+        {
+            _logger.LogError($"Erro durante execução da análise: {ex.Message}", ex);
+            throw;
+        }
     }
 
     public static void TreinamentoComPercentuais(Lances arLotoTreino)
     {
-        // Inicializar subgrupos e dicionários de contagem
-        Lance oAlvo = arLotoTreino[0];
-        Lances ars9 = Infra.Combinar15a9(oAlvo.Lista);
-        Lances ars6 = Infra.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+        try
+        {
+            _logger.LogInformation($"Iniciando geração de percentuais com {arLotoTreino.Count} sorteios");
 
-        // Inicializar dicionários de contagem
-        Dictionary<int, Dictionary<int, int>> contagemSS = ars9.ToDictionary(lance => lance.Id, lance => Enumerable.Range(3, 7).ToDictionary(i => i, i => 0));
-        Dictionary<int, Dictionary<int, int>> contagemNS = ars6.ToDictionary(lance => lance.Id, lance => Enumerable.Range(2, 5).ToDictionary(i => i, i => 0));
+            // Inicializar subgrupos e dicionários de contagem
+            Lance oAlvo = arLotoTreino[0];
+            Lances ars9 = GerarCombinacoes.Combinar15a9(oAlvo.Lista);
+            Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
 
+            Dictionary<int, Dictionary<int, int>> contagemSS = ars9.ToDictionary(
+                lance => lance.Id,
+                lance => Enumerable.Range(3, 7).ToDictionary(i => i, i => 0));
+
+            Dictionary<int, Dictionary<int, int>> contagemNS = ars6.ToDictionary(
+                lance => lance.Id,
+                lance => Enumerable.Range(2, 5).ToDictionary(i => i, i => 0));
+
+            ProcessarContagens(arLotoTreino, contagemSS, contagemNS);
+
+            // Calcular e salvar percentuais
+            SalvarPercentuais(contagemSS, contagemNS, arLotoTreino.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Erro no processamento de percentuais: {ex.Message}", ex);
+            throw;
+        }
+    }
+
+    private static void ProcessarContagens(Lances arLotoTreino,
+        Dictionary<int, Dictionary<int, int>> contagemSS,
+        Dictionary<int, Dictionary<int, int>> contagemNS)
+    {
         int ix = arLotoTreino.Count - 1;
         int ax = ix - 1;
 
-        // Realizar a contagem dos acertos
         while ((ix > 1) && (ax > 0))
         {
             Lance o = arLotoTreino[ix];
             Lance p = arLotoTreino[ax];
-
             int m = Infra.Contapontos(o, p);
 
             if (m == 9)
             {
-                Lances ars9Tmp = Infra.Combinar15a9(p.Lista);
-                Lances ars6Tmp = Infra.Combinar10a6(Infra.DevolveOposto(p).Lista);
-
-                // Loop para contagem de 3 a 9 acertos (Subgrupo SS)
-                for (int h = 3; h <= 9; h++)
-                {
-                    Lances encontrados9 = ars9Tmp.Where(q => Infra.Contapontos(q, o) == h).ToLances();
-                    foreach (Lance z in encontrados9)
-                    {
-                        if (contagemSS.TryGetValue(z.Id, out var contagem))
-                        {
-                            contagem[h]++;
-                        }
-                    }
-                }
-
-                // Loop para contagem de 2 a 6 acertos (Subgrupo NS)
-                for (int h = 2; h <= 6; h++)
-                {
-                    Lances encontrados6 = ars6Tmp.Where(q => Infra.Contapontos(q, o) == h).ToLances();
-                    foreach (Lance z in encontrados6)
-                    {
-                        if (contagemNS.TryGetValue(z.Id, out var contagem))
-                        {
-                            contagem[h]++;
-                        }
-                    }
-                }
-
+                ProcessarAcertos(p, o, contagemSS, contagemNS);
                 ix--;
                 ax = ix - 1;
             }
@@ -152,71 +111,103 @@ public static class AnaliseService
                 ax--;
             }
         }
-
-        // Salvar as contagens geradas para análises futuras
-        FileService fileService = new FileService();
-        fileService.SalvarDados("ContagemSS.json", contagemSS);
-        fileService.SalvarDados("ContagemNS.json", contagemNS);
-
-        // Calcular valores percentuais
-        int totalSorteios = arLotoTreino.Count;
-        Dictionary<int, Dictionary<int, double>> percentuaisSS = new Dictionary<int, Dictionary<int, double>>();
-        Dictionary<int, Dictionary<int, double>> percentuaisNS = new Dictionary<int, Dictionary<int, double>>();
-
-        foreach (var subgrupo in contagemSS)
-        {
-            int subgrupoId = subgrupo.Key;
-            var contagens = subgrupo.Value;
-
-            // Criar um novo dicionário para armazenar os percentuais
-            percentuaisSS[subgrupoId] = new Dictionary<int, double>();
-
-            foreach (var contagem in contagens)
-            {
-                int acertos = contagem.Key;
-                int frequencia = contagem.Value;
-
-                // Calcular o percentual em relação ao total de sorteios
-                double percentual = (double)frequencia / totalSorteios * 100.0;
-                percentuaisSS[subgrupoId][acertos] = percentual;
-            }
-        }
-
-        foreach (var subgrupo in contagemNS)
-        {
-            int subgrupoId = subgrupo.Key;
-            var contagens = subgrupo.Value;
-
-            // Criar um novo dicionário para armazenar os percentuais
-            percentuaisNS[subgrupoId] = new Dictionary<int, double>();
-
-            foreach (var contagem in contagens)
-            {
-                int acertos = contagem.Key;
-                int frequencia = contagem.Value;
-
-                // Calcular o percentual em relação ao total de sorteios
-                double percentual = (double)frequencia / totalSorteios * 100.0;
-                percentuaisNS[subgrupoId][acertos] = percentual;
-            }
-        }
-
-        // Salvar percentuais calculados para análises futuras
-        fileService.SalvarDados("PercentuaisSS.json", percentuaisSS);
-        fileService.SalvarDados("PercentuaisNS.json", percentuaisNS);
     }
 
+    private static void ProcessarAcertos(Lance p, Lance o,
+        Dictionary<int, Dictionary<int, int>> contagemSS,
+        Dictionary<int, Dictionary<int, int>> contagemNS)
+    {
+        Lances ars9Tmp = GerarCombinacoes.Combinar15a9(p.Lista);
+        Lances ars6Tmp = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(p).Lista);
+
+        // Processar SS (3-9 acertos)
+        for (int h = 3; h <= 9; h++)
+        {
+            foreach (var z in ars9Tmp.Where(q => Infra.Contapontos(q, o) == h))
+            {
+                if (contagemSS.TryGetValue(z.Id, out var contagem))
+                {
+                    contagem[h]++;
+                }
+            }
+        }
+
+        // Processar NS (2-6 acertos)
+        for (int h = 2; h <= 6; h++)
+        {
+            foreach (var z in ars6Tmp.Where(q => Infra.Contapontos(q, o) == h))
+            {
+                if (contagemNS.TryGetValue(z.Id, out var contagem))
+                {
+                    contagem[h]++;
+                }
+            }
+        }
+    }
+
+    private static void SalvarPercentuais(
+        Dictionary<int, Dictionary<int, int>> contagemSS,
+        Dictionary<int, Dictionary<int, int>> contagemNS,
+        int totalSorteios)
+    {
+        var fileService = new FileService();
+
+        var percentuaisSS = CalcularPercentuais(contagemSS, totalSorteios);
+        var percentuaisNS = CalcularPercentuais(contagemNS, totalSorteios);
+
+        fileService.SalvarDados("PercentuaisSS.json", percentuaisSS);
+        fileService.SalvarDados("PercentuaisNS.json", percentuaisNS);
+
+        _logger.LogInformation("Percentuais calculados e salvos com sucesso");
+    }
+
+    private static Dictionary<int, Dictionary<int, double>> CalcularPercentuais(
+        Dictionary<int, Dictionary<int, int>> contagens,
+        int totalSorteios)
+    {
+        return contagens.ToDictionary(
+            subgrupo => subgrupo.Key,
+            subgrupo => subgrupo.Value.ToDictionary(
+                contagem => contagem.Key,
+                contagem => (double)contagem.Value / totalSorteios * 100.0
+            )
+        );
+    }
+
+    private static void ValidarModelos(MLNetModel modelSS, MLNetModel modelNS, Lances valSorteios)
+    {
+        _logger.LogInformation("Iniciando validação dos modelos com dados de teste");
+
+        foreach (var sorteio in valSorteios.Lista)
+        {
+            // Gerar subgrupos para validação
+            var subgruposSS = GerarCombinacoes.Combinar15a9(sorteio.Lista);
+            var subgruposNS = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(sorteio).Lista);
+
+            // Validar predições
+            foreach (var subgrupo in subgruposSS.Lista)
+            {
+                var predicaoSS = modelSS.Predict(subgrupo.Lista.Select(x => (float)x).ToArray());
+                _logger.LogInformation($"Predição SS para subgrupo {subgrupo.Id}: {predicaoSS}");
+            }
+
+            foreach (var subgrupo in subgruposNS.Lista)
+            {
+                var predicaoNS = modelNS.Predict(subgrupo.Lista.Select(x => (float)x).ToArray());
+                _logger.LogInformation($"Predição NS para subgrupo {subgrupo.Id}: {predicaoNS}");
+            }
+        }
+    }
 
     public static void SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios)
     {
         int totalSorteios = Infra.arLoto.Count;
-
-        // Definir os índices para treinamento e validação
         int quantidadeValidacao = 100;
         int quantidadeTreinamento = totalSorteios - quantidadeValidacao;
 
-        // Separar os sorteios para treinamento e validação
         trainSorteios = Infra.arLoto.Take(quantidadeTreinamento).ToLances();
         valSorteios = Infra.arLoto.Skip(quantidadeTreinamento).ToLances();
+
+        _logger.LogInformation($"Dados separados: {quantidadeTreinamento} para treino, {quantidadeValidacao} para validação");
     }
 }

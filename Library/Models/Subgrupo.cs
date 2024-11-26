@@ -1,68 +1,68 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TF = Tensorflow.NumPy;
 
-namespace LotoLibrary.Models
+namespace LotoLibrary.Models;
+
+public class Subgrupo
 {
-    public class Subgrupo
+    public int Id { get; set; }
+    public List<int> Numeros { get; set; }
+    public int Frequencia { get; set; }
+    public double ValorAssociado { get; set; }
+    public Dictionary<int, int> ContagemAcertos { get; set; }
+    public Dictionary<int, double> ContagemPercentual { get; set; }
+
+    public Subgrupo(List<int> numeros)
     {
-        public int Id { get; set; }
-        public List<int> Numeros { get; set; }
-        public int Frequencia { get; set; }
-        public double ValorAssociado { get; set; }
-        public Dictionary<int, int> ContagemAcertos { get; set; } // Contagem de acertos (e.g., 9, 8, 7...)
-        public Dictionary<int, double> ContagemPercentual { get; set; } // Contagem percentual para cada acerto
+        Numeros = numeros;
+        Frequencia = 0;
+        ValorAssociado = 0.0;
+        ContagemAcertos = new Dictionary<int, int>();
+        ContagemPercentual = new Dictionary<int, double>();
+    }
 
-        public Subgrupo(List<int> numeros)
+    public void IncrementarFrequencia()
+    {
+        Frequencia++;
+    }
+
+    public void AtualizarContagemAcertos(int acertos)
+    {
+        if (!ContagemAcertos.ContainsKey(acertos))
         {
-            Numeros = numeros;
-            Frequencia = 0;
-            ValorAssociado = 0.0;
-            ContagemAcertos = new Dictionary<int, int>();
-            ContagemPercentual = new Dictionary<int, double>();
+            ContagemAcertos[acertos] = 0;
         }
+        ContagemAcertos[acertos]++;
+    }
 
-        // Método para incrementar a frequência quando o subgrupo aparece em um sorteio
-        public void IncrementarFrequencia()
+    public void CalcularPercentual(int totalSorteios)
+    {
+        foreach (var acerto in ContagemAcertos.Keys.ToList())
         {
-            Frequencia++;
+            ContagemPercentual[acerto] = (double)ContagemAcertos[acerto] / totalSorteios * 100;
         }
+    }
 
-        // Método para atualizar a contagem de acertos
-        public void AtualizarContagemAcertos(int acertos)
-        {
-            if (ContagemAcertos.ContainsKey(acertos))
-            {
-                ContagemAcertos[acertos]++;
-            }
-            else
-            {
-                ContagemAcertos[acertos] = 1;
-            }
-        }
+    public float[] ObterCaracteristicasML()
+    {
+        List<float> caracteristicas = new List<float>();
 
-        // Método para calcular a porcentagem de acertos
-        public void CalcularPercentual(int totalSorteios)
-        {
-            foreach (var acerto in ContagemAcertos.Keys.ToList())
-            {
-                ContagemPercentual[acerto] = (double)ContagemAcertos[acerto] / totalSorteios * 100;
-            }
-        }
+        // Adicionar características básicas
+        caracteristicas.Add((float)Frequencia);
+        caracteristicas.Add((float)ValorAssociado);
 
-        // Método para obter um vetor de características do subgrupo
-        public TF.NDArray ObterVetorCaracteristicas()
-        {
-            var caracteristicas = new List<double> { Frequencia, ValorAssociado };
-            caracteristicas.AddRange(ContagemPercentual.Values);
-            return TF.np.array(caracteristicas.ToArray());
-        }
+        // Adicionar percentuais de acertos ordenados
+        var percentuaisOrdenados = ContagemPercentual
+            .OrderBy(x => x.Key)
+            .Select(x => (float)x.Value);
 
+        caracteristicas.AddRange(percentuaisOrdenados);
 
-        public bool VerificarAcerto(Lance sorteio)
-        {
-            // Verifica se todos os números do subgrupo estão presentes no sorteio
-            return Numeros.All(numero => sorteio.Lista.Contains(numero));
-        }
+        return caracteristicas.ToArray();
+    }
+
+    public bool VerificarAcerto(Lance sorteio)
+    {
+        return Numeros.All(numero => sorteio.Lista.Contains(numero));
     }
 }
