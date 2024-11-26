@@ -1,4 +1,4 @@
-﻿using LotoLibrary.Constantes;
+using LotoLibrary.Constantes;
 using LotoLibrary.Models;
 using LotoLibrary.Services;
 using System;
@@ -10,6 +10,12 @@ namespace Busisness
     public class Filtros
     {
 
+        /// <summary>
+        /// Aplica um filtro em listas de dados de loteria.
+        /// </summary>
+        /// <param name="ListaT">Lista de entrada a ser filtrada.</param>
+        /// <param name="ListaAlvo">Lista de critérios para o filtro.</param>
+        /// <returns>Uma nova lista de resultados filtrados.</returns>
         public static Lances Filtro1(Lances ListaT, Lances ListaAlvo)
         {
             Lances ars = new();
@@ -158,7 +164,7 @@ namespace Busisness
 
         public static Lances Filtro6(Lances ListaT)
         {
-            Lances ars = new();
+            Lances ars = new
 
 
             Random rnd = new Random();
@@ -206,7 +212,6 @@ namespace Busisness
 
                 }
             }
-
 
 
             return ars;
@@ -281,7 +286,6 @@ namespace Busisness
             return ars;
         }
 
-   
 
         public static bool Filtro10(Lance L)
         {

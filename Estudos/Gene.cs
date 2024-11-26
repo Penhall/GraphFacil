@@ -1,4 +1,4 @@
-﻿using LotoLibrary.Models;
+using LotoLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,11 +8,11 @@ namespace Busisness
     public class Gene
     {
         /// <summary>
-        /// Método para gerar uma lista de inteiros aleatórios
+        /// Método para gerar uma lista de inteiros aleatórios.
         /// </summary>
-        /// <param name="T"> Tamanho da lista de aleatórios</param>
-        /// <param name="M">Limite máximo para o inteiro aleatório</param>
-        /// <returns></returns>
+        /// <param name="T">Tamanho da lista de aleatórios.</param>
+        /// <param name="M">Limite máximo para o inteiro aleatório.</param>
+        /// <returns>Uma lista de inteiros aleatórios.</returns>
         public static List<int> Aleatorio(int T, int M)
         {
             List<int> A = new();
@@ -193,6 +193,7 @@ namespace Busisness
 
             return S;
         }
+
 
     }
 }

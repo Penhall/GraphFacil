@@ -1,15 +1,19 @@
-﻿using LotoLibrary.Models;
+using LotoLibrary.Models;
 using LotoLibrary.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 
 namespace Busisness;
 
 public static class Estudos
 {
 
+    /// <summary>
+    /// Executa o primeiro estudo combinando dados de loteria.
+    /// </summary>
+    /// <param name="alvo">O alvo para o estudo.</param>
+    /// <returns>Uma lista de resultados do tipo Lances.</returns>
     public static Lances Estudo1(int alvo)
     {
 
@@ -21,7 +25,6 @@ public static class Estudos
         Lances ars3 = new();
 
         Lances arGeral = Infra.DevolveBaseAleatoria(10000);
-
 
 
         Lance oAlvo = Infra.arLoto[alvo - 2];
@@ -79,20 +82,17 @@ public static class Estudos
         ars6.Sort();
 
 
-
         Lances ars9Principais = new();
         Lances ars6Principais = new();
 
         ars9Principais.AddRange(ars9.Take(101));
         ars6Principais.AddRange(ars6.Take(45));
 
-        List<int> ints6 = new();
-
+        List<int> ints6 = new()
 
         foreach (Lance o in ars9Principais) { foreach (Lance p in o.ListaX) ars2.Add(p); }
 
         foreach (Lance o in ars6Principais) { ints6.Add(o.Id); foreach (Lance p in o.ListaX) ars3.Add(p); }
-
 
 
         Infra.SalvaSaidaW(arGeral, Infra.NomeSaida("Controle", alvo));
@@ -113,13 +113,11 @@ public static class Estudos
         //          Infra.SalvaSaidaW(ars3, Infra.NomeSaida("Base6Seleta", alvo));
 
 
-
         foreach (Lance o in ars9Principais) { o.LimpaListas(); }
         foreach (Lance o in ars6Principais) { o.LimpaListas(); }
 
         Infra.SalvaSaidaJson(ars9Principais, Infra.NomeJson("NineSeletos", alvo));
         Infra.SalvaSaidaJson(ars6Principais, Infra.NomeJson("SixSeletos", alvo));
-
 
 
         return ars;
@@ -130,7 +128,7 @@ public static class Estudos
         Lances ar9 = new Lances();
         Lances ar6 = new Lances();
 
-        Lances anteriores = new Lances();
+        Lances anteriores = new Lances()
 
 
         Infra.CombinarGeral();
@@ -284,11 +282,7 @@ public static class Estudos
     }
 
 
-
-
-    #region MÉTODOS INATIVOS     
-
-
+    #region MÉTODOS INATIVOS
 
 
     #endregion
@@ -298,17 +292,7 @@ public static class Estudos
 
 
 
-
-
-
-
-
     #endregion
 
 
-
 }
-
-
-
-
