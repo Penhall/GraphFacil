@@ -1,12 +1,12 @@
-﻿using LotoLibrary.Interfaces;
+﻿using LotoLibrary.Infrastructure.Logging;
+using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.NeuralNetwork;
-using LotoLibrary.Infrastructure.Logging;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace LotoLibrary.Services;
 
@@ -35,9 +35,9 @@ public static class AnaliseService
             // Gerar percentuais de treinamento
             TreinamentoComPercentuais(trainSorteios);
 
-            // Criar e treinar modelos ML.NET
-            var modelSS = new MLNetModel(_logger, "ModeloSS.zip");
-            var modelNS = new MLNetModel(_logger, "ModeloNS.zip");
+            // Criar e treinar modelos ML.NET com os tipos corretos
+            var modelSS = new MLNetModel(_logger, "ModeloSS.zip", "SS");
+            var modelNS = new MLNetModel(_logger, "ModeloNS.zip", "NS");
 
             // Treinar modelos
             _logger.LogInformation("Iniciando treinamento do modelo SS");
@@ -46,7 +46,7 @@ public static class AnaliseService
             _logger.LogInformation("Iniciando treinamento do modelo NS");
             modelNS.Train("PercentuaisNS.json", usarCrossValidation: true);
 
-            // Validar modelos com dados de validação
+            // Validar modelos com dados de validação se necessário
             ValidarModelos(modelSS, modelNS, valSorteios);
         }
         catch (Exception ex)
@@ -55,6 +55,7 @@ public static class AnaliseService
             throw;
         }
     }
+
 
     public static void TreinamentoComPercentuais(Lances arLotoTreino)
     {

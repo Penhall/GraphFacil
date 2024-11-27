@@ -5,7 +5,6 @@ using LotoLibrary.Models;
 using LotoLibrary.NeuralNetwork;
 using LotoLibrary.Services;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,21 +21,23 @@ namespace Dashboard
         private readonly IMLLogger _logger;
         private readonly MLNetModel _modelSS;
         private readonly MLNetModel _modelNS;
+
+
+
         public MainWindow()
         {
             InitializeComponent();
             Infra.CarregarConcursos();
 
             T1.Text = Infra.arLoto.Count.ToString();
+
             // Configurar logger com configuração simplificada
             _logger = new MLLogger(LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole(); // Removida a configuração redundante do formatter
-            }).CreateLogger<MLLogger>());
+             builder.AddConsole()).CreateLogger<MLLogger>());
 
-            // Inicializar modelos
-            _modelSS = new MLNetModel(_logger, "ModeloSS.zip");
-            _modelNS = new MLNetModel(_logger, "ModeloNS.zip");
+            // Inicializar modelos com tipos corretos
+            _modelSS = new MLNetModel(_logger, "ModeloSS.zip", "SS");
+            _modelNS = new MLNetModel(_logger, "ModeloNS.zip", "NS");
 
         }
 
@@ -130,18 +131,6 @@ namespace Dashboard
 
                 // Executar análise tradicional primeiro para gerar os percentuais
                 AnaliseService.ExecutarAnalise();
-
-                // Treinar modelos ML.NET com os percentuais gerados
-                _logger.LogInformation("Iniciando treinamento dos modelos ML.NET");
-
-                await Task.Run(() =>
-                                {
-                                    // Treinar modelo SS
-                                    _modelSS.Train("PercentuaisSS.json", usarCrossValidation: true);
-
-                                    // Treinar modelo NS
-                                    _modelNS.Train("PercentuaisNS.json", usarCrossValidation: true);
-                                });
 
                 _logger.LogInformation("Análise e treinamento concluídos com sucesso");
 
