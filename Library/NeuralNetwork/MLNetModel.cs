@@ -6,6 +6,7 @@ using Microsoft.ML.Trainers.FastTree;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -55,6 +56,28 @@ namespace LotoLibrary.NeuralNetwork
                 ));
 
             return pipeline;
+        }
+
+        // Adicionar este método à classe MLNetModel
+        public void CarregarModelo()
+        {
+            try
+            {
+                if (!File.Exists(_modelPath))
+                {
+                    _logger.LogWarning($"Arquivo do modelo não encontrado: {_modelPath}");
+                    throw new FileNotFoundException($"Arquivo do modelo não encontrado: {_modelPath}");
+                }
+
+                DataViewSchema schema;
+                _trainedModel = _mlContext.Model.Load(_modelPath, out schema);
+                _logger.LogInformation($"Modelo carregado com sucesso de: {_modelPath}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro ao carregar modelo: {ex.Message}", ex);
+                throw;
+            }
         }
 
         public void Train(string caminhoPercentuais, bool usarCrossValidation = true)

@@ -6,6 +6,8 @@ using LotoLibrary.NeuralNetwork;
 using LotoLibrary.Services;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -17,6 +19,7 @@ namespace Dashboard
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly PalpiteService _palpiteService;
 
         private readonly IMLLogger _logger;
         private readonly MLNetModel _modelSS;
@@ -33,11 +36,26 @@ namespace Dashboard
 
             // Configurar logger com configuração simplificada
             _logger = new MLLogger(LoggerFactory.Create(builder =>
-             builder.AddConsole()).CreateLogger<MLLogger>());
+                builder.AddConsole()).CreateLogger<MLLogger>());
 
             // Inicializar modelos com tipos corretos
             _modelSS = new MLNetModel(_logger, "ModeloSS.zip", "SS");
             _modelNS = new MLNetModel(_logger, "ModeloNS.zip", "NS");
+
+            // Tentar carregar modelos existentes
+            try
+            {
+                _modelSS.CarregarModelo();
+                _modelNS.CarregarModelo();
+                _logger.LogInformation("Modelos existentes carregados com sucesso");
+            }
+            catch
+            {
+                _logger.LogInformation("Modelos não encontrados. Execute o treinamento primeiro.");
+            }
+
+            // Inicializar PalpiteService com o logger
+            _palpiteService = new PalpiteService(_logger);
 
         }
 
@@ -123,25 +141,6 @@ namespace Dashboard
             await MLAnalise();
         }
 
-        private async Task MLAnalise()
-        {
-            try
-            {
-                _logger.LogInformation("Iniciando análise completa");
-
-                // Executar análise tradicional primeiro para gerar os percentuais
-                AnaliseService.ExecutarAnalise();
-
-                _logger.LogInformation("Análise e treinamento concluídos com sucesso");
-
-                TerminarPrograma();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Erro durante a execução da análise", ex);
-                MessageBox.Show($"Erro durante a execução: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         /// <summary>
         /// Método associado ao clique no botão Quinto. Atualmente não implementado.
@@ -157,8 +156,31 @@ namespace Dashboard
         /// </summary>
         private void Sexto_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                _logger.LogInformation("Iniciando geração de palpites.");
 
-            TerminarPrograma();
+
+
+                // Geração de palpites aleatórios usando o serviço
+                var palpitesAleatorios = _palpiteService.GerarPalpitesAleatorios(100); // Gera 100 palpites para começar
+
+                // Classificar palpites usando os modelos com o serviço
+                var palpitesClassificados = _palpiteService.ClassificarPalpites(_modelSS, _modelNS, palpitesAleatorios);
+
+                // Exibir resultados na interface
+                ExibirResultados(palpitesClassificados);
+
+                _logger.LogInformation("Geração de palpites concluída.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Erro durante a geração dos palpites", ex);
+                MessageBox.Show($"Erro durante a geração dos palpites: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+
+            //  TerminarPrograma();
         }
 
         /// <summary>
@@ -291,6 +313,49 @@ namespace Dashboard
         private void TerminarPrograma()
         {
             Application.Current.Shutdown();
+        }
+
+
+        private async Task MLAnalise()
+        {
+            try
+            {
+                _logger.LogInformation("Iniciando análise completa");
+
+                // Executar análise tradicional primeiro para gerar os percentuais
+                AnaliseService.ExecutarAnalise();
+
+                // Treinar os modelos ML.NET
+                _logger.LogInformation("Iniciando treinamento do modelo SS");
+                _modelSS.Train("PercentuaisSS.json", usarCrossValidation: true);
+
+                _logger.LogInformation("Iniciando treinamento do modelo NS");
+                _modelNS.Train("PercentuaisNS.json", usarCrossValidation: true);
+
+                _logger.LogInformation("Análise e treinamento concluídos com sucesso");
+
+                MessageBox.Show("Treinamento Finalizado!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Erro durante a execução da análise", ex);
+                MessageBox.Show($"Erro durante a execução: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+        private void ExibirResultados(List<(int[], float)> palpitesClassificados)
+        {
+            // Limpar resultados anteriores
+            listBoxResultados.Items.Clear();
+
+            foreach (var (palpite, pontuacao) in palpitesClassificados)
+            {
+                // Formatar números para melhor visualização
+                var numerosFormatados = string.Join(", ", palpite.Select(n => n.ToString("00")));
+                string resultado = $"Pontuação: {pontuacao:F2} - Números: {numerosFormatados}";
+                listBoxResultados.Items.Add(resultado);
+            }
         }
 
         #endregion

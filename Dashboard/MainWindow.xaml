@@ -38,8 +38,9 @@
                     </Grid.RowDefinitions>
 
                     <Rectangle Height="150" Margin="20" Fill="White" RadiusY="10" RadiusX="10"></Rectangle>
-                    <Grid>
-                        <!--<local:TesteControl Height="200" Margin="20" Grid.Column="3"/>-->
+                    <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="4">
+                        <ListBox Name="listBoxResultados" Width="400" Height="300" />
+
                     </Grid>
                 </Grid>
             </ScrollViewer>
@@ -99,7 +100,7 @@
                 <Button x:Name="Quarto"  Margin="10" BorderBrush="#FF8522BD" Click="Quarto_Click">
                     <Grid Width="150">
                         <md:PackIcon Kind="Finance"/>
-                        <TextBlock HorizontalAlignment="Center" Text="QUARTO" VerticalAlignment="Center" FontFamily="Candara"/>
+                        <TextBlock HorizontalAlignment="Center" Text="Treinamento" VerticalAlignment="Center" FontFamily="Candara"/>
                     </Grid>
                 </Button>
 
@@ -113,7 +114,7 @@
                 <Button x:Name="Sexto" Margin="10" BorderBrush="#FF8522BD" Click="Sexto_Click">
                     <Grid Width="150">
                         <md:PackIcon Kind="Schedule"/>
-                        <TextBlock HorizontalAlignment="Center" Text="SEXTO" VerticalAlignment="Center" FontFamily="Candara"/>
+                        <TextBlock HorizontalAlignment="Center" Text="Gerar Palpites" VerticalAlignment="Center" FontFamily="Candara"/>
                     </Grid>
 
                 </Button>
