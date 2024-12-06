@@ -14,6 +14,9 @@ namespace LotoLibrary.Models
         public int X = 0;
         public int Y = 0;
         public int PT = 0;
+
+        public float F = 0;
+
         public Dictionary<int, int> ContagemAcerto = new();
 
         public int Anel = 0;
@@ -66,27 +69,16 @@ namespace LotoLibrary.Models
 
         public void SomaX() => N = ListaX.Count;
 
-        public void Pontos(Lance O)
-        {
-            PT = Lista.Intersect(O.Lista).ToList().Count;
-            N = ListaN.Intersect(O.Lista).ToList().Count;
 
-        }
 
         public void LimpaListas() { this.ListaX.Clear(); this.ListaY.Clear(); }
 
-        public Boolean SomaComplementar(Lance O)
-        {
-            int h0 = Infra.Contapontos(O.Lista, this.Lista);
-            int h1 = Infra.Contapontos(O.Lista, this.ListaN);
 
-            if ((h0 == this.Lista.Count) && (h1 == 0)) return true; else return false;
-        }
 
         public int CompareTo(object obj)
         {
             Lance l = (Lance)obj;
-            return -N.CompareTo(l.N);
+            return F.CompareTo(l.F);
         }
 
         public void ComplementarPara(Lance O)
@@ -100,9 +92,7 @@ namespace LotoLibrary.Models
 
     public class Lances : List<Lance>
     {
-        public Lances()
-        {
-        }
+        public Lances() { }
 
 
         public Lances(IEnumerable<Lance> collection) : base(collection)

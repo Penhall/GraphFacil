@@ -224,24 +224,48 @@ namespace LotoLibrary.NeuralNetwork
             }
         }
 
+        //public float Predict(float[] features)
+        //{
+        //    try
+        //    {
+        //        if (_trainedModel == null)
+        //        {
+        //            throw new InvalidOperationException("Modelo não está treinado");
+        //        }
+
+        //        var inputData = _tipo == "SS" ?
+        //            (BaseMLFeatures)new SubgrupoSSFeatures { Features = features } :
+        //            new SubgrupoNSFeatures { Features = features };
+
+        //        var predictionEngine = _mlContext.Model.CreatePredictionEngine<BaseMLFeatures, SubgrupoMLOutput>(_trainedModel);
+        //        var prediction = predictionEngine.Predict(inputData);
+
+        //        _logger.LogInformation($"Predição realizada com sucesso: {prediction.Score}");
+        //        return prediction.Score;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Erro ao realizar predição: {ex.Message}", ex);
+        //        throw;
+        //    }
+        //}
+
+
         public float Predict(float[] features)
         {
             try
             {
                 if (_trainedModel == null)
-                {
                     throw new InvalidOperationException("Modelo não está treinado");
-                }
 
-                var inputData = _tipo == "SS" ?
-                    (BaseMLFeatures)new SubgrupoSSFeatures { Features = features } :
-                    new SubgrupoNSFeatures { Features = features };
+                var input = new MLFeatures
+                {
+                    Features = features,
+                    Label = 0
+                };
 
-                var predictionEngine = _mlContext.Model.CreatePredictionEngine<BaseMLFeatures, SubgrupoMLOutput>(_trainedModel);
-                var prediction = predictionEngine.Predict(inputData);
-
-                _logger.LogInformation($"Predição realizada com sucesso: {prediction.Score}");
-                return prediction.Score;
+                var predictionEngine = _mlContext.Model.CreatePredictionEngine<MLFeatures, MLOutput>(_trainedModel);
+                return predictionEngine.Predict(input).Score;
             }
             catch (Exception ex)
             {
@@ -249,5 +273,7 @@ namespace LotoLibrary.NeuralNetwork
                 throw;
             }
         }
+
+
     }
 }

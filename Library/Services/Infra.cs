@@ -207,6 +207,7 @@ public class Infra
 
         foreach (Lance o in matrizSaida)
         {
+            if (o.Saida is null) o.Atualiza();
             salvaKey.AppendLine(o.Saida);
 
         }

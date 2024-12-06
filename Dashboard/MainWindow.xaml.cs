@@ -32,35 +32,27 @@ namespace Dashboard
         {
             InitializeComponent();
             Infra.CarregarConcursos();
-
             T1.Text = Infra.arLoto.Count.ToString();
 
-            // Configurar logger com configuração simplificada
             _logger = new MLLogger(LoggerFactory.Create(builder =>
                 builder.AddConsole()).CreateLogger<MLLogger>());
 
-            // Inicializar modelos com tipos corretos
             _modelSS = new MLNetModel(_logger, "ModeloSS.zip", "SS");
             _modelNS = new MLNetModel(_logger, "ModeloNS.zip", "NS");
 
-
-            // Tentar carregar modelos existentes
             try
             {
                 _modelSS.CarregarModelo();
                 _modelNS.CarregarModelo();
-                _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS);
+                // _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS);
                 _logger.LogInformation("Modelos existentes carregados com sucesso");
             }
             catch
             {
                 _logger.LogInformation("Modelos não encontrados. Execute o treinamento primeiro.");
             }
-
-            // Inicializar PalpiteService com o logger
-            _palpiteService = new PalpiteService(_logger);
-
         }
+
 
         /// <summary>
         /// Método que fecha a aplicação ao clicar no botão Fechar.
@@ -142,6 +134,9 @@ namespace Dashboard
         private async void Quarto_Click(object sender, RoutedEventArgs e)
         {
             await MLAnalise();
+
+            // Após o treinamento, inicializar o PalpiteService1
+
         }
 
 
@@ -159,39 +154,8 @@ namespace Dashboard
         /// </summary>
         private void Sexto_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                _logger.LogInformation("Iniciando geração de palpites.");
 
-
-
-                // Geração de palpites aleatórios usando o serviço
-                var palpitesAleatorios = _palpiteService.GerarPalpitesAleatorios(10); // Gera 100 palpites para começar
-
-                // Classificar palpites usando os modelos com o serviço
-                var palpitesClassificados = _palpiteService.ClassificarPalpites(_modelSS, _modelNS, palpitesAleatorios);
-
-                // Exibir resultados na interface
-                ExibirResultados(palpitesClassificados);
-
-                _logger.LogInformation("Geração de palpites concluída.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Erro durante a geração dos palpites", ex);
-                MessageBox.Show($"Erro durante a geração dos palpites: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-
-            //  TerminarPrograma();
-        }
-
-        /// <summary>
-        /// Método associado ao clique no botão Sétimo. Atualmente não implementado.
-        /// </summary>
-        private void Setimo_Click(object sender, RoutedEventArgs e)
-        {
-
+            // _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS);
             try
             {
                 // Verificar se o serviço está inicializado
@@ -214,6 +178,36 @@ namespace Dashboard
                 MessageBox.Show($"Erro durante a geração dos palpites: {ex.Message}",
                                "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        /// <summary>
+        /// Método associado ao clique no botão Sétimo. Atualmente não implementado.
+        /// </summary>
+        private void Setimo_Click(object sender, RoutedEventArgs e)
+        {
+            int concursoBase = Convert.ToInt32(T1.Text);
+            try
+            {
+                if (_palpiteService1 == null)
+                {
+
+                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
+                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
+                }
+
+                _logger.LogInformation("Iniciando geração de palpites.");
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000);
+                var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
+                ExibirResultados(palpitesClassificados);
+
+                Infra.SalvaSaidaW(palpitesClassificados, Infra.NomeSaida("Calculado", concursoBase));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro: {ex.Message}");
+                MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         /// <summary>
@@ -339,24 +333,19 @@ namespace Dashboard
             Application.Current.Shutdown();
         }
 
-
         private async Task MLAnalise()
         {
             try
             {
-                _logger.LogInformation("Iniciando análise completa");
+                int concursoBase = Convert.ToInt32(T1.Text);
 
-                // Executar análise tradicional primeiro para gerar os percentuais
+                _logger.LogInformation("Iniciando análise completa");
                 AnaliseService.ExecutarAnalise();
 
-                // Treinar os modelos ML.NET
-                _logger.LogInformation("Iniciando treinamento do modelo SS");
                 _modelSS.Train("PercentuaisSS.json", usarCrossValidation: true);
-
-                _logger.LogInformation("Iniciando treinamento do modelo NS");
                 _modelNS.Train("PercentuaisNS.json", usarCrossValidation: true);
 
-                _logger.LogInformation("Análise e treinamento concluídos com sucesso");
+                _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
 
                 MessageBox.Show("Treinamento Finalizado!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -368,16 +357,16 @@ namespace Dashboard
         }
 
 
-        private void ExibirResultados(List<(int[], float)> palpitesClassificados)
+        private void ExibirResultados(Lances palpitesClassificados)
         {
             // Limpar resultados anteriores
             listBoxResultados.Items.Clear();
 
-            foreach (var (palpite, pontuacao) in palpitesClassificados)
+            foreach (var palpite in palpitesClassificados)
             {
                 // Formatar números para melhor visualização
-                var numerosFormatados = string.Join(", ", palpite.Select(n => n.ToString("00")));
-                string resultado = $"Pontuação: {pontuacao:F2} - Números: {numerosFormatados}";
+                var numerosFormatados = string.Join(", ", palpite.Lista);
+                string resultado = $"Pontuação: {palpite.F:F2} - Números: {numerosFormatados}";
                 listBoxResultados.Items.Add(resultado);
             }
         }

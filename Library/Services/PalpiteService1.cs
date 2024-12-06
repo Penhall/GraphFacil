@@ -1,139 +1,116 @@
-﻿using LotoLibrary.Interfaces;
+﻿using LotoLibrary.Infrastructure.Logging;
+using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.NeuralNetwork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LotoLibrary.Services;
-
-public class PalpiteService1
+namespace LotoLibrary.Services
 {
-    private readonly Random _random;
-    private readonly IMLLogger _logger;
-    private readonly MLModelRepository _repository;
-    private readonly Dictionary<string, GrupoAvaliacao> _gruposAvaliados;
-    private readonly MLNetModel _modeloSS;
-    private readonly MLNetModel _modeloNS;
-
-    public PalpiteService1(IMLLogger logger, MLNetModel modeloSS, MLNetModel modeloNS)
+    public class PalpiteService1
     {
-        _random = new Random();
-        _logger = logger;
-        _repository = new MLModelRepository(new FileService(), logger);
-        _modeloSS = modeloSS;
-        _modeloNS = modeloNS;
-        _gruposAvaliados = new Dictionary<string, GrupoAvaliacao>();
+        private readonly Random _random;
+        private readonly IMLLogger _logger;
+        private readonly MLNetModel _modelSS;
+        private readonly MLNetModel _modelNS;
+        private readonly Dictionary<int, Dictionary<int, double>> _percentuaisSS;
+        private readonly Dictionary<int, Dictionary<int, double>> _percentuaisNS;
+        private readonly MLModelRepository _repository;
+        private readonly Lance _concursoBase;
+        private readonly Lances _gruposSS;
+        private readonly Lances _gruposNS;
+        private readonly int _concursoBaseId;
 
-        // Pré-processar grupos na inicialização
-        PreProcessarGrupos();
-    }
-
-    private void PreProcessarGrupos()
-    {
-        try
+        public PalpiteService1(IMLLogger logger, MLNetModel modeloSS, MLNetModel modeloNS, int concursoBaseId)
         {
-            _logger.LogInformation("Iniciando pré-processamento dos grupos...");
+            _random = new Random();
+            _logger = logger;
+            _modelSS = modeloSS;
+            _modelNS = modeloNS;
+            _repository = new MLModelRepository(new FileService(), logger);
+            _percentuaisSS = _repository.CarregarPercentuaisSS();
+            _percentuaisNS = _repository.CarregarPercentuaisNS();
 
-            var percentuaisSS = _repository.CarregarPercentuaisSS();
-            var percentuaisNS = _repository.CarregarPercentuaisNS();
+            _concursoBaseId = concursoBaseId;
+            _concursoBase = Infra.arLoto.First(c => c.Id == _concursoBaseId);
+            _gruposSS = GerarCombinacoes.Combinar15a9(_concursoBase.Lista);
+            _gruposNS = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(_concursoBase).Lista);
 
-            // Para cada combinação possível de SS e NS
-            foreach (var ss in percentuaisSS)
+            _logger.LogInformation($"Inicializado com concurso base: {_concursoBase.Id}");
+            _logger.LogInformation($"Grupos gerados - SS: {_gruposSS.Count}, NS: {_gruposNS.Count}");
+        }
+
+        public Lances GerarPalpitesAleatorios(int quantidade)
+        {
+            Lances palpites = new();
+
+            for (int i = 0; i < quantidade; i++)
             {
-                foreach (var ns in percentuaisNS)
-                {
-                    var grupo = new GrupoAvaliacao
-                    {
-                        IdSS = ss.Key,
-                        IdNS = ns.Key,
-                        PercentuaisSS = ss.Value,
-                        PercentuaisNS = ns.Value
-                    };
+                int ss = _random.Next(_gruposSS.Count);
+                int ns = _random.Next(_gruposNS.Count);
 
-                    // Calcular pontuação usando os modelos
-                    var featuresSS = Enumerable.Range(3, 7)
-                        .Select(i => ss.Value.ContainsKey(i) ? (float)ss.Value[i] : 0f)
-                        .ToArray();
+                List<int> ls1 = _gruposSS[ss].Lista;
+                List<int> ls2 = _gruposNS[ns].Lista;
 
-                    var featuresNS = Enumerable.Range(2, 5)
-                        .Select(i => ns.Value.ContainsKey(i) ? (float)ns.Value[i] : 0f)
-                        .ToArray();
+                List<int> ls3 = new List<int>(ls1.Concat(ls2));
 
-                    var pontuacaoSS = _modeloSS.Predict(featuresSS);
-                    var pontuacaoNS = _modeloNS.Predict(featuresNS);
+                ls3.Sort();
 
-                    grupo.PontuacaoCombinada = (pontuacaoSS + pontuacaoNS) / 2.0;
-                    _gruposAvaliados[grupo.IdCC] = grupo;
-                }
+                Lance u = new Lance { Id = palpites.Count, Lista = ls3, M = ss, N = ns };
+
+
+
+                palpites.Add(u);
+                _logger.LogInformation($"Palpite gerado: SS(ID:{u.M}) + NS(ID:{u.N})");
             }
 
-            _logger.LogInformation($"Pré-processamento concluído. Total de grupos: {_gruposAvaliados.Count}");
+            return palpites;
         }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Erro no pré-processamento: {ex.Message}");
-            throw;
-        }
-    }
 
-    public List<int[]> GerarPalpitesAleatorios(int quantidade)
-    {
-        List<int[]> palpites = new List<int[]>();
-        for (int i = 0; i < quantidade; i++)
+        public Lances ClassificarPalpites(Lances palpites)
         {
-            var palpite = Enumerable.Range(1, 25).OrderBy(x => _random.Next()).Take(15).ToArray();
-            palpites.Add(palpite);
-        }
-        return palpites;
-    }
-
-    public List<(int[], float)> ClassificarPalpites(List<int[]> palpites)
-    {
-        try
-        {
-            List<(int[], float)> palpitesClassificados = new List<(int[], float)>();
+            Lances classificados = new();
 
             foreach (var palpite in palpites)
             {
-                try
-                {
-                    _logger.LogInformation($"Avaliando palpite: {string.Join(",", palpite)}");
+                // Obter IDs dos grupos que compõem o palpite
 
-                    // Gerar subgrupos do palpite
-                    var subgruposSS = GerarCombinacoes.Combinar15a9(palpite.ToList());
-                    var numerosOpostos = Infra.DevolveOposto(new Lance { Lista = palpite.ToList() }).Lista;
-                    var subgruposNS = GerarCombinacoes.Combinar10a6(numerosOpostos);
 
-                    // Avaliar cada combinação de subgrupos
-                    float maxPontuacao = 0;
-                    foreach (var ss in subgruposSS.Lista)
-                    {
-                        foreach (var ns in subgruposNS.Lista)
-                        {
-                            string idCC = $"{ss.Id}-{ns.Id}";
-                            if (_gruposAvaliados.TryGetValue(idCC, out var grupo))
-                            {
-                                maxPontuacao = Math.Max(maxPontuacao, (float)grupo.PontuacaoCombinada);
-                            }
-                        }
-                    }
+                // Calcular pontuação com base nos percentuais históricos
+                float pontuacao = CalcularPontuacaoGrupo(palpite.M, palpite.N);
 
-                    _logger.LogInformation($"Pontuação do palpite: {maxPontuacao:F2}");
-                    palpitesClassificados.Add((palpite, maxPontuacao));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Erro ao classificar palpite individual: {ex.Message}");
-                }
+                palpite.F = pontuacao;
+
+                classificados.Add(palpite);
+
+                _logger.LogInformation($"Palpite classificado - SS:{palpite.M} NS:{palpite.N} Pontuação:{pontuacao:F2}");
             }
 
-            return palpitesClassificados.OrderByDescending(p => p.Item2).ToList();
+            classificados.Sort();
+
+            return classificados;
         }
-        catch (Exception ex)
+
+        private float CalcularPontuacaoGrupo(int idSS, int idNS)
         {
-            _logger.LogError($"Erro ao classificar palpites: {ex.Message}");
-            throw;
+            if (_percentuaisSS.TryGetValue(idSS, out var valoresSS) &&
+                _percentuaisNS.TryGetValue(idNS, out var valoresNS))
+            {
+                var featuresSS = Enumerable.Range(3, 7)
+                    .Select(i => valoresSS.ContainsKey(i) ? (float)valoresSS[i] : 0f)
+                    .ToArray();
+
+                var featuresNS = Enumerable.Range(2, 5)
+                    .Select(i => valoresNS.ContainsKey(i) ? (float)valoresNS[i] : 0f)
+                    .ToArray();
+
+                var pontuacaoSS = _modelSS.Predict(featuresSS);
+                var pontuacaoNS = _modelNS.Predict(featuresNS);
+
+                return (pontuacaoSS + pontuacaoNS) / 2.0f;
+            }
+            return 0;
         }
     }
 }

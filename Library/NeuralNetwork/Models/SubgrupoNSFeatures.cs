@@ -3,9 +3,9 @@
 namespace LotoLibrary.NeuralNetwork.Models;
 
 // Classe específica para NS (5 dimensões)
-public class SubgrupoNSFeatures : BaseMLFeatures
+public class SubgrupoNSFeatures : MLFeatures
 {
     [VectorType(5)]
     [ColumnName("Features")]
-    public float[] Features { get; set; }
+    public new float[] Features { get; set; }
 }
