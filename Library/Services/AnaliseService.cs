@@ -88,9 +88,7 @@ public static class AnaliseService
         }
     }
 
-    private static void ProcessarContagens(Lances arLotoTreino,
-        Dictionary<int, Dictionary<int, int>> contagemSS,
-        Dictionary<int, Dictionary<int, int>> contagemNS)
+    private static void ProcessarContagens(Lances arLotoTreino, Dictionary<int, Dictionary<int, int>> contagemSS, Dictionary<int, Dictionary<int, int>> contagemNS)
     {
         int ix = arLotoTreino.Count - 1;
         int ax = ix - 1;
@@ -114,9 +112,7 @@ public static class AnaliseService
         }
     }
 
-    private static void ProcessarAcertos(Lance p, Lance o,
-        Dictionary<int, Dictionary<int, int>> contagemSS,
-        Dictionary<int, Dictionary<int, int>> contagemNS)
+    private static void ProcessarAcertos(Lance p, Lance o, Dictionary<int, Dictionary<int, int>> contagemSS, Dictionary<int, Dictionary<int, int>> contagemNS)
     {
         Lances ars9Tmp = GerarCombinacoes.Combinar15a9(p.Lista);
         Lances ars6Tmp = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(p).Lista);
@@ -146,10 +142,7 @@ public static class AnaliseService
         }
     }
 
-    private static void SalvarPercentuais(
-        Dictionary<int, Dictionary<int, int>> contagemSS,
-        Dictionary<int, Dictionary<int, int>> contagemNS,
-        int totalSorteios)
+    private static void SalvarPercentuais(Dictionary<int, Dictionary<int, int>> contagemSS, Dictionary<int, Dictionary<int, int>> contagemNS, int totalSorteios)
     {
         var fileService = new FileService();
 
@@ -162,9 +155,7 @@ public static class AnaliseService
         _logger.LogInformation("Percentuais calculados e salvos com sucesso");
     }
 
-    private static Dictionary<int, Dictionary<int, double>> CalcularPercentuais(
-        Dictionary<int, Dictionary<int, int>> contagens,
-        int totalSorteios)
+    private static Dictionary<int, Dictionary<int, double>> CalcularPercentuais(Dictionary<int, Dictionary<int, int>> contagens, int totalSorteios)
     {
         return contagens.ToDictionary(
             subgrupo => subgrupo.Key,

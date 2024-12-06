@@ -24,6 +24,7 @@ namespace Dashboard
         private readonly IMLLogger _logger;
         private readonly MLNetModel _modelSS;
         private readonly MLNetModel _modelNS;
+        private PalpiteService1 _palpiteService1;
 
 
 
@@ -42,11 +43,13 @@ namespace Dashboard
             _modelSS = new MLNetModel(_logger, "ModeloSS.zip", "SS");
             _modelNS = new MLNetModel(_logger, "ModeloNS.zip", "NS");
 
+
             // Tentar carregar modelos existentes
             try
             {
                 _modelSS.CarregarModelo();
                 _modelNS.CarregarModelo();
+                _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS);
                 _logger.LogInformation("Modelos existentes carregados com sucesso");
             }
             catch
@@ -163,7 +166,7 @@ namespace Dashboard
 
 
                 // Geração de palpites aleatórios usando o serviço
-                var palpitesAleatorios = _palpiteService.GerarPalpitesAleatorios(100); // Gera 100 palpites para começar
+                var palpitesAleatorios = _palpiteService.GerarPalpitesAleatorios(10); // Gera 100 palpites para começar
 
                 // Classificar palpites usando os modelos com o serviço
                 var palpitesClassificados = _palpiteService.ClassificarPalpites(_modelSS, _modelNS, palpitesAleatorios);
@@ -189,7 +192,28 @@ namespace Dashboard
         private void Setimo_Click(object sender, RoutedEventArgs e)
         {
 
-            TerminarPrograma();
+            try
+            {
+                // Verificar se o serviço está inicializado
+                if (_palpiteService1 == null)
+                {
+                    MessageBox.Show("Execute o treinamento dos modelos primeiro (botão Quarto)",
+                                  "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                _logger.LogInformation("Iniciando geração de palpites.");
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(10);
+                var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
+                ExibirResultados(palpitesClassificados);
+                _logger.LogInformation("Geração de palpites concluída.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Erro durante a geração dos palpites", ex);
+                MessageBox.Show($"Erro durante a geração dos palpites: {ex.Message}",
+                               "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         /// <summary>
