@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30413.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LotoLibrary", "Library\LotoLibrary.csproj", "{78363807-974D-43D2-A0A7-C3908F5FD3C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dashboard", "Dashboard\Dashboard.csproj", "{CA11046B-DCEF-4C35-8E2F-5502E6714FE4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Busisness", "Estudos\Busisness.csproj", "{7DCEEC21-C9C3-480E-9556-17B5E251EF5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{CA11046B-DCEF-4C35-8E2F-5502E6714FE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA11046B-DCEF-4C35-8E2F-5502E6714FE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA11046B-DCEF-4C35-8E2F-5502E6714FE4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7DCEEC21-C9C3-480E-9556-17B5E251EF5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DCEEC21-C9C3-480E-9556-17B5E251EF5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DCEEC21-C9C3-480E-9556-17B5E251EF5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DCEEC21-C9C3-480E-9556-17B5E251EF5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,6 +16,7 @@ namespace LotoLibrary.Models
         public int PT = 0;
 
         public float F = 0;
+        public float F1 = 0;
 
         public Dictionary<int, int> ContagemAcerto = new();
 
@@ -24,6 +25,8 @@ namespace LotoLibrary.Models
         public List<int> Lista;
         public List<int> ListaN = new();
         public List<int> ListaM = new();
+
+        public List<Double> MN = new();
 
         public Lances ListaX = new();
 
@@ -49,7 +52,6 @@ namespace LotoLibrary.Models
             this.Id = 0;
             this.Lista = new List<int>();
         }
-
         public string Atualiza()
         {
             Saida = string.Empty;
@@ -65,15 +67,18 @@ namespace LotoLibrary.Models
             return Saida;
         }
 
-        public void Ordena() { SomaX(); ListaM.Sort(); ListaN.Sort(); }
+        public void Ordena() { ListaM.Sort(); ListaN.Sort(); }
 
-        public void SomaX() => N = ListaX.Count;
+        //     public void SomaX() => MN = ListaX.Count;
 
+        public override string ToString()
+        {
+            Atualiza();
+            return Saida; // Ou qualquer formato que represente os valores importantes
+        }
 
 
         public void LimpaListas() { this.ListaX.Clear(); this.ListaY.Clear(); }
-
-
 
         public int CompareTo(object obj)
         {
@@ -94,14 +99,11 @@ namespace LotoLibrary.Models
     {
         public Lances() { }
 
-
         public Lances(IEnumerable<Lance> collection) : base(collection)
         {
         }
 
         public List<Lance> Lista { get; set; } = new List<Lance>();
-
-
 
     }
 

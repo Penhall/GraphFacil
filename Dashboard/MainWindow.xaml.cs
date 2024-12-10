@@ -1,4 +1,4 @@
-using Busisness;
+using LotoLibrary.Extensions;
 using LotoLibrary.Infrastructure.Logging;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
@@ -196,11 +196,14 @@ namespace Dashboard
                 }
 
                 _logger.LogInformation("Iniciando geração de palpites.");
-                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000);
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(10000);
                 var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
                 ExibirResultados(palpitesClassificados);
 
+
                 Infra.SalvaSaidaW(palpitesClassificados, Infra.NomeSaida("Calculado", concursoBase));
+                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(), Infra.NomeSaida("PosiçãoF", concursoBase));
+                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF1(), Infra.NomeSaida("PosiçãoF1", concursoBase));
             }
             catch (Exception ex)
             {
@@ -357,7 +360,7 @@ namespace Dashboard
         }
 
 
-        private void ExibirResultados(Lances palpitesClassificados)
+        private void ExibirResultadosV0(Lances palpitesClassificados)
         {
             // Limpar resultados anteriores
             listBoxResultados.Items.Clear();
@@ -367,6 +370,20 @@ namespace Dashboard
                 // Formatar números para melhor visualização
                 var numerosFormatados = string.Join(", ", palpite.Lista);
                 string resultado = $"Pontuação: {palpite.F:F2} - Números: {numerosFormatados}";
+                listBoxResultados.Items.Add(resultado);
+            }
+        }
+
+        private void ExibirResultados(Lances palpitesClassificados)
+        {
+            listBoxResultados.Items.Clear();
+
+            foreach (var palpite in palpitesClassificados)
+            {
+                var numerosFormatados = string.Join(", ", palpite.Lista.Select(n => n.ToString("00")));
+                string resultado = $"Nums: {numerosFormatados} - " +
+                                 $"SS:{palpite.M} NS:{palpite.N} - " +
+                                 $"Pontuação: {palpite.F:F2}";
                 listBoxResultados.Items.Add(resultado);
             }
         }

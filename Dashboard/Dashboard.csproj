@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Estudos\Busisness.csproj" />
     <ProjectReference Include="..\Library\LotoLibrary.csproj" />
   </ItemGroup>
 
