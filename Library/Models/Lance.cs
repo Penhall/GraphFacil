@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace LotoLibrary.Models
 {
-    public class Lance : IComparable
+    public class Lance
     {
         public int Id;
 
@@ -15,8 +15,9 @@ namespace LotoLibrary.Models
         public int Y = 0;
         public int PT = 0;
 
-        public float F = 0;
+        public float F0 = 0;
         public float F1 = 0;
+        public float F2 = 0;
 
         public Dictionary<int, int> ContagemAcerto = new();
 
@@ -33,6 +34,7 @@ namespace LotoLibrary.Models
         public Lances ListaY = new();
 
         public string Saida;
+
         public string Nome;
 
         public Lance(int id, List<int> lista)
@@ -52,6 +54,7 @@ namespace LotoLibrary.Models
             this.Id = 0;
             this.Lista = new List<int>();
         }
+
         public string Atualiza()
         {
             Saida = string.Empty;
@@ -69,31 +72,34 @@ namespace LotoLibrary.Models
 
         public void Ordena() { ListaM.Sort(); ListaN.Sort(); }
 
-        //     public void SomaX() => MN = ListaX.Count;
-
-        public override string ToString()
-        {
-            Atualiza();
-            return Saida; // Ou qualquer formato que represente os valores importantes
-        }
-
-
         public void LimpaListas() { this.ListaX.Clear(); this.ListaY.Clear(); }
 
         public int CompareTo(object obj)
         {
-            Lance l = (Lance)obj;
-            return F.CompareTo(l.F);
+            if (obj == null) return 1;
+            Lance other = obj as Lance;
+            if (other == null) return 1;
+
+            // Se algum valor for inválido, coloca no fim da lista
+            if (float.IsNaN(this.F1) || float.IsInfinity(this.F1)) return -1;
+            if (float.IsNaN(other.F1) || float.IsInfinity(other.F1)) return 1;
+
+            // Ordem decrescente (maior primeiro)
+            return other.F1.CompareTo(this.F1);
         }
 
-        public void ComplementarPara(Lance O)
+
+        public override string ToString()
         {
-            this.ListaN = O.Lista.Except(this.Lista).ToList();
-            this.ListaN.Sort();
+            Atualiza();
+
+            return Saida;
         }
 
-        public void AtualizaContagemAcerto(int i, int j) { this.ContagemAcerto.Add(i, j); }
     }
+
+
+
 
     public class Lances : List<Lance>
     {

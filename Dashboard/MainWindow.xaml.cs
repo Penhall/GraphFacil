@@ -196,14 +196,15 @@ namespace Dashboard
                 }
 
                 _logger.LogInformation("Iniciando geração de palpites.");
-                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(10000);
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000);
                 var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
                 ExibirResultados(palpitesClassificados);
 
 
-                Infra.SalvaSaidaW(palpitesClassificados, Infra.NomeSaida("Calculado", concursoBase));
-                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(), Infra.NomeSaida("PosiçãoF", concursoBase));
-                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF1(), Infra.NomeSaida("PosiçãoF1", concursoBase));
+                Infra.SalvaSaidaW(palpitesClassificados.ToList(), Infra.NomeSaida("Calculado", concursoBase));
+                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0    ", concursoBase));
+                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1", concursoBase));
+                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2", concursoBase));
             }
             catch (Exception ex)
             {
@@ -369,7 +370,7 @@ namespace Dashboard
             {
                 // Formatar números para melhor visualização
                 var numerosFormatados = string.Join(", ", palpite.Lista);
-                string resultado = $"Pontuação: {palpite.F:F2} - Números: {numerosFormatados}";
+                string resultado = $"Pontuação: {palpite.F0:F2} - Números: {numerosFormatados}";
                 listBoxResultados.Items.Add(resultado);
             }
         }
@@ -383,7 +384,7 @@ namespace Dashboard
                 var numerosFormatados = string.Join(", ", palpite.Lista.Select(n => n.ToString("00")));
                 string resultado = $"Nums: {numerosFormatados} - " +
                                  $"SS:{palpite.M} NS:{palpite.N} - " +
-                                 $"Pontuação: {palpite.F:F2}";
+                                 $"Pontuação: {palpite.F0:F2}";
                 listBoxResultados.Items.Add(resultado);
             }
         }

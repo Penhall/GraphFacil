@@ -32,7 +32,7 @@ public class PalpiteService1
         _percentuaisSS = _repository.CarregarPercentuaisSS();
         _percentuaisNS = _repository.CarregarPercentuaisNS();
 
-        _concursoBaseId = concursoBaseId;
+        _concursoBaseId = concursoBaseId - 2;
         _concursoBase = Infra.arLoto.First(c => c.Id == _concursoBaseId);
         _gruposSS = GerarCombinacoes.Combinar15a9(_concursoBase.Lista);
         _gruposNS = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(_concursoBase).Lista);
@@ -52,15 +52,10 @@ public class PalpiteService1
 
             List<int> ls1 = _gruposSS[ss].Lista;
             List<int> ls2 = _gruposNS[ns].Lista;
-
             List<int> ls3 = new List<int>(ls1.Concat(ls2));
-
             ls3.Sort();
 
             Lance u = new Lance { Id = palpites.Count, Lista = ls3, M = ss, N = ns };
-
-
-
             palpites.Add(u);
             _logger.LogInformation($"Palpite gerado: SS(ID:{u.M}) + NS(ID:{u.N})");
         }
@@ -68,121 +63,61 @@ public class PalpiteService1
         return palpites;
     }
 
+    private float CalcularBonusDistanciaCinco(int pontos)
+    {
+        return pontos switch
+        {
+            5 => 1.0f,      // Máximo bônus
+            4 or 6 => 0.8f, // Bônus alto
+            3 or 7 => 0.5f, // Bônus médio
+            2 or 8 => 0.2f, // Bônus baixo
+            _ => 0f         // Sem bônus
+        };
+    }
+
     public Lances ClassificarPalpites(Lances palpites)
     {
         var classificados = new Lances();
 
-        // Encontrar o grupo SS mais frequente
-        var (idSSMaisFrequente, _) = EncontrarSSMaisFrequenteNosPalpites(palpites);
-        var gruposNSAssociados = EncontrarGruposNSAssociados(palpites, idSSMaisFrequente);
+        // Encontrar referências para as duas medidas
+        var (grupoRefFreq, gruposNSFreq) = EncontrarGruposFrequentes(palpites);
+        var (grupoRefAnt, gruposNSAnt) = EncontrarGruposAnteriores();
 
         foreach (var palpite in palpites)
         {
-            // Calcular pontuação original
-            float pontuacaoOriginal = CalcularPontuacaoGrupo(palpite.M, palpite.N);
+            // Pontuação base ML
+            float pontuacaoBase = CalcularPontuacaoGrupo(palpite.M, palpite.N);
 
-            // Calcular pontuação baseada em frequência
-            float pontuacaoFrequencia = CalcularPontuacaoComFrequencia(palpite, idSSMaisFrequente, gruposNSAssociados);
+            // Medida 1: Baseada em frequência no conjunto de palpites
+            float pontuacaoFreq = CalcularPontuacaoComFrequencia(palpite, grupoRefFreq, gruposNSFreq, pontuacaoBase);
 
-            // Usar a média como pontuação final
-            palpite.F = (pontuacaoOriginal);
-            palpite.F1 = (pontuacaoFrequencia);
+            // Medida 2: Baseada em concurso anterior com 9 pontos
+            float pontuacaoAnt = CalcularPontuacaoComAcertosAnteriores(palpite, grupoRefAnt, gruposNSAnt, pontuacaoBase);
+
+            palpite.F0 = pontuacaoBase;
+            palpite.F1 = pontuacaoFreq;
+            palpite.F2 = pontuacaoAnt;
+
             classificados.Add(palpite);
 
             _logger.LogInformation($"Palpite: SS={palpite.M} NS={palpite.N} " +
-                                 $"PontOriginal={pontuacaoOriginal:F2} " +
-                                 $"PontFreq={pontuacaoFrequencia:F2} " +
-                                 $"Final={palpite.F:F2}");
+                                 $"Base={pontuacaoBase:F2} " +
+                                 $"Freq={pontuacaoFreq:F2} " +
+                                 $"Ant={pontuacaoAnt:F2}");
         }
 
-        classificados.Sort(); // Usa o CompareTo da classe Lance
-        return classificados;
-    }
+        // classificados.Sort();
 
-    private (int idSS, int frequencia) EncontrarSSMaisFrequenteNosPalpites(Lances palpites)
-    {
-        var frequenciaGruposSS = new Dictionary<int, int>();
+        //var ordenados = classificados
+        //.Where(p => !float.IsNaN(p.F1) && !float.IsInfinity(p.F1))
+        //.OrderByDescending(p => p.F1)
+        //.ToList();
 
-        foreach (var palpite in palpites)
-        {
-            if (!frequenciaGruposSS.ContainsKey(palpite.M))
-                frequenciaGruposSS[palpite.M] = 0;
-            frequenciaGruposSS[palpite.M]++;
-        }
-
-        var maisFrequente = frequenciaGruposSS
-            .OrderByDescending(x => x.Value)
-            .First();
-
-        _logger.LogInformation($"Grupo SS mais frequente: ID={maisFrequente.Key}, Freq={maisFrequente.Value}");
-        return (maisFrequente.Key, maisFrequente.Value);
-    }
-
-    private List<int> EncontrarGruposNSAssociados(Lances palpites, int idSS)
-    {
-        var gruposNS = new List<int>();
-
-        foreach (var palpite in palpites)
-        {
-            if (palpite.M == idSS)
-            {
-                gruposNS.Add(palpite.N);
-            }
-        }
-
-        _logger.LogInformation($"Grupos NS associados ao SS {idSS}: {string.Join(",", gruposNS)}");
-        return gruposNS;
-    }
-
-    private float CalcularPontuacaoComFrequencia(Lance palpite, int idSSMaisFrequente, List<int> gruposNSAssociados)
-    {
-        float pontuacaoBase = CalcularPontuacaoGrupo(palpite.M, palpite.N);
-        float bonusFrequencia = 0;
-
-        if (palpite.M == idSSMaisFrequente)
-            bonusFrequencia += 0.3f;
-
-        if (gruposNSAssociados.Contains(palpite.N))
-            bonusFrequencia += 0.2f;
-
-        return pontuacaoBase * (1 + bonusFrequencia);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    public Lances ClassificarPalpitesV0(Lances palpites)
-    {
-        Lances classificados = new();
-
-        foreach (var palpite in palpites)
-        {
-            // Obter IDs dos grupos que compõem o palpite
-
-
-            // Calcular pontuação com base nos percentuais históricos
-            float pontuacao = CalcularPontuacaoGrupo(palpite.M, palpite.N);
-
-            palpite.F = pontuacao;
-
-            classificados.Add(palpite);
-
-            _logger.LogInformation($"Palpite classificado - SS:{palpite.M} NS:{palpite.N} Pontuação:{pontuacao:F2}");
-        }
-
-        classificados.Sort();
 
         return classificados;
     }
 
+    #region CÁLCULO DE PONTUAÇÃO BASE
     private float CalcularPontuacaoGrupo(int idSS, int idNS)
     {
         if (_percentuaisSS.TryGetValue(idSS, out var valoresSS) &&
@@ -203,5 +138,92 @@ public class PalpiteService1
         }
         return 0;
     }
+    #endregion
 
+    #region CÁLCULO BASEADO EM FREQUÊNCIA
+    private (Lance grupoRef, List<int> gruposNS) EncontrarGruposFrequentes(Lances palpites)
+    {
+        var frequenciaGruposSS = new Dictionary<int, int>();
+        foreach (var palpite in palpites)
+        {
+            if (!frequenciaGruposSS.ContainsKey(palpite.M))
+                frequenciaGruposSS[palpite.M] = 0;
+            frequenciaGruposSS[palpite.M]++;
+        }
+
+        var idSSMaisFrequente = frequenciaGruposSS.OrderByDescending(x => x.Value).First().Key;
+        var grupoRef = _gruposSS[idSSMaisFrequente];
+
+        var gruposNSAssociados = palpites
+            .Where(p => p.M == idSSMaisFrequente)
+            .Select(p => p.N)
+            .Distinct()
+            .ToList();
+
+        return (grupoRef, gruposNSAssociados);
+    }
+
+    private float CalcularPontuacaoComFrequencia(Lance palpite, Lance grupoRef, List<int> gruposNSRef, float pontuacaoBase)
+    {
+        // Calcular pontos que o grupo SS faz no grupo referência
+        var grupoSS = _gruposSS[palpite.M];
+        int pontosNoRef = Infra.Contapontos(grupoRef, grupoSS);
+
+        float bonusSS = CalcularBonusDistanciaCinco(pontosNoRef);
+        float bonusNS = gruposNSRef.Contains(palpite.N) ? 0.3f : 0f;
+
+        return pontuacaoBase * (1 + bonusSS + bonusNS);
+    }
+    #endregion
+
+    #region CÁLCULO BASEADO EM CONCURSO ANTERIOR
+    private (Lance grupoRef, List<int> gruposNS) EncontrarGruposAnteriores()
+    {
+        // Encontrar primeiro concurso anterior que faz 9 pontos com o base
+        Lance concursoAnterior = null;
+        for (int i = _concursoBaseId - 1; i > 0; i--)
+        {
+            var concurso = Infra.arLoto.First(c => c.Id == i);
+            if (Infra.Contapontos(_concursoBase, concurso) == 9)
+            {
+                concursoAnterior = concurso;
+                break;
+            }
+        }
+
+        if (concursoAnterior == null)
+            return (null, new List<int>());
+
+        // Encontrar grupos SS que fazem 9 pontos nesse concurso
+        var grupoRef = _gruposSS.Lista.FirstOrDefault(g =>
+            Infra.Contapontos(concursoAnterior, g) == 9);
+
+
+
+        // Encontrar grupos NS que fazem 6 pontos
+        var gruposNS = new List<int>();
+        for (int i = 0; i < _gruposNS.Count; i++)
+        {
+            if (Infra.Contapontos(concursoAnterior, _gruposNS[i]) == 6)
+                gruposNS.Add(i);
+        }
+
+        return (grupoRef, gruposNS);
+    }
+
+    private float CalcularPontuacaoComAcertosAnteriores(Lance palpite, Lance grupoRef, List<int> gruposNSRef, float pontuacaoBase)
+    {
+        if (grupoRef == null)
+            return pontuacaoBase;
+
+        // Calcular pontos que o grupo SS faz no grupo referência
+        var grupoSS = _gruposSS[palpite.M];
+        int pontosNoRef = Infra.Contapontos(grupoRef, grupoSS);
+
+        float bonusSS = CalcularBonusDistanciaCinco(pontosNoRef);
+        float bonusNS = gruposNSRef.Contains(palpite.N) ? 0.3f : 0f;
+
+        return pontuacaoBase * (1 + bonusSS + bonusNS);
+    }
+    #endregion
 }

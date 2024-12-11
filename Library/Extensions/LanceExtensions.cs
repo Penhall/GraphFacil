@@ -1,4 +1,5 @@
 using LotoLibrary.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,16 +30,20 @@ namespace LotoLibrary.Extensions
             return arAlvos;
         }
 
-        public static List<double> ObterValoresF(this Lances lances)
-        {
-            return lances.SelectMany(lance => new List<double> { lance.F }).ToList();
-        }
 
-        public static List<double> ObterValoresF1(this Lances lances)
+        public static List<float> ObterValoresF(this Lances lances, int indicador)
         {
-            return lances.SelectMany(lance => new List<double> { lance.F1 }).ToList();
+            return lances.Select(lance =>
+            {
+                return indicador switch
+                {
+                    0 => lance.F0,
+                    1 => lance.F1,
+                    2 => lance.F2,
+                    _ => throw new ArgumentException($"Indicador {indicador} inválido")
+                };
+            }).ToList();
         }
-
 
 
     }
