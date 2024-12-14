@@ -1,5 +1,4 @@
-﻿using LotoLibrary.Infrastructure.Logging;
-using LotoLibrary.Interfaces;
+﻿using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.NeuralNetwork;
 using System;
@@ -18,6 +17,7 @@ public class PalpiteService1
     private readonly Dictionary<int, Dictionary<int, double>> _percentuaisNS;
     private readonly MLModelRepository _repository;
     private readonly Lance _concursoBase;
+    private readonly Lance _concursoAlvo;
     private readonly Lances _gruposSS;
     private readonly Lances _gruposNS;
     private readonly int _concursoBaseId;
@@ -32,8 +32,10 @@ public class PalpiteService1
         _percentuaisSS = _repository.CarregarPercentuaisSS();
         _percentuaisNS = _repository.CarregarPercentuaisNS();
 
-        _concursoBaseId = concursoBaseId - 2;
+        _concursoBaseId = concursoBaseId - 1;
         _concursoBase = Infra.arLoto.First(c => c.Id == _concursoBaseId);
+        _concursoAlvo = Infra.arLoto.First(c => c.Id == concursoBaseId - 1);
+
         _gruposSS = GerarCombinacoes.Combinar15a9(_concursoBase.Lista);
         _gruposNS = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(_concursoBase).Lista);
 
@@ -41,6 +43,36 @@ public class PalpiteService1
         _logger.LogInformation($"Grupos gerados - SS: {_gruposSS.Count}, NS: {_gruposNS.Count}");
     }
 
+
+    #region GERAR PALPITES ALEATÓRIOS
+
+    public Lances GerarPalpitesAleatorios()
+    {
+        Lances palpites = new();
+
+        foreach (Lance o in _gruposSS)
+        {
+
+
+            List<int> ls1 = o.Lista;
+            foreach (Lance p in _gruposNS)
+            {
+                List<int> ls2 = p.Lista;
+
+
+                List<int> ls3 = new List<int>(ls1.Concat(ls2));
+                ls3.Sort();
+
+                Lance u = new Lance { Id = palpites.Count, Lista = ls3, M = o.Id, N = p.Id };
+                palpites.Add(u);
+
+
+                _logger.LogInformation($"Palpite gerado: SS(ID:{u.M}) + NS(ID:{u.N})");
+            }
+        }
+
+        return palpites;
+    }
     public Lances GerarPalpitesAleatorios(int quantidade)
     {
         Lances palpites = new();
@@ -62,6 +94,31 @@ public class PalpiteService1
 
         return palpites;
     }
+    public Lances GerarPalpitesAleatorios(int quantidade, int PT)
+    {
+        Lances palpites = new();
+
+        while (palpites.Count < quantidade)
+        {
+            int ss = _random.Next(_gruposSS.Count);
+            int ns = _random.Next(_gruposNS.Count);
+
+            List<int> ls1 = _gruposSS[ss].Lista;
+            List<int> ls2 = _gruposNS[ns].Lista;
+            List<int> ls3 = new List<int>(ls1.Concat(ls2));
+            ls3.Sort();
+
+            Lance u = new Lance { Id = palpites.Count, Lista = ls3, M = ss, N = ns };
+            if (Infra.Contapontos(u, _concursoAlvo) == PT) palpites.Add(u);
+
+            _logger.LogInformation($"Palpite gerado: SS(ID:{u.M}) + NS(ID:{u.N})");
+        }
+
+        return palpites;
+    }
+
+    #endregion
+
 
     private float CalcularBonusDistanciaCinco(int pontos)
     {
@@ -92,11 +149,11 @@ public class PalpiteService1
             float pontuacaoFreq = CalcularPontuacaoComFrequencia(palpite, grupoRefFreq, gruposNSFreq, pontuacaoBase);
 
             // Medida 2: Baseada em concurso anterior com 9 pontos
-            float pontuacaoAnt = CalcularPontuacaoComAcertosAnteriores(palpite, grupoRefAnt, gruposNSAnt, pontuacaoBase);
+            float pontuacaoAnt = CalcularPontuacaoComAcertosAnteriores(palpite, grupoRefAnt, gruposNSAnt.Lista, pontuacaoBase);
 
-            palpite.F0 = pontuacaoBase;
-            palpite.F1 = pontuacaoFreq;
-            palpite.F2 = pontuacaoAnt;
+            palpite.F0 = (float)Math.Round(pontuacaoBase, 4);
+            palpite.F1 = (float)Math.Round(pontuacaoFreq, 4);
+            palpite.F2 = (float)Math.Round(pontuacaoAnt, 4);
 
             classificados.Add(palpite);
 
@@ -116,6 +173,8 @@ public class PalpiteService1
 
         return classificados;
     }
+
+
 
     #region CÁLCULO DE PONTUAÇÃO BASE
     private float CalcularPontuacaoGrupo(int idSS, int idNS)
@@ -177,7 +236,7 @@ public class PalpiteService1
     #endregion
 
     #region CÁLCULO BASEADO EM CONCURSO ANTERIOR
-    private (Lance grupoRef, List<int> gruposNS) EncontrarGruposAnteriores()
+    private (Lance grupoRef, Lance gruposNS) EncontrarGruposAnteriores()
     {
         // Encontrar primeiro concurso anterior que faz 9 pontos com o base
         Lance concursoAnterior = null;
@@ -191,24 +250,14 @@ public class PalpiteService1
             }
         }
 
-        if (concursoAnterior == null)
-            return (null, new List<int>());
-
         // Encontrar grupos SS que fazem 9 pontos nesse concurso
-        var grupoRef = _gruposSS.Lista.FirstOrDefault(g =>
-            Infra.Contapontos(concursoAnterior, g) == 9);
+        Lance grupoRef = null;
+        Lance grupoNS = null;
 
+        foreach (Lance o in _gruposSS) { if (Infra.Contapontos(o, concursoAnterior) == 9) { grupoRef = o; break; } }
+        foreach (Lance o in _gruposNS) { if (Infra.Contapontos(o, concursoAnterior) == 6) { grupoNS = o; break; } }
 
-
-        // Encontrar grupos NS que fazem 6 pontos
-        var gruposNS = new List<int>();
-        for (int i = 0; i < _gruposNS.Count; i++)
-        {
-            if (Infra.Contapontos(concursoAnterior, _gruposNS[i]) == 6)
-                gruposNS.Add(i);
-        }
-
-        return (grupoRef, gruposNS);
+        return (grupoRef, grupoNS);
     }
 
     private float CalcularPontuacaoComAcertosAnteriores(Lance palpite, Lance grupoRef, List<int> gruposNSRef, float pontuacaoBase)

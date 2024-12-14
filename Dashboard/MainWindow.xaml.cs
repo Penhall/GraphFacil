@@ -6,7 +6,6 @@ using LotoLibrary.NeuralNetwork;
 using LotoLibrary.Services;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -75,8 +74,10 @@ namespace Dashboard
         /// </summary>
         private void BtnLembrete_Click(object sender, RoutedEventArgs e)
         {
-
+            SalvarResultados();
         }
+
+
 
         /// <summary>
         /// Permite mover a janela ao clicar e arrastar a barra de título.
@@ -196,7 +197,7 @@ namespace Dashboard
                 }
 
                 _logger.LogInformation("Iniciando geração de palpites.");
-                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000);
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000, 13);
                 var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
                 ExibirResultados(palpitesClassificados);
 
@@ -219,7 +220,39 @@ namespace Dashboard
         /// </summary>
         private void Oitavo_Click(object sender, RoutedEventArgs e)
         {
+            int concursoBase = Convert.ToInt32(T1.Text);
+            try
+            {
+                if (_palpiteService1 == null)
+                {
 
+                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
+                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
+                }
+
+                _logger.LogInformation("Iniciando geração de palpites.");
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios();
+                var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
+
+                palpitesClassificados.OrdenarPorF1().Take(1000);
+
+                var palpitesClassificadosFiltrados = palpitesClassificados.OrdenarPorF1().Take(1000).ToLances(); ;
+
+                //        var palpitesClassificadosFiltrados = palpitesClassificados.FiltrarPorValores(f0Filter: f0 => f0 == 41.9, f1Filter: f1 => f1 == 61.9, f2Filter: f2 => f2 == 61.9);
+
+                ExibirResultados(palpitesClassificadosFiltrados);
+
+
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ToList(), Infra.NomeSaida("Calculado", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0-Filtrado    ", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1-Filtrado", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2-Filtrado", concursoBase + 1));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro: {ex.Message}");
+                MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             TerminarPrograma();
         }
 
@@ -387,6 +420,13 @@ namespace Dashboard
                                  $"Pontuação: {palpite.F0:F2}";
                 listBoxResultados.Items.Add(resultado);
             }
+        }
+
+
+        private void SalvarResultados()
+        {
+
+            Infra.SalvaSaidaW(Infra.arLoto, Infra.NomeSaida("Resultados", T1.Text));
         }
 
         #endregion

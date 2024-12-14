@@ -197,8 +197,8 @@ public static class AnaliseService
         int quantidadeValidacao = 100;
         int quantidadeTreinamento = totalSorteios - quantidadeValidacao;
 
-        trainSorteios = Infra.arLoto.Take(quantidadeTreinamento).ToLances();
-        valSorteios = Infra.arLoto.Skip(quantidadeTreinamento).ToLances();
+        trainSorteios = Infra.arLoto.Take(quantidadeTreinamento).ToLances1();
+        valSorteios = Infra.arLoto.Skip(quantidadeTreinamento).ToLances1();
 
         _logger.LogInformation($"Dados separados: {quantidadeTreinamento} para treino, {quantidadeValidacao} para validação");
     }

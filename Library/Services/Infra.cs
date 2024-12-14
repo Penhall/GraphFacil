@@ -2,7 +2,6 @@
 using LotoLibrary.Models;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -254,6 +253,18 @@ public class Infra
         if (!Directory.Exists(caminho)) { Directory.CreateDirectory(caminho); }
 
         return Path.Combine(caminho + "\\" + nome + "-" + alvo.ToString() + ".txt");
+    }
+
+    public static string NomeSaida(string nome, string alvo)
+    {
+
+        string path = Directory.Exists(Constante.PT) ? Constante.PT : Constante.PT1;
+
+        string caminho = path + "\\" + "Saida" + "\\" + alvo.ToString();
+
+        if (!Directory.Exists(caminho)) { Directory.CreateDirectory(caminho); }
+
+        return Path.Combine(caminho + "\\" + nome + "-" + alvo + ".txt");
     }
 
     public static Lances DevolveBaseCompleta(Lance oAlvo, int v)

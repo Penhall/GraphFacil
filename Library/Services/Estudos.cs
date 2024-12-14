@@ -241,7 +241,7 @@ public static class Estudos
                 // Loop para contagem de 3 a 9 acertos (Subgrupo SS)
                 for (int h = 3; h <= 9; h++)
                 {
-                    Lances encontrados9 = ars9Tmp.Where(q => Infra.Contapontos(q, o) == h).ToLances();
+                    Lances encontrados9 = ars9Tmp.Where(q => Infra.Contapontos(q, o) == h).ToLances1();
                     foreach (Lance z in encontrados9)
                     {
                         if (contagemSS.TryGetValue(z.Id, out var contagem))
@@ -254,7 +254,7 @@ public static class Estudos
                 // Loop para contagem de 2 a 6 acertos (Subgrupo NS)
                 for (int h = 2; h <= 6; h++)
                 {
-                    Lances encontrados6 = ars6Tmp.Where(q => Infra.Contapontos(q, o) == h).ToLances();
+                    Lances encontrados6 = ars6Tmp.Where(q => Infra.Contapontos(q, o) == h).ToLances1();
                     foreach (Lance z in encontrados6)
                     {
                         if (contagemNS.TryGetValue(z.Id, out var contagem))

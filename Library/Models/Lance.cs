@@ -1,5 +1,4 @@
-﻿using LotoLibrary.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -98,9 +97,6 @@ namespace LotoLibrary.Models
 
     }
 
-
-
-
     public class Lances : List<Lance>
     {
         public Lances() { }
@@ -115,7 +111,7 @@ namespace LotoLibrary.Models
 
     public static class EnumerableExtensions
     {
-        public static Lances ToLances(this IEnumerable<Lance> source)
+        public static Lances ToLances1(this IEnumerable<Lance> source)
         {
             return new Lances(source);
         }
