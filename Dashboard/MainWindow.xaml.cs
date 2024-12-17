@@ -243,10 +243,10 @@ namespace Dashboard
                 ExibirResultados(palpitesClassificadosFiltrados);
 
 
-                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ToList(), Infra.NomeSaida("Calculado", concursoBase + 1));
-                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0-Filtrado    ", concursoBase + 1));
-                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1-Filtrado", concursoBase + 1));
-                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2-Filtrado", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ToList(), Infra.NomeSaida("Calculado-A", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0-Filtrado-A", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1-Filtrado-A", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2-Filtrado-A", concursoBase + 1));
             }
             catch (Exception ex)
             {
@@ -261,6 +261,39 @@ namespace Dashboard
         /// </summary>
         private void Nono_Click(object sender, RoutedEventArgs e)
         {
+            int concursoBase = Convert.ToInt32(T1.Text);
+            try
+            {
+                if (_palpiteService1 == null)
+                {
+
+                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
+                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
+                }
+
+                _logger.LogInformation("Iniciando geração de palpites.");
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios();
+                var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
+
+                palpitesClassificados.OrdenarPorF1().Take(1000);
+
+                var palpitesClassificadosFiltrados = palpitesClassificados.OrdenarPorF1Dsc().Take(1000).ToLances(); ;
+
+                //        var palpitesClassificadosFiltrados = palpitesClassificados.FiltrarPorValores(f0Filter: f0 => f0 == 41.9, f1Filter: f1 => f1 == 61.9, f2Filter: f2 => f2 == 61.9);
+
+                ExibirResultados(palpitesClassificadosFiltrados);
+
+
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ToList(), Infra.NomeSaida("Calculado-D", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0-Filtrado-D", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1-Filtrado-D", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2-Filtrado-D", concursoBase + 1));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro: {ex.Message}");
+                MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             TerminarPrograma();
         }
 

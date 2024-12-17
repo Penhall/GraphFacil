@@ -145,7 +145,7 @@ public static class LanceExtensions
     /// <param name="lances">Coleção de Lances a ser ordenada</param>
     /// <param name="descending">Indica se a ordenação deve ser descendente (opcional, padrão é descendente)</param>
     /// <returns>Nova coleção Lances ordenada</returns>
-    public static Lances OrdenarPorF1Asc(
+    public static Lances OrdenarPorF1Dsc(
         this Lances lances,
         bool descending = true)
     {
