@@ -6,6 +6,7 @@ using LotoLibrary.NeuralNetwork;
 using LotoLibrary.Services;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -269,6 +270,45 @@ namespace Dashboard
         /// </summary>
         private void Dez_Click(object sender, RoutedEventArgs e)
         {
+            Random random = new Random();
+
+            int concursoBase = Convert.ToInt32(T1.Text) + 1;
+            string nomeArq = "Calculado-" + concursoBase.ToString();
+
+            Lances arq = Infra.AbrirArquivo(nomeArq);
+
+            Lances arq1 = new();
+
+            foreach (Lance o in arq)
+            {
+                arq1.Add(Infra.DevolveOposto(o));
+            }
+
+            List<int> N = Enumerable.Range(1, 25).ToList();
+
+            Lances ars1 = GerarCombinacoes.Combinar25a15(N);
+
+            Lances ars2 = new Lances();
+
+            while (ars2.Count < 100)
+            {
+                Lance o = ars1[random.Next(ars1.Count)];
+                int a = 0;
+
+                foreach (Lance p in arq1)
+                {
+                    int b = Infra.Contapontos(o, p);
+                    if ((b == 5) || (b == 6)) a += 10;
+
+                }
+
+                if (a > 9000) ars2.Add(o);
+
+
+            }
+
+            Infra.SalvaSaidaW(ars2, Infra.NomeSaida("OpostosV1-", concursoBase));
+
 
             TerminarPrograma();
         }
@@ -278,6 +318,43 @@ namespace Dashboard
         /// </summary>
         private void Onze_Click(object sender, RoutedEventArgs e)
         {
+
+            int concursoBase = Convert.ToInt32(T1.Text) + 1;
+            string nomeArq = "Calculado-" + concursoBase.ToString();
+
+            Lances arq = Infra.AbrirArquivo(nomeArq);
+
+            Lances arq1 = new();
+
+            foreach (Lance o in arq)
+            {
+                arq1.Add(Infra.DevolveOposto(o));
+            }
+
+            List<int> N = Enumerable.Range(1, 25).ToList();
+
+            Lances ars1 = GerarCombinacoes.Combinar25a15(N);
+
+            Lances ars2 = new Lances();
+
+            foreach (Lance o in ars1)
+            {
+                int a = 0;
+
+                foreach (Lance p in arq1)
+                {
+                    int b = Infra.Contapontos(o, p);
+                    if (b == 6) a += 10;
+
+                }
+
+                if (a > 9000) ars2.Add(o);
+                if (ars2.Count > 1000) break;
+
+            }
+
+            Infra.SalvaSaidaW(ars2, Infra.NomeSaida("Opostos-V2-", concursoBase));
+
 
             TerminarPrograma();
         }

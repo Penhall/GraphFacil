@@ -23,7 +23,7 @@ namespace LotoLibrary.Services
             return resultado;
         }
 
-        private static void GerarCombinacoesRecursivo(List<int> elementos, int tamanhoCombinacao, int indiceInicial, 
+        private static void GerarCombinacoesRecursivo(List<int> elementos, int tamanhoCombinacao, int indiceInicial,
             List<int> combinacaoAtual, Lances resultado)
         {
             if (combinacaoAtual.Count == tamanhoCombinacao)
@@ -54,6 +54,11 @@ namespace LotoLibrary.Services
         public static Lances Combinar25a15(List<int> elementos)
         {
             return Combinar(elementos, 15);
+        }
+
+        public static Lances Combinar25a10(List<int> elementos)
+        {
+            return Combinar(elementos, 10);
         }
     }
 }

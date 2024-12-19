@@ -315,6 +315,12 @@ public class Infra
         GerarCombinacoes.Combinar25a15(N);
     }
 
+    public static void CombinarGeralB()
+    {
+        List<int> N = Enumerable.Range(1, 25).ToList();
+        GerarCombinacoes.Combinar25a15(N);
+    }
+
 
     #endregion
 }
