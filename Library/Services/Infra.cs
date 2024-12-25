@@ -49,6 +49,23 @@ public class Infra
         return ar;
     }
 
+    public static bool ArquivoExiste(string nomeArquivo)
+    {
+        string path = Directory.Exists(Constante.PT) ? Constante.PT : Constante.PT1;
+        DirectoryInfo diretorio = new(path);
+
+        // Garante que o nome do arquivo tenha a extensão .txt
+        if (!nomeArquivo.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+        {
+            nomeArquivo += ".txt";
+        }
+
+        // Procura o arquivo em todos os subdiretórios
+        FileInfo[] arquivos = diretorio.GetFiles("*.txt", SearchOption.AllDirectories);
+
+        return arquivos.Any(arquivo => arquivo.Name.Equals(nomeArquivo, StringComparison.OrdinalIgnoreCase));
+    }
+
     private static Lances PreencheCesta(string file)
     {
 
@@ -308,6 +325,116 @@ public class Infra
                                       .ToList();
 
         return new Lances(resultadoParalelo);
+    }
+
+
+    public static Lance DevolveMaisFrequentes(Lances L, int T)
+    {
+
+        List<int> arSaida = new();
+        List<int> arSaidaTmp = new();
+        List<int> aBase = DevolveListaZerada(25);
+        Dictionary<int, int> Uva = new Dictionary<int, int>();
+
+        foreach (Lance o in L)
+        {
+            foreach (int p in o.Lista)
+            {
+                aBase[p - 1]++;
+            }
+        }
+
+
+        for (int k = 0; k < aBase.Count; k++)
+        {
+            Uva.Add(k + 1, aBase[k]);
+
+        }
+
+        var ls = Uva.OrderByDescending(key => key.Value);
+
+        foreach (var item in ls)
+        {
+            arSaidaTmp.Add(item.Key);
+        }
+
+        for (int i = 0; i < T; i++)
+        {
+            arSaida.Add(arSaidaTmp[i]);
+        }
+
+        //  arSaida.Sort();
+
+        Lance U = new Lance(0, arSaida);
+
+        return U;
+    }
+
+    public static Lance DevolveMaisFrequentes(Lances L, int T, int score)
+    {
+
+        List<int> arSaida = new();
+        List<int> arSaidaTmp = new();
+        List<int> arSaidaCont = new();
+        List<int> aBase = DevolveListaZerada(25);
+        Dictionary<int, int> Uva = new Dictionary<int, int>();
+
+        foreach (Lance o in L)
+        {
+            foreach (int p in o.Lista)
+            {
+                aBase[p - 1]++;
+            }
+        }
+
+
+        for (int k = 0; k < aBase.Count; k++)
+        {
+            Uva.Add(k + 1, aBase[k]);
+
+        }
+
+        var ls = Uva.OrderByDescending(key => key.Value);
+
+
+        foreach (var item in ls)
+        {
+            arSaidaTmp.Add(item.Key);
+            arSaidaCont.Add(item.Value);
+        }
+
+        for (int i = 0; i < T; i++)
+        {
+            arSaida.Add(arSaidaTmp[i]);
+        }
+
+        int x = 0;
+
+
+        for (int i = 0; i < T; i++)
+        {
+            var z = arSaidaCont[i];
+            if (z == score) { x++; };
+        }
+
+
+        arSaida.Sort();
+
+        Lance U = new Lance(x, arSaida);
+
+
+        return U;
+    }
+
+    public static List<int> DevolveListaZerada(int i)
+    {
+        List<int> L = new();
+        for (int z = 0; z < i; z++)
+        {
+            L.Add(0);
+        }
+
+        return L;
     }
     public static void CombinarGeral()
     {

@@ -275,6 +275,10 @@ namespace Dashboard
             int concursoBase = Convert.ToInt32(T1.Text) + 1;
             string nomeArq = "Calculado-" + concursoBase.ToString();
 
+            Lance oBase = Infra.arLoto[concursoBase - 2];
+
+            Lance oBaseOposto = Infra.DevolveOposto(oBase);
+
             Lances arq = Infra.AbrirArquivo(nomeArq);
 
             Lances arq1 = new();
@@ -290,24 +294,94 @@ namespace Dashboard
 
             Lances ars2 = new Lances();
 
-            while (ars2.Count < 100)
+            Lance maiores = Infra.DevolveMaisFrequentes(arq, 15);
+
+            List<int> PTbase = new();
+            List<int> PTbaseSaida = new();
+
+            foreach (Lance o in arq)
             {
-                Lance o = ars1[random.Next(ars1.Count)];
-                int a = 0;
+                PTbase.Add(Infra.Contapontos(o, maiores));
+            }
 
-                foreach (Lance p in arq1)
+            for (int x = 0; x < arq.Count; x++)
+            {
+                Lance lance = arq[x];
+
+                List<int> list = new List<int>();
+
+                foreach (Lance o in arq)
                 {
-                    int b = Infra.Contapontos(o, p);
-                    if ((b == 5) || (b == 6)) a += 10;
-
+                    list.Add(Infra.Contapontos(lance, o));
+                }
+                int a = 0;
+                for (int y = 0; y < list.Count; y++)
+                {
+                    if (list[y] == PTbase[y]) a++;
                 }
 
-                if (a > 9000) ars2.Add(o);
+                PTbaseSaida.Add(a);
+            }
 
+
+            PTbaseSaida.Sort();
+
+            int oMin = 20;
+            int oMax = 30;
+
+
+            List<int> LancesMax = new List<int>();
+
+            Lances ars3 = new();
+
+
+            int m = 0;
+            while ((ars3.Count < 1000))
+            {
+                Lance lance = ars1[random.Next(ars1.Count)];
+
+
+                List<int> list = new List<int>();
+
+                foreach (Lance o in arq)
+                {
+                    list.Add(Infra.Contapontos(lance, o));
+                }
+                int a = 0;
+                for (int y = 0; y < list.Count; y++)
+                {
+                    if (list[y] == PTbase[y]) a++;
+                }
+
+                if ((a > oMin) && (a < oMax)) { ars3.Add(lance); LancesMax.Add(a); }
+                m++;
 
             }
 
-            Infra.SalvaSaidaW(ars2, Infra.NomeSaida("OpostosV1-", concursoBase));
+
+
+
+
+            //int a = 0;
+
+            //foreach (Lance p in arq1)
+            //{
+            //    int b = Infra.Contapontos(o, p);
+            //    if ((b == 5) || (b == 6)) a += 10;
+
+            //}
+
+            //if (a > 8000) ars2.Add(o);
+
+
+            //    }
+
+
+
+
+            Infra.SalvaSaidaW(PTbaseSaida, Infra.NomeSaida("PTBase", concursoBase));
+            Infra.SalvaSaidaW(LancesMax, Infra.NomeSaida("PTAlter", concursoBase));
+            Infra.SalvaSaidaW(ars3, Infra.NomeSaida("Alter", concursoBase));
 
 
             TerminarPrograma();
@@ -321,10 +395,21 @@ namespace Dashboard
 
             int concursoBase = Convert.ToInt32(T1.Text) + 1;
             string nomeArq = "Calculado-" + concursoBase.ToString();
+            string nomeArq1 = "Opostos-V3-" + concursoBase.ToString();
 
             Lances arq = Infra.AbrirArquivo(nomeArq);
 
+            if (Infra.ArquivoExiste(nomeArq1))
+            {
+                Lances q = Infra.AbrirArquivo(nomeArq1);
+                foreach (Lance o in q) { arq.Add(o); }
+            }
+
+
+
             Lances arq1 = new();
+
+
 
             foreach (Lance o in arq)
             {
@@ -348,12 +433,12 @@ namespace Dashboard
 
                 }
 
-                if (a > 9000) ars2.Add(o);
-                if (ars2.Count > 1000) break;
+                if (a < 100) ars2.Add(o);
+                if (ars2.Count > 5000) break;
 
             }
 
-            Infra.SalvaSaidaW(ars2, Infra.NomeSaida("Opostos-V2-", concursoBase));
+            Infra.SalvaSaidaW(ars2, Infra.NomeSaida("Opostos-V3", concursoBase));
 
 
             TerminarPrograma();
