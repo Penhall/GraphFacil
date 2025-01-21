@@ -445,7 +445,41 @@ public class Infra
     public static void CombinarGeralB()
     {
         List<int> N = Enumerable.Range(1, 25).ToList();
-        GerarCombinacoes.Combinar25a15(N);
+        arGeral = GerarCombinacoes.Combinar25a15(N);
+    }
+
+    public static Lances CarregaLotoData()
+    {
+        Lances ars = new Lances();
+
+        Random random = new Random();
+
+        CombinarGeralB();
+
+        foreach (Lance o in arLoto) { ars.Add(o); }
+
+        int a = Infra.arLoto.Count;
+        int y = 0;
+
+        while (ars.Count < 75000)
+        {
+            Lance lance = ars[a - 1];
+
+            while (y != 9)
+            {
+                int x = random.Next(arGeral.Count);
+
+                Lance lance1 = arGeral[x];
+
+                y = Infra.Contapontos(lance, lance1);
+                if (y == 9) { ars.Add(lance1); a++; }
+
+            }
+            y = 0;
+
+        }
+
+        return ars;
     }
 
 
