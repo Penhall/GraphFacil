@@ -16,6 +16,8 @@ public static class AnaliseService
         LoggerFactory.Create(builder => builder.AddConsole())
         .CreateLogger<MLLogger>());
 
+    private static Lances LotoData = new Lances();
+
     static AnaliseService()
     {
         // Definir cultura padrão para invariant
@@ -27,6 +29,8 @@ public static class AnaliseService
     {
         try
         {
+            LotoData = Infra.CarregaLotoData();
+
             _logger.LogInformation("Iniciando análise com ML.NET");
 
             // Separar dados de treinamento e validação
@@ -193,13 +197,15 @@ public static class AnaliseService
 
     public static void SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios)
     {
-        int totalSorteios = Infra.arLoto.Count;
+        // int totalSorteios = Infra.arLoto.Count;
+        int totalSorteios = LotoData.Count;
         int quantidadeValidacao = 100;
         int quantidadeTreinamento = totalSorteios - quantidadeValidacao;
 
-        trainSorteios = Infra.arLoto.Take(quantidadeTreinamento).ToLances1();
-        valSorteios = Infra.arLoto.Skip(quantidadeTreinamento).ToLances1();
+        trainSorteios = LotoData.Take(quantidadeTreinamento).ToLances1();
+        valSorteios = LotoData.Skip(quantidadeTreinamento).ToLances1();
 
         _logger.LogInformation($"Dados separados: {quantidadeTreinamento} para treino, {quantidadeValidacao} para validação");
+
     }
 }
