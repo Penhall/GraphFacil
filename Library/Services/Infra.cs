@@ -312,7 +312,7 @@ public class Infra
     public static void CombinarGeral()
     {
         List<int> N = Enumerable.Range(1, 25).ToList();
-        GerarCombinacoes.Combinar25a15(N);
+        arGeral = GerarCombinacoes.Combinar25a15(N);
     }
 
 

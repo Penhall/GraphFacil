@@ -302,6 +302,46 @@ namespace Dashboard
         /// </summary>
         private void Dez_Click(object sender, RoutedEventArgs e)
         {
+            Lances ars = new();
+            Lances lances = new();
+
+            int alvo = Convert.ToInt32(T1.Text) - 2;
+            Lances artmp = new Lances();
+
+            Infra.CombinarGeral();
+
+            int a = 100000;
+            int b = 1000;
+            int R = 11;
+            while (a > 10000)
+            {
+                Lance oAlvo = Infra.arLoto[alvo];
+                lances.Clear();
+
+                if (b == 1000)
+                {
+                    lances.AddRange(Infra.DevolveBaseGeralFiltrada(Infra.arGeral, oAlvo, R));
+                    b = 0;
+                }
+                else
+                {
+                    lances.AddRange(Infra.DevolveBaseGeralFiltrada(artmp, oAlvo, R));
+                    artmp.Clear();
+                }
+
+
+                artmp.AddRange(lances);
+
+                a = lances.Count();
+                alvo--;
+
+                // if (a < 1000) { ars.AddRange(lances); }
+
+            }
+
+
+            Infra.SalvaSaidaW(lances, Infra.NomeSaida("Eleitos", T1.Text));
+
 
             TerminarPrograma();
         }
