@@ -330,7 +330,6 @@ public class Infra
 
     public static Lance DevolveMaisFrequentes(Lances L, int T)
     {
-
         List<int> arSaida = new();
         List<int> arSaidaTmp = new();
         List<int> aBase = DevolveListaZerada(25);
@@ -344,11 +343,9 @@ public class Infra
             }
         }
 
-
         for (int k = 0; k < aBase.Count; k++)
         {
             Uva.Add(k + 1, aBase[k]);
-
         }
 
         var ls = Uva.OrderByDescending(key => key.Value);
@@ -363,12 +360,25 @@ public class Infra
             arSaida.Add(arSaidaTmp[i]);
         }
 
-        //  arSaida.Sort();
-
+        // Cria o objeto Lance
         Lance U = new Lance(0, arSaida);
+
+
+        // *** Cálculo da variância ***     
+        int maxValor = Uva.Values.Max();
+        int minValor = Uva.Values.Min();
+
+        int resultado = maxValor - minValor;
+
+
+
+
+        // *** Atribui o valor ao atributo `pt` de `U` ***
+        U.PT = resultado;
 
         return U;
     }
+
 
     public static Lance DevolveMaisFrequentes(Lances L, int T, int score)
     {
@@ -439,14 +449,10 @@ public class Infra
     public static void CombinarGeral()
     {
         List<int> N = Enumerable.Range(1, 25).ToList();
-        GerarCombinacoes.Combinar25a15(N);
-    }
-
-    public static void CombinarGeralB()
-    {
-        List<int> N = Enumerable.Range(1, 25).ToList();
         arGeral = GerarCombinacoes.Combinar25a15(N);
     }
+
+
 
     public static Lances CarregaLotoData()
     {
@@ -454,7 +460,7 @@ public class Infra
 
         Random random = new Random();
 
-        CombinarGeralB();
+        CombinarGeral();
 
         foreach (Lance o in arLoto) { ars.Add(o); }
 
@@ -481,6 +487,45 @@ public class Infra
 
         return ars;
     }
+
+    public static Lances ContaOcorrencia(List<int> ls, Lances Alvo)
+    {
+        Lances ars = new();
+
+        Dictionary<int, int> set = ls.GroupBy(n => n)
+                                     .ToDictionary(g => g.Key, g => g.Count());
+
+        var MaiorValor = set.Values.Max();
+
+        var chavesDeMaiorValor = set.Where(par => par.Value == MaiorValor)
+                                    .Select(par => par.Key)
+                                    .ToList();
+
+        // Aqui você pode fazer algo com chavesDeMaiorValor
+        // Por exemplo, adicionar essas chaves ao objeto ars
+
+        foreach (var chave in chavesDeMaiorValor)
+        {
+            // Assumindo que Lances tem um método para adicionar valores
+            ars.Add(Alvo[chave]);
+        }
+
+        return ars;
+    }
+
+    public static int ObterProximos(Lance lance, Lances palpites, int v)
+    {
+        int a = 0;
+        foreach (Lance o in palpites)
+        {
+
+            if (Contapontos(lance, o) == v) { a++; }
+        }
+
+        return a;
+
+    }
+
 
 
     #endregion

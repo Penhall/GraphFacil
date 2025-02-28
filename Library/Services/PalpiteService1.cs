@@ -274,5 +274,11 @@ public class PalpiteService1
 
         return pontuacaoBase * (1 + bonusSS + bonusNS);
     }
+
+
+    public Lances GetGrupoSS() { return (Lances)_gruposSS; }
+    public Lances GetGrupoNS() { return (Lances)_gruposNS; }
+
+
     #endregion
 }

@@ -32,6 +32,8 @@ namespace Dashboard
         {
             InitializeComponent();
             Infra.CarregarConcursos();
+            Infra.CombinarGeral();
+
             T1.Text = Infra.arLoto.Count.ToString();
 
             _logger = new MLLogger(LoggerFactory.Create(builder =>
@@ -187,7 +189,7 @@ namespace Dashboard
         /// </summary>
         private void Setimo_Click(object sender, RoutedEventArgs e)
         {
-            int concursoBase = Convert.ToInt32(T1.Text);
+            int concursoBase = Convert.ToInt32(T1.Text) - 1;
             try
             {
                 if (_palpiteService1 == null)
@@ -198,15 +200,46 @@ namespace Dashboard
                 }
 
                 _logger.LogInformation("Iniciando geração de palpites.");
-                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000, 13);
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(10000, 9);
+
+
                 var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
+
+                List<int> lsm = new List<int>();
+                List<int> lsn = new List<int>();
+
+                Lances arsm = _palpiteService1.GetGrupoSS();
+                Lances arsn = _palpiteService1.GetGrupoNS();
+
+
+                foreach (Lance o in palpitesClassificados) { lsm.Add(o.M); lsn.Add(o.N); }
+
+
+                Lances OcorrenciaSS = Infra.ContaOcorrencia(lsm, arsm);
+                Lances OcorrenciaNS = Infra.ContaOcorrencia(lsn, arsn);
+
+
                 ExibirResultados(palpitesClassificados);
 
 
-                Infra.SalvaSaidaW(palpitesClassificados.ToList(), Infra.NomeSaida("Calculado", concursoBase));
-                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0    ", concursoBase));
-                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1", concursoBase));
-                Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2", concursoBase));
+                Infra.SalvaSaidaW(palpitesClassificados.ToList(), Infra.NomeSaida("Calculado", concursoBase + 1));
+                //Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0    ", concursoBase + 1));
+                //Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1", concursoBase + 1));
+                //Infra.SalvaSaidaW(palpitesClassificados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2", concursoBase + 1));
+
+                Infra.SalvaSaidaW(lsm, Infra.NomeSaida("ListaM", concursoBase + 1));
+                Infra.SalvaSaidaW(lsn, Infra.NomeSaida("ListaN", concursoBase + 1));
+
+                Infra.SalvaSaidaW(arsm, Infra.NomeSaida("GrupoSS", concursoBase + 1));
+                Infra.SalvaSaidaW(arsn, Infra.NomeSaida("GrupoNS", concursoBase + 1));
+
+
+                Infra.SalvaSaidaW(OcorrenciaSS, Infra.NomeSaida("OcorrenciasSS", concursoBase + 1));
+                Infra.SalvaSaidaW(OcorrenciaNS, Infra.NomeSaida("OcorrenciasNS", concursoBase + 1));
+
+
+
+
             }
             catch (Exception ex)
             {
@@ -393,52 +426,47 @@ namespace Dashboard
         private void Onze_Click(object sender, RoutedEventArgs e)
         {
 
-            int concursoBase = Convert.ToInt32(T1.Text) + 1;
-            string nomeArq = "Calculado-" + concursoBase.ToString();
-            string nomeArq1 = "Opostos-V3-" + concursoBase.ToString();
+            Lances ars = new();
+
+            int concursoBase = Convert.ToInt32(T1.Text);
+            string nomeArq = "Baseado-" + concursoBase.ToString();
 
             Lances arq = Infra.AbrirArquivo(nomeArq);
 
-            if (Infra.ArquivoExiste(nomeArq1))
+            int s = 0;
+
+
+            while (s < arq.Count - 25)
             {
-                Lances q = Infra.AbrirArquivo(nomeArq1);
-                foreach (Lance o in q) { arq.Add(o); }
-            }
+                Lances ars1 = new();
 
 
+                for (int i = s; i < s + 25; i++) { ars1.Add(arq[i]); }
 
-            Lances arq1 = new();
-
-
-
-            foreach (Lance o in arq)
-            {
-                arq1.Add(Infra.DevolveOposto(o));
-            }
-
-            List<int> N = Enumerable.Range(1, 25).ToList();
-
-            Lances ars1 = GerarCombinacoes.Combinar25a15(N);
-
-            Lances ars2 = new Lances();
-
-            foreach (Lance o in ars1)
-            {
-                int a = 0;
-
-                foreach (Lance p in arq1)
+                if (ars1.Count == 25)
                 {
-                    int b = Infra.Contapontos(o, p);
-                    if (b == 6) a += 10;
 
+                    foreach (Lance o in Infra.arGeral)
+                    {
+                        int a = 0;
+
+                        foreach (Lance p in ars1)
+                        {
+                            if (Infra.Contapontos(o, p) != 9) { a++; break; }
+
+                        }
+
+                        if (a == 0)
+                            ars.Add(o);
+                    }
                 }
+                s++;
 
-                if (a < 100) ars2.Add(o);
-                if (ars2.Count > 5000) break;
 
             }
 
-            Infra.SalvaSaidaW(ars2, Infra.NomeSaida("Opostos-V3", concursoBase));
+
+            Infra.SalvaSaidaW(ars, Infra.NomeSaida("Eleitos-", concursoBase));
 
 
             TerminarPrograma();
@@ -449,6 +477,40 @@ namespace Dashboard
         /// </summary>
         private void Doze_Click(object sender, RoutedEventArgs e)
         {
+
+            Lances ars1 = new();
+            Lances ars2 = new();
+
+
+            int concursoBase = Convert.ToInt32(T1.Text);
+            string nomeArq1 = "Baseado1-" + concursoBase.ToString();
+            string nomeArq2 = "Baseado2-" + concursoBase.ToString();
+
+            Lances arq1 = Infra.AbrirArquivo(nomeArq1);
+            Lances arq2 = Infra.AbrirArquivo(nomeArq2);
+
+
+
+
+
+            foreach (Lance o in Infra.arGeral)
+            {
+                int s = 0;
+                int t = 0;
+
+                foreach (Lance p in arq1) { if (Infra.Contapontos(o, p) == 9) { s++; } }
+                foreach (Lance p in arq2) { if (Infra.Contapontos(o, p) == 9) { t++; } }
+
+                if (s == 2) ars1.Add(o);
+                if (t == 2) ars2.Add(o);
+            }
+
+
+
+            Infra.SalvaSaidaW(ars1, Infra.NomeSaida("Eleitos1-", concursoBase));
+            Infra.SalvaSaidaW(ars2, Infra.NomeSaida("Eleitos2-", concursoBase));
+
+
             TerminarPrograma();
         }
 
@@ -465,6 +527,60 @@ namespace Dashboard
         /// </summary>
         private void Catorze_Click(object sender, RoutedEventArgs e)
         {
+            int concursoBase = Convert.ToInt32(T1.Text) - 1;
+
+            Lances OcorrenciaSS = new();
+            Lances OcorrenciaNS = new();
+
+            Lances arsm = new();
+            Lances arsn = new();
+            try
+            {
+                if (_palpiteService1 == null)
+                {
+
+                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
+
+                    arsm.AddRange(_palpiteService1.GetGrupoSS());
+                    arsn.AddRange(_palpiteService1.GetGrupoNS());
+                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
+
+
+                }
+
+
+                for (int i = 0; i < 4000; i++)
+                {
+                    var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(10000, 9);
+
+
+
+                    List<int> lsm = new List<int>();
+                    List<int> lsn = new List<int>();
+
+
+                    foreach (Lance o in palpitesAleatorios) { lsm.Add(o.M); lsn.Add(o.N); }
+
+
+                    OcorrenciaSS.AddRange(Infra.ContaOcorrencia(lsm, arsm));
+                    OcorrenciaNS.AddRange(Infra.ContaOcorrencia(lsn, arsn));
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro: {ex.Message}");
+                MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            Infra.SalvaSaidaW(arsm, Infra.NomeSaida("GrupoSS", concursoBase + 1));
+            Infra.SalvaSaidaW(arsn, Infra.NomeSaida("GrupoNS", concursoBase + 1));
+
+
+            Infra.SalvaSaidaW(OcorrenciaSS, Infra.NomeSaida("OcorrenciasSS", concursoBase + 1));
+            Infra.SalvaSaidaW(OcorrenciaNS, Infra.NomeSaida("OcorrenciasNS", concursoBase + 1));
+
 
             TerminarPrograma();
         }
@@ -474,6 +590,79 @@ namespace Dashboard
         /// </summary>
         private void Quinze_Click(object sender, RoutedEventArgs e)
         {
+            int concursoBase = Convert.ToInt32(T1.Text) - 1;
+
+            List<int> lsMediaSS = new();
+            List<int> lsMediaNS = new();
+
+            Lances palpites = new Lances();
+
+            Lances ars1 = new();
+            Lances ars2 = new();
+            Lances ars3 = new();
+
+
+            Lances arsm = new();
+            Lances arsn = new();
+
+
+            try
+            {
+                if (_palpiteService1 == null)
+                {
+
+                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
+
+                    arsm.AddRange(_palpiteService1.GetGrupoSS());
+                    arsn.AddRange(_palpiteService1.GetGrupoNS());
+                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
+
+
+                }
+
+
+                for (int i = 0; i < 1000; i++)
+                {
+
+                    Lances arSS = new();
+                    Lances arNS = new();
+
+
+                    var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000, 9);
+
+                    foreach (Lance o in palpitesAleatorios)
+                    {
+                        arSS.Add(arsm[o.M]);
+                        arNS.Add(arsn[o.N]);
+                    }
+
+
+                    var maisFreq1 = Infra.DevolveMaisFrequentes(arSS, 9);
+                    var maisFreq2 = Infra.DevolveMaisFrequentes(arNS, 6);
+
+
+                    lsMediaSS.Add(maisFreq1.PT);
+                    lsMediaNS.Add(maisFreq2.PT);
+
+                    ars1.Add(maisFreq1);
+                    ars2.Add(maisFreq2);
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro: {ex.Message}");
+                MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            Infra.SalvaSaidaW(ars1, Infra.NomeSaida("GrupoSaidaMaisFreqSS", concursoBase + 1));
+            Infra.SalvaSaidaW(ars2, Infra.NomeSaida("GrupoSaidaMaisFreqNS", concursoBase + 1));
+
+            Infra.SalvaSaidaW(lsMediaSS, Infra.NomeSaida("MediaSS", concursoBase + 1));
+            Infra.SalvaSaidaW(lsMediaNS, Infra.NomeSaida("MediaNS", concursoBase + 1));
+
+
 
             TerminarPrograma();
         }
@@ -483,6 +672,76 @@ namespace Dashboard
         /// </summary>
         private void Dezesseis_Click(object sender, RoutedEventArgs e)
         {
+            int concursoBase = Convert.ToInt32(T1.Text) - 1;
+            int concursoAnterior = Convert.ToInt32(T1.Text) - 3;
+
+
+            Lance oAlvo = Infra.arLoto[concursoBase];
+            Lance oAnterior = Infra.arLoto[concursoAnterior];
+
+            List<int> lsMediaSS = new();
+            List<int> lsMediaNS = new();
+
+            Lances palpites = new Lances();
+
+            Lances ars1 = new();
+            Lances ars2 = new();
+            Lances ars3 = new();
+
+
+            Lances arsm = new();
+            Lances arsn = new();
+
+
+            try
+            {
+                if (_palpiteService1 == null)
+                {
+
+                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
+
+                    arsm.AddRange(_palpiteService1.GetGrupoSS());
+                    arsn.AddRange(_palpiteService1.GetGrupoNS());
+                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
+
+
+                    palpites.AddRange(_palpiteService1.GerarPalpitesAleatorios(1000, 9));
+
+                }
+
+
+                foreach (Lance o in palpites)
+                {
+                    List<int> ls = new List<int>();
+
+                    ls.Add(o.M);
+                    ls.Add(o.N);
+
+                    ls.Add(Infra.ObterProximos(arsm[o.M], palpites, 8));
+                    ls.Add(Infra.ObterProximos(arsn[o.N], palpites, 5));
+
+                    ls.Add(Infra.Contapontos(o, oAlvo));
+                    ls.Add(Infra.Contapontos(arsm[o.M], oAnterior));
+                    ls.Add(Infra.Contapontos(arsn[o.N], oAnterior));
+
+                    Lance u = new Lance(ars1.Count, ls);
+
+                    ars1.Add(u);
+
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro: {ex.Message}");
+                MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            Infra.SalvaSaidaW(ars1, Infra.NomeSaida("FrequenciaTotal", concursoBase + 1));
+            Infra.SalvaSaidaW(palpites, Infra.NomeSaida("Palpites", concursoBase + 1));
+
 
             TerminarPrograma();
         }

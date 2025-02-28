@@ -348,7 +348,7 @@
                             VerticalAlignment="Center"
                             FontFamily="Candara"
                             FontStretch="Expanded"
-                            Text="ONZE"
+                            Text="BASEADO"
                             />
                     </Grid>
 
