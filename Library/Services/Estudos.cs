@@ -149,8 +149,8 @@ public static class Estudos
 
         Lances arGeral1 = Infra.DevolveBaseGeralFiltrada(Infra.arGeral, oAlvo, 9);
 
-        Lances arGeral = Infra.DevolveBaseAleatoria(arGeral1, 10000);
-        Lances ars1 = Infra.DevolveBaseAleatoria(Infra.arGeral, 10000);
+        Lances arGeral = Infra.Aleatorios(arGeral1, 10000); // Corrigido: Usar Aleatorios
+        Lances ars1 = Infra.Aleatorios(Infra.arGeral, 10000); // Corrigido: Usar Aleatorios
 
         foreach (Lance z in anteriores)
         {

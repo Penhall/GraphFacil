@@ -277,10 +277,10 @@ namespace Dashboard
                 ExibirResultados(palpitesClassificadosFiltrados);
 
 
-                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ToList(), Infra.NomeSaida("Calculado", concursoBase + 1));
-                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0-Filtrado    ", concursoBase + 1));
-                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1-Filtrado", concursoBase + 1));
-                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2-Filtrado", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ToList(), Infra.NomeSaida("Calculado-A", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0-Filtrado-A", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1-Filtrado-A", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2-Filtrado-A", concursoBase + 1));
             }
             catch (Exception ex)
             {
@@ -295,6 +295,39 @@ namespace Dashboard
         /// </summary>
         private void Nono_Click(object sender, RoutedEventArgs e)
         {
+            int concursoBase = Convert.ToInt32(T1.Text);
+            try
+            {
+                if (_palpiteService1 == null)
+                {
+
+                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
+                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
+                }
+
+                _logger.LogInformation("Iniciando geração de palpites.");
+                var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios();
+                var palpitesClassificados = _palpiteService1.ClassificarPalpites(palpitesAleatorios);
+
+                palpitesClassificados.OrdenarPorF1().Take(1000);
+
+                var palpitesClassificadosFiltrados = palpitesClassificados.OrdenarPorF1Dsc().Take(1000).ToLances(); ;
+
+                //        var palpitesClassificadosFiltrados = palpitesClassificados.FiltrarPorValores(f0Filter: f0 => f0 == 41.9, f1Filter: f1 => f1 == 61.9, f2Filter: f2 => f2 == 61.9);
+
+                ExibirResultados(palpitesClassificadosFiltrados);
+
+
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ToList(), Infra.NomeSaida("Calculado-D", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0-Filtrado-D", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1-Filtrado-D", concursoBase + 1));
+                Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2-Filtrado-D", concursoBase + 1));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro: {ex.Message}");
+                MessageBox.Show(ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             TerminarPrograma();
         }
 
@@ -303,119 +336,6 @@ namespace Dashboard
         /// </summary>
         private void Dez_Click(object sender, RoutedEventArgs e)
         {
-            Random random = new Random();
-
-            int concursoBase = Convert.ToInt32(T1.Text) + 1;
-            string nomeArq = "Calculado-" + concursoBase.ToString();
-
-            Lance oBase = Infra.arLoto[concursoBase - 2];
-
-            Lance oBaseOposto = Infra.DevolveOposto(oBase);
-
-            Lances arq = Infra.AbrirArquivo(nomeArq);
-
-            Lances arq1 = new();
-
-            foreach (Lance o in arq)
-            {
-                arq1.Add(Infra.DevolveOposto(o));
-            }
-
-            List<int> N = Enumerable.Range(1, 25).ToList();
-
-            Lances ars1 = GerarCombinacoes.Combinar25a15(N);
-
-            Lances ars2 = new Lances();
-
-            Lance maiores = Infra.DevolveMaisFrequentes(arq, 15);
-
-            List<int> PTbase = new();
-            List<int> PTbaseSaida = new();
-
-            foreach (Lance o in arq)
-            {
-                PTbase.Add(Infra.Contapontos(o, maiores));
-            }
-
-            for (int x = 0; x < arq.Count; x++)
-            {
-                Lance lance = arq[x];
-
-                List<int> list = new List<int>();
-
-                foreach (Lance o in arq)
-                {
-                    list.Add(Infra.Contapontos(lance, o));
-                }
-                int a = 0;
-                for (int y = 0; y < list.Count; y++)
-                {
-                    if (list[y] == PTbase[y]) a++;
-                }
-
-                PTbaseSaida.Add(a);
-            }
-
-
-            PTbaseSaida.Sort();
-
-            int oMin = 20;
-            int oMax = 30;
-
-
-            List<int> LancesMax = new List<int>();
-
-            Lances ars3 = new();
-
-
-            int m = 0;
-            while ((ars3.Count < 1000))
-            {
-                Lance lance = ars1[random.Next(ars1.Count)];
-
-
-                List<int> list = new List<int>();
-
-                foreach (Lance o in arq)
-                {
-                    list.Add(Infra.Contapontos(lance, o));
-                }
-                int a = 0;
-                for (int y = 0; y < list.Count; y++)
-                {
-                    if (list[y] == PTbase[y]) a++;
-                }
-
-                if ((a > oMin) && (a < oMax)) { ars3.Add(lance); LancesMax.Add(a); }
-                m++;
-
-            }
-
-
-
-
-
-            //int a = 0;
-
-            //foreach (Lance p in arq1)
-            //{
-            //    int b = Infra.Contapontos(o, p);
-            //    if ((b == 5) || (b == 6)) a += 10;
-
-            //}
-
-            //if (a > 8000) ars2.Add(o);
-
-
-            //    }
-
-
-
-
-            Infra.SalvaSaidaW(PTbaseSaida, Infra.NomeSaida("PTBase", concursoBase));
-            Infra.SalvaSaidaW(LancesMax, Infra.NomeSaida("PTAlter", concursoBase));
-            Infra.SalvaSaidaW(ars3, Infra.NomeSaida("Alter", concursoBase));
-
 
             TerminarPrograma();
         }
@@ -426,6 +346,7 @@ namespace Dashboard
         private void Onze_Click(object sender, RoutedEventArgs e)
         {
 
+<<<<<<< HEAD
             Lances ars = new();
 
             int concursoBase = Convert.ToInt32(T1.Text);
@@ -469,6 +390,8 @@ namespace Dashboard
             Infra.SalvaSaidaW(ars, Infra.NomeSaida("Eleitos-", concursoBase));
 
 
+=======
+>>>>>>> f68e5414d5f831d91eb78990c2490ae60881de7a
             TerminarPrograma();
         }
 
