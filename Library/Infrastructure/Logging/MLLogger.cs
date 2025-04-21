@@ -52,4 +52,10 @@ public class MLLogger : IMLLogger
         _logger.LogInformation(logMessage);
         File.AppendAllText(_logFilePath, logMessage + Environment.NewLine);
     }
+
+    public void LogDebug(string message)
+    {
+        var logMessage = $"{DateTime.Now}: DEBUG - {message}";
+        _logger.LogDebug(message);
+    }
 }
