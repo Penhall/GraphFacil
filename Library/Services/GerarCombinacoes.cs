@@ -53,10 +53,12 @@ namespace LotoLibrary.Services
 
         public static Lances Combinar25a15(List<int> elementos)
         {
-            Lances lances = Combinar(elementos, 15);
+            return Combinar(elementos, 15);
+        }
 
-            Infra.arGeral.AddRange(lances);
-            return lances;
+        public static Lances Combinar25a10(List<int> elementos)
+        {
+            return Combinar(elementos, 10);
         }
     }
 }

@@ -138,6 +138,25 @@ public static class LanceExtensions
         return new Lances(orderedLances);
     }
 
+
+    /// <summary>
+    /// Ordena a coleção de Lances de forma ascendente baseado no valor de F1
+    /// </summary>
+    /// <param name="lances">Coleção de Lances a ser ordenada</param>
+    /// <param name="descending">Indica se a ordenação deve ser descendente (opcional, padrão é descendente)</param>
+    /// <returns>Nova coleção Lances ordenada</returns>
+    public static Lances OrdenarPorF1Dsc(
+        this Lances lances,
+        bool descending = true)
+    {
+        var orderedLances = descending
+            ? lances.OrderByDescending(lance => lance.F1)
+            : lances.OrderBy(lance => lance.F1);
+
+        return new Lances(orderedLances);
+    }
+
+
     /// <summary>
     /// Ordena a coleção de Lances de forma ascendente baseado no valor de F1, 
     /// com possibilidade de ordenação secundária

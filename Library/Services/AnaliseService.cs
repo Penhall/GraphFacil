@@ -16,6 +16,8 @@ public static class AnaliseService
         LoggerFactory.Create(builder => builder.AddConsole())
         .CreateLogger<MLLogger>());
 
+    private static Lances LotoData = new Lances();
+
     static AnaliseService()
     {
         // Definir cultura padrão para invariant
@@ -27,6 +29,8 @@ public static class AnaliseService
     {
         try
         {
+            LotoData = Infra.AbrirArquivoJson("Lotofacil.json"); // Corrigido: Usar AbrirArquivoJson
+
             _logger.LogInformation("Iniciando análise com ML.NET");
 
             // Separar dados de treinamento e validação
@@ -161,7 +165,7 @@ public static class AnaliseService
             subgrupo => subgrupo.Key,
             subgrupo => subgrupo.Value.ToDictionary(
                 contagem => contagem.Key,
-                contagem => (double)contagem.Value / totalSorteios * 100.0
+                contagem => totalSorteios > 0 ? (double)contagem.Value / totalSorteios * 100.0 : 0.0 // Evitar divisão por zero
             )
         );
     }
@@ -170,20 +174,20 @@ public static class AnaliseService
     {
         _logger.LogInformation("Iniciando validação dos modelos com dados de teste");
 
-        foreach (var sorteio in valSorteios.Lista)
+        foreach (var sorteio in valSorteios) // Iterar diretamente sobre Lances
         {
             // Gerar subgrupos para validação
             var subgruposSS = GerarCombinacoes.Combinar15a9(sorteio.Lista);
             var subgruposNS = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(sorteio).Lista);
 
             // Validar predições
-            foreach (var subgrupo in subgruposSS.Lista)
+            foreach (var subgrupo in subgruposSS) // Iterar diretamente sobre Lances
             {
                 var predicaoSS = modelSS.Predict(subgrupo.Lista.Select(x => (float)x).ToArray());
                 _logger.LogInformation($"Predição SS para subgrupo {subgrupo.Id}: {predicaoSS}");
             }
 
-            foreach (var subgrupo in subgruposNS.Lista)
+            foreach (var subgrupo in subgruposNS) // Iterar diretamente sobre Lances
             {
                 var predicaoNS = modelNS.Predict(subgrupo.Lista.Select(x => (float)x).ToArray());
                 _logger.LogInformation($"Predição NS para subgrupo {subgrupo.Id}: {predicaoNS}");
@@ -193,13 +197,24 @@ public static class AnaliseService
 
     public static void SepararDadosTreinamentoEValidacao(out Lances trainSorteios, out Lances valSorteios)
     {
-        int totalSorteios = Infra.arLoto.Count;
+        // int totalSorteios = Infra.arLoto.Count;
+        int totalSorteios = LotoData.Count;
         int quantidadeValidacao = 100;
         int quantidadeTreinamento = totalSorteios - quantidadeValidacao;
 
-        trainSorteios = Infra.arLoto.Take(quantidadeTreinamento).ToLances1();
-        valSorteios = Infra.arLoto.Skip(quantidadeTreinamento).ToLances1();
+        // Garantir que não tentemos pegar mais do que existe ou quantidades negativas
+        quantidadeTreinamento = Math.Max(0, quantidadeTreinamento);
+        quantidadeValidacao = Math.Min(totalSorteios, quantidadeValidacao);
+        if (quantidadeTreinamento + quantidadeValidacao > totalSorteios)
+        {
+            quantidadeValidacao = totalSorteios - quantidadeTreinamento;
+        }
 
-        _logger.LogInformation($"Dados separados: {quantidadeTreinamento} para treino, {quantidadeValidacao} para validação");
+
+        trainSorteios = LotoData.Take(quantidadeTreinamento).ToLances1();
+        valSorteios = LotoData.Skip(quantidadeTreinamento).Take(quantidadeValidacao).ToLances1(); // Adicionado Take
+
+        _logger.LogInformation($"Dados separados: {trainSorteios.Count} para treino, {valSorteios.Count} para validação");
+
     }
 }
