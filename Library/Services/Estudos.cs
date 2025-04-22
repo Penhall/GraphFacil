@@ -213,6 +213,217 @@ public static class Estudos
         return ars1;
     }
 
+
+    public static Lances Estudo11(int alvo)
+    {
+
+        Infra.CombinarGeral();
+
+        Lances ars = new();
+        Lances ars1 = new();
+        Lances ars2 = new();
+        Lances ars3 = new();
+
+
+        Lance oAlvo = Infra.arLoto[alvo - 2];
+
+
+        Lances ars9 = GerarCombinacoes.Combinar15a9(oAlvo.Lista);
+
+        Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+
+        Lances arBase = Infra.DevolveBaseCombinada(ars9, ars6);
+
+
+        string arq1 = "SixSeletos-" + alvo.ToString();
+
+        Lances arJson = Infra.AbrirArquivoJson(arq1);
+
+
+
+        Random random = new Random();
+
+        int ax = 1000;
+
+        while (ars.Count < 2000)
+        {
+
+            List<int> l9 = Enumerable.Repeat(0, ars9.Count).ToList();
+            List<int> l6 = Enumerable.Repeat(0, ars6.Count).ToList();
+
+            Lances lances = Infra.DevolveBaseAleatoria(arBase, ax);
+
+            foreach (Lance a in lances) { l9[a.M]++; l6[a.N]++; }
+
+            Uvas uvas9 = new();
+            Uvas uvas6 = new();
+
+            foreach (int i in l9) { uvas9.Add(new Uva(uvas9.Count, i)); }
+            foreach (int i in l6) { uvas6.Add(new Uva(uvas6.Count, i)); }
+
+            uvas9.Sort();
+            uvas6.Sort();
+
+            int uv9 = uvas9[0].Id;
+            int uv6 = uvas6[0].Id;
+
+            ars.Add(ars9[uv9]);
+            ars1.Add(ars6[uv6]);
+
+
+        }
+
+
+
+        Infra.SalvaSaidaW(ars, Infra.NomeSaida("Lista9", alvo));
+        Infra.SalvaSaidaW(ars1, Infra.NomeSaida("Lista6", alvo));
+
+
+
+        return ars;
+    }
+
+    public static Lances Estudo12(int alvo)
+    {
+
+        Infra.CombinarGeral();
+
+        Lances ars = new();
+        Lances ars1 = new();
+        Lances ars2 = new();
+        Lances ars3 = new();
+
+
+        Lance oAlvo = Infra.arLoto[alvo - 2];
+
+
+        Lances ars9 = GerarCombinacoes.Combinar15a9(oAlvo.Lista);
+
+        Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+
+        Lances arBase = Infra.DevolveBaseCombinada(ars9, ars6);
+
+
+        string arq1 = "SixSeletos-" + alvo.ToString();
+
+        Lances arJson = Infra.AbrirArquivoJson(arq1);
+
+        List<int> l9 = Enumerable.Repeat(0, ars9.Count).ToList();
+        List<int> l6 = Enumerable.Repeat(0, ars6.Count).ToList();
+
+        Random random = new Random();
+
+        int ax = 1000;
+
+
+
+        Lances lances = Infra.DevolveBaseAleatoria(arBase, ax);
+
+        Lance oMaisFrequente = Infra.DevolveMaisFrequentes(lances, 15);
+
+        Lance oGrupoNNmaisFrequente = ars6.FirstOrDefault(o => Infra.Contapontos(o, oMaisFrequente) == 6);
+
+
+        foreach (Lance a in lances) { l9[a.M]++; l6[a.N]++; }
+
+        List<int> l6paraContagem = lances.Select(o => Infra.Contapontos(o, oGrupoNNmaisFrequente)).ToList();
+
+        //List<int> l6Posicao = new();
+
+        //foreach(Lance q in ars6)
+        //{
+        //    List<int> list = lances.Select(o => Infra.Contapontos(o, q)).ToList();
+
+        //    int t = 0;
+
+        //    for(int i = 0; i < list.Count; i++)
+        //    {
+        //      t += list[i]-l6paraContagem[i];
+        //    }
+
+        //    l6Posicao.Add(t);
+
+        //}
+
+
+        List<int> l6Posicao = ars6.Select(q => lances.Select((o, i) => Infra.Contapontos(o, q) - l6paraContagem[i]).Sum()).ToList();
+        //
+        //List<int> l6PosicaoPeso = ars6.Select(q => lances.Select((o, i) => Infra.Contapontos(o, q)).Sum()).ToList();
+
+        List<int> l6PosicaoPeso = new List<int>();
+
+        foreach (Lance q in ars6)
+        {
+            int soma = 0;
+            foreach (Lance o in lances)
+            {
+                soma += Infra.Contapontos(o, q);
+            }
+            l6PosicaoPeso.Add(soma);
+        }
+
+        List<int> LTPosicaoMult = new List<int>();
+
+        foreach (Lance q in lances)
+        {
+            int soma = 0;
+            foreach (Lance o in ars6)
+            {
+                soma += (Infra.Contapontos(o, q) * l6[o.Id]);
+            }
+
+            foreach (Lance o in ars9)
+            {
+                soma += (Infra.Contapontos(o, q) * l9[o.Id]);
+            }
+            LTPosicaoMult.Add(soma);
+        }
+
+
+        foreach (Lance a in lances)
+        {
+            l9[a.M]++;
+            l6[a.N]++;
+
+            List<int> list = new List<int>();
+            list.Add(a.M);
+            list.Add(a.N);
+
+            ars.Add(new Lance(ars.Count, list));
+
+
+        }
+
+
+
+        //for (int i = 0; i < l6.Count - 1; i++)
+        //{
+        //    l6PosicaoPeso.Add(l6Posicao[i] * l6[i]);
+        //}
+
+
+
+
+
+
+        Infra.SalvaSaidaW(ars9, Infra.NomeSaida("Lista9", alvo));
+        Infra.SalvaSaidaW(ars6, Infra.NomeSaida("Lista6", alvo));
+
+        Infra.SalvaSaidaW(l9, Infra.NomeSaida("Lista9PT", alvo));
+        Infra.SalvaSaidaW(l6, Infra.NomeSaida("Lista6PT", alvo));
+        Infra.SalvaSaidaW(l6Posicao, Infra.NomeSaida("Lista6Posicao", alvo));
+        Infra.SalvaSaidaW(l6PosicaoPeso, Infra.NomeSaida("Lista6PosicaoPeso", alvo));
+        Infra.SalvaSaidaW(LTPosicaoMult, Infra.NomeSaida("ListaTPosicaoMulti", alvo));
+
+
+        Infra.SalvaSaidaW(ars, Infra.NomeSaida("Mistura", alvo));
+
+
+
+        return lances;
+    }
+
+
     private static void Treinamento(Lances arLotoTreino)
     {
         Lance oAlvo = arLotoTreino[0];

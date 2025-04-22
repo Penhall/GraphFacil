@@ -315,6 +315,146 @@ public class Infra
         GerarCombinacoes.Combinar25a15(N);
     }
 
+    internal static Lances DevolveBaseCombinada(Lances ars9, Lances ars6)
+    {
+        Lances lances = new();
+
+        for (int i = 0; i < ars9.Count - 1; i++)
+        {
+            Lance m = ars9[i];
+
+            for (int j = 0; j < ars6.Count - 1; j++)
+            {
+                Lance n = ars6[j];
+
+                List<int> l = new();
+                l.AddRange(m.Lista);
+                l.AddRange(n.Lista);
+
+                l.Sort();
+
+                Lance u = new(lances.Count, l);
+
+                u.M = i;
+                u.N = j;
+                lances.Add(u);
+            }
+
+        }
+
+        return lances;
+
+    }
+
+    public static Lance DevolveMaisFrequentes(Lances L, int T)
+    {
+
+        List<int> arSaida = new();
+        List<int> arSaidaTmp = new();
+        List<int> aBase = DevolveListaZerada(25);
+        Dictionary<int, int> Uva = new Dictionary<int, int>();
+
+        foreach (Lance o in L)
+        {
+            foreach (int p in o.Lista)
+            {
+                aBase[p - 1]++;
+            }
+        }
+
+
+        for (int k = 0; k < aBase.Count; k++)
+        {
+            Uva.Add(k + 1, aBase[k]);
+
+        }
+
+        var ls = Uva.OrderByDescending(key => key.Value);
+
+        foreach (var item in ls)
+        {
+            arSaidaTmp.Add(item.Key);
+        }
+
+        for (int i = 0; i < T; i++)
+        {
+            arSaida.Add(arSaidaTmp[i]);
+        }
+
+        arSaida.Sort();
+
+        Lance U = new Lance(0, arSaida);
+
+        return U;
+    }
+
+    public static Lance DevolveMaisFrequentes(Lances L, int T, int score)
+    {
+
+        List<int> arSaida = new();
+        List<int> arSaidaTmp = new();
+        List<int> arSaidaCont = new();
+        List<int> aBase = DevolveListaZerada(25);
+        Dictionary<int, int> Uva = new Dictionary<int, int>();
+
+        foreach (Lance o in L)
+        {
+            foreach (int p in o.Lista)
+            {
+                aBase[p - 1]++;
+            }
+        }
+
+
+        for (int k = 0; k < aBase.Count; k++)
+        {
+            Uva.Add(k + 1, aBase[k]);
+
+        }
+
+        var ls = Uva.OrderByDescending(key => key.Value);
+
+
+        foreach (var item in ls)
+        {
+            arSaidaTmp.Add(item.Key);
+            arSaidaCont.Add(item.Value);
+        }
+
+        for (int i = 0; i < T; i++)
+        {
+            arSaida.Add(arSaidaTmp[i]);
+        }
+
+        int x = 0;
+
+
+        for (int i = 0; i < T; i++)
+        {
+            var z = arSaidaCont[i];
+            if (z == score) { x++; }
+            ;
+        }
+
+
+        arSaida.Sort();
+
+        Lance U = new Lance(x, arSaida);
+
+
+        return U;
+    }
+
+    public static List<int> DevolveListaZerada(int i)
+    {
+        List<int> L = new();
+        for (int z = 0; z < i; z++)
+        {
+            L.Add(0);
+        }
+
+        return L;
+    }
 
     #endregion
 }

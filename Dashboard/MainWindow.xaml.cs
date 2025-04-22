@@ -278,6 +278,12 @@ namespace Dashboard
         /// </summary>
         private void Onze_Click(object sender, RoutedEventArgs e)
         {
+            int alvo = Convert.ToInt32(T1.Text);
+
+
+            Lances A = Estudos.Estudo11(alvo);
+
+            Infra.SalvaSaidaW(A, Infra.NomeSaida("ListaEstudo2", alvo));
 
             TerminarPrograma();
         }
@@ -287,6 +293,13 @@ namespace Dashboard
         /// </summary>
         private void Doze_Click(object sender, RoutedEventArgs e)
         {
+            int alvo = Convert.ToInt32(T1.Text);
+
+
+            Lances A = Estudos.Estudo12(alvo);
+
+            Infra.SalvaSaidaW(A, Infra.NomeSaida("ListaEstudo12", alvo));
+
             TerminarPrograma();
         }
 
