@@ -3621,6 +3621,45 @@ namespace LotoLibrary.Services
             return ars;
         }
 
+        internal static Lances DevolveBaseCombinada(Lances ars9, Lances ars6)
+        {
+            Lances saida = new();
+
+            foreach (Lance o in ars9)
+            {
+                foreach (Lance p in ars6)
+                {
+                    List<int> list = new List<int>();
+                    list.AddRange(o.Lista);
+                    list.AddRange(p.Lista);
+                    list.Sort();
+                    saida.Add(new Lance(saida.Count, list));
+                }
+            }
+
+
+            return saida;
+        }
+
+        internal static Lances DevolveBaseAleatoria(Lances arBase, int ax)
+        {
+            Lances saida = new();
+
+            Random random = new();
+
+            while (saida.Count < ax)
+            {
+                Lance o = arBase[random.Next(arBase.Count)];
+                if (!saida.Contains(o))
+                {
+                    saida.Add(o);
+                }
+            }
+
+
+            return saida;
+        }
+
 
 
 
