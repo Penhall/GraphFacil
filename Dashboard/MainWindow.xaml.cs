@@ -7,11 +7,11 @@ using LotoLibrary.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO; // Adicionado para System.IO
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.IO; // Adicionado para System.IO
 
 namespace Dashboard
 {
@@ -20,8 +20,7 @@ namespace Dashboard
     /// </summary>
     public partial class MainWindow : Window
     {
-:start_line:23
--------
+
         private readonly PalpiteService _palpiteService;
         private readonly LotofacilService _lotofacilService; // Adicionado o serviço da Lotofácil
 
@@ -170,9 +169,9 @@ namespace Dashboard
                 // Verificar se o serviço está inicializado
                 if (_palpiteService1 == null)
                 {
-                     int concursoBase = Convert.ToInt32(T1.Text) - 1; // Precisa definir concurso base se não treinou
+                    int concursoBase = Convert.ToInt32(T1.Text) - 1; // Precisa definir concurso base se não treinou
                     _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
-                     _logger.LogWarning($"PalpiteService1 inicializado no Sexto_Click com concurso base {concursoBase}. Idealmente, treine primeiro (Botão Quarto).");
+                    _logger.LogWarning($"PalpiteService1 inicializado no Sexto_Click com concurso base {concursoBase}. Idealmente, treine primeiro (Botão Quarto).");
                     // MessageBox.Show("Execute o treinamento dos modelos primeiro (botão Quarto)",
                     //               "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
                     // return;
@@ -420,20 +419,20 @@ namespace Dashboard
                     var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000, 9); // Reduzido para teste
 
                     foreach (Lance o in palpitesAleatorios) { all_lsm.Add(o.M); all_lsn.Add(o.N); }
-                     _logger.LogDebug($"Loop {i+1}/{loopCount} concluído.");
+                    _logger.LogDebug($"Loop {i + 1}/{loopCount} concluído.");
                 }
 
-                 _logger.LogInformation("Contando ocorrências acumuladas.");
+                _logger.LogInformation("Contando ocorrências acumuladas.");
                 // Contar ocorrências acumuladas após o loop
-                 var groupedCountsSS = all_lsm.GroupBy(id => id)
-                                             .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
-                                             .OrderByDescending(l => l.F1);
-                 OcorrenciaSS = groupedCountsSS.ToLances1();
+                var groupedCountsSS = all_lsm.GroupBy(id => id)
+                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
+                                            .OrderByDescending(l => l.F1);
+                OcorrenciaSS = groupedCountsSS.ToLances1();
 
-                 var groupedCountsNS = all_lsn.GroupBy(id => id)
-                                             .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
-                                             .OrderByDescending(l => l.F1);
-                 OcorrenciaNS = groupedCountsNS.ToLances1();
+                var groupedCountsNS = all_lsn.GroupBy(id => id)
+                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
+                                            .OrderByDescending(l => l.F1);
+                OcorrenciaNS = groupedCountsNS.ToLances1();
 
 
             }
@@ -469,7 +468,7 @@ namespace Dashboard
             Lances arsn = new();
             try
             {
-                 if (_palpiteService1 == null)
+                if (_palpiteService1 == null)
                 {
                     _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
                     _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
@@ -490,20 +489,20 @@ namespace Dashboard
                     var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000, 9); // Reduzido para teste
 
                     foreach (Lance o in palpitesAleatorios) { all_lsm.Add(o.M); all_lsn.Add(o.N); }
-                     _logger.LogDebug($"Loop {i+1}/{loopCount} concluído.");
+                    _logger.LogDebug($"Loop {i + 1}/{loopCount} concluído.");
                 }
 
-                 _logger.LogInformation("Contando ocorrências acumuladas.");
+                _logger.LogInformation("Contando ocorrências acumuladas.");
                 // Contar ocorrências acumuladas após o loop
-                 var groupedCountsSS = all_lsm.GroupBy(id => id)
-                                             .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() }) // CORRIGIDO: Usar construtor correto
-                                             .OrderByDescending(l => l.F1); // Ordena pela contagem (F1)
-                 OcorrenciaSS = groupedCountsSS.ToLances1();
+                var groupedCountsSS = all_lsm.GroupBy(id => id)
+                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() }) // CORRIGIDO: Usar construtor correto
+                                            .OrderByDescending(l => l.F1); // Ordena pela contagem (F1)
+                OcorrenciaSS = groupedCountsSS.ToLances1();
 
-                 var groupedCountsNS = all_lsn.GroupBy(id => id)
-                                             .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
-                                             .OrderByDescending(l => l.F1);
-                 OcorrenciaNS = groupedCountsNS.ToLances1();
+                var groupedCountsNS = all_lsn.GroupBy(id => id)
+                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
+                                            .OrderByDescending(l => l.F1);
+                OcorrenciaNS = groupedCountsNS.ToLances1();
 
             }
             catch (Exception ex)
@@ -551,7 +550,7 @@ namespace Dashboard
 
             try
             {
-                 if (_palpiteService1 == null)
+                if (_palpiteService1 == null)
                 {
                     _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
                     _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
@@ -574,20 +573,20 @@ namespace Dashboard
                     palpitesClassificadosTotal.AddRange(palpitesClassificadosBatch); // Acumula
 
                     foreach (Lance o in palpitesAleatorios) { all_lsm.Add(o.M); all_lsn.Add(o.N); }
-                     _logger.LogDebug($"Loop {i+1}/{loopCount} concluído.");
+                    _logger.LogDebug($"Loop {i + 1}/{loopCount} concluído.");
                 }
 
-                 _logger.LogInformation("Contando ocorrências acumuladas.");
+                _logger.LogInformation("Contando ocorrências acumuladas.");
                 // Contar ocorrências acumuladas após o loop
-                 var groupedCountsSS = all_lsm.GroupBy(id => id)
-                                             .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
-                                             .OrderByDescending(l => l.F1);
-                 OcorrenciaSS = groupedCountsSS.ToLances1();
+                var groupedCountsSS = all_lsm.GroupBy(id => id)
+                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
+                                            .OrderByDescending(l => l.F1);
+                OcorrenciaSS = groupedCountsSS.ToLances1();
 
-                 var groupedCountsNS = all_lsn.GroupBy(id => id)
-                                             .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
-                                             .OrderByDescending(l => l.F1);
-                 OcorrenciaNS = groupedCountsNS.ToLances1();
+                var groupedCountsNS = all_lsn.GroupBy(id => id)
+                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
+                                            .OrderByDescending(l => l.F1);
+                OcorrenciaNS = groupedCountsNS.ToLances1();
 
             }
             catch (Exception ex)
@@ -701,7 +700,7 @@ namespace Dashboard
 
         private void ExibirResultados(Lances palpitesClassificados)
         {
-             // Corrigido: Usar o nome correto do XAML
+            // Corrigido: Usar o nome correto do XAML
             listBoxResultados.Items.Clear();
             foreach (var palpite in palpitesClassificados.Take(20)) // Exibe os 20 melhores
             {
@@ -714,7 +713,7 @@ namespace Dashboard
         {
             int concursoBase = Convert.ToInt32(T1.Text);
             List<string> itemsAsString = new List<string>();
-            foreach(var item in listBoxResultados.Items) // Corrigido: Usar o nome correto do XAML
+            foreach (var item in listBoxResultados.Items) // Corrigido: Usar o nome correto do XAML
             {
                 itemsAsString.Add(item?.ToString() ?? string.Empty);
             }
@@ -733,8 +732,8 @@ namespace Dashboard
             }
             catch (Exception ex)
             {
-                 _logger.LogError($"Erro ao salvar resultados em arquivo de texto: {ex.Message}", ex);
-                 MessageBox.Show($"Erro ao salvar resultados: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                _logger.LogError($"Erro ao salvar resultados em arquivo de texto: {ex.Message}", ex);
+                MessageBox.Show($"Erro ao salvar resultados: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
