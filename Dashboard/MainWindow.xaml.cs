@@ -20,7 +20,10 @@ namespace Dashboard
     /// </summary>
     public partial class MainWindow : Window
     {
+:start_line:23
+-------
         private readonly PalpiteService _palpiteService;
+        private readonly LotofacilService _lotofacilService; // Adicionado o serviço da Lotofácil
 
         private readonly IMLLogger _logger;
         private readonly MLNetModel _modelSS;
@@ -32,10 +35,13 @@ namespace Dashboard
         public MainWindow()
         {
             InitializeComponent();
-            Infra.CarregarConcursos();
-            Infra.CombinarGeral();
+            // Infra.CarregarConcursos(); // Removido - substituído pelo LotofacilService
+            // Infra.CombinarGeral(); // Manter se necessário para outras partes do código que dependem de Infra.arGeral
 
-            T1.Text = Infra.arLoto.Count.ToString();
+            _lotofacilService = new LotofacilService(); // Inicializa o serviço da Lotofácil
+            _lotofacilService.UpdateFromAPI(); // Carrega/Atualiza os dados da Lotofácil
+
+            T1.Text = _lotofacilService.GetTotalConcursos().ToString(); // Atualiza o texto com o total de concursos carregados
 
             _logger = new MLLogger(LoggerFactory.Create(builder =>
                 builder.AddConsole()).CreateLogger<MLLogger>());
