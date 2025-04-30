@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 
 namespace LotoLibrary.Services
@@ -180,10 +181,63 @@ namespace LotoLibrary.Services
         #endregion
 
         #region "Métodos Especiais"
-        public static void CarregarConcursos()
+
+        public static void CarregarConcursos() => AtualizarConcursosDiretoDoSite(Constante.ArqLotoJson);
+
+        private static void AtualizarConcursosDiretoDoSite(string nomeArq)
         {
-            arLoto.AddRange(AbrirArquivo(Constante.ArqLoto));
+            string path = Directory.Exists(Constante.PT) ? Constante.PT : Constante.PT1;
+            string fullPath = Path.Combine(path, nomeArq);
+
+            List<Lotofacil> concursos;
+
+            if (File.Exists(fullPath))
+            {
+                // O arquivo existe, vamos carregar e atualizar
+                concursos = CarregarConcursosDoArquivo(fullPath);
+                var updater = new LotofacilUpdater();
+                concursos = updater.UpdateConcursos(concursos);
+
+                PreencheSorteios(concursos);
+            }
+            else
+            {
+                // O arquivo não existe, vamos extrair todos os concursos
+                var scraper = new LotofacilScraper();
+                concursos = scraper.ExtractAllConcursos();
+
+                PreencheSorteios(concursos);
+            }
+
+            // Salvar os concursos atualizados no arquivo
+            SalvarConcursosNoArquivo(fullPath, concursos);
         }
+
+
+        private static List<Lotofacil> CarregarConcursosDoArquivo(string filePath)
+        {
+            string json = File.ReadAllText(filePath);
+            return JsonConvert.DeserializeObject<List<Lotofacil>>(json);
+        }
+        private static async Task SalvarConcursosNoArquivo(string filePath, List<Lotofacil> concursos)
+        {
+            string json = JsonConvert.SerializeObject(concursos, Formatting.Indented);
+            await File.WriteAllTextAsync(filePath, json);
+        }
+
+
+        private static void PreencheSorteios(List<Lotofacil> concursos)
+        {
+            foreach (var o in concursos)
+            {
+                List<int> l = new List<int>();
+                foreach (string m in o.listaDezenas) { l.Add(Convert.ToInt32(m)); }
+
+                arLoto.Add(new Lance(arLoto.Count, l));
+            }
+        }
+
+
 
         public static int Contapontos(Lance Lsa, Lance Lsb)
         {
