@@ -3720,12 +3720,12 @@ namespace LotoLibrary.Services
             return saida;
         }
 
-        internal static Lance CriaLanceAPartirDoPar(Lance lance, Lance oYmaisFrequente)
+        internal static Lance CriaLanceAPartirDoPar(Lance lance, Lance oMaisFrequente)
         {
             List<int> ints = new();
 
             ints.AddRange(lance.Lista);
-            ints.AddRange(oYmaisFrequente.Lista);
+            ints.AddRange(oMaisFrequente.Lista);
 
             ints.Sort();
 

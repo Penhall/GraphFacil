@@ -107,6 +107,8 @@ namespace LotoLibrary.Models
 
         public List<Lance> Lista { get; set; } = new List<Lance>();
 
+        public void LimpaXY() { foreach (Lance o in this) { o.X = 0; o.Y = 0; } }
+
     }
 
     public static class EnumerableExtensions

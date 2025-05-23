@@ -320,9 +320,6 @@ namespace Dashboard
 
 
                 Infra.SalvaSaidaW(palpitesClassificadosFiltrados, Infra.NomeSaida("Calculado-D", concursoBase + 1)); // Corrigido: Removido ToList()
-                //Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(0), Infra.NomeSaida("PosiçãoF0-Filtrado-D", concursoBase + 1)); // Comentado - CS1503
-                //Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(1), Infra.NomeSaida("PosiçãoF1-Filtrado-D", concursoBase + 1)); // Comentado - CS1503
-                //Infra.SalvaSaidaW(palpitesClassificadosFiltrados.ObterValoresF(2), Infra.NomeSaida("PosiçãoF2-Filtrado-D", concursoBase + 1)); // Comentado - CS1503
             }
             catch (Exception ex)
             {
@@ -391,69 +388,14 @@ namespace Dashboard
         /// </summary>
         private void Catorze_Click(object sender, RoutedEventArgs e)
         {
-            int concursoBase = Convert.ToInt32(T1.Text) - 1;
 
-            Lances OcorrenciaSS = new();
-            Lances OcorrenciaNS = new();
+            int alvo = Convert.ToInt32(T1.Text);
 
-            Lances arsm = new();
-            Lances arsn = new();
-            try
-            {
-                if (_palpiteService1 == null)
-                {
-                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
-                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
-                }
+            Lances A = Estudos.Estudo14(alvo);
 
-                // Obter grupos SS e NS apenas uma vez
-                arsm.AddRange(_palpiteService1.GetGrupoSS());
-                arsn.AddRange(_palpiteService1.GetGrupoNS());
+            Infra.SalvaSaidaW(A, Infra.NomeSaida("ListaEstudo14", alvo));
 
-                List<int> all_lsm = new List<int>();
-                List<int> all_lsn = new List<int>();
-
-                int loopCount = 40; // Reduzido para teste mais rápido
-                _logger.LogInformation($"Iniciando loop de {loopCount} iterações (Catorze_Click).");
-
-                for (int i = 0; i < loopCount; i++)
-                {
-                    var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000, 9); // Reduzido para teste
-
-                    foreach (Lance o in palpitesAleatorios) { all_lsm.Add(o.M); all_lsn.Add(o.N); }
-                    _logger.LogDebug($"Loop {i + 1}/{loopCount} concluído.");
-                }
-
-                _logger.LogInformation("Contando ocorrências acumuladas.");
-                // Contar ocorrências acumuladas após o loop
-                var groupedCountsSS = all_lsm.GroupBy(id => id)
-                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
-                                            .OrderByDescending(l => l.F1);
-                OcorrenciaSS = groupedCountsSS.ToLances1();
-
-                var groupedCountsNS = all_lsn.GroupBy(id => id)
-                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
-                                            .OrderByDescending(l => l.F1);
-                OcorrenciaNS = groupedCountsNS.ToLances1();
-
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Erro (Catorze_Click): {ex.Message}", ex);
-                MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-            _logger.LogInformation("Salvando resultados (Catorze_Click).");
-            Infra.SalvaSaidaW(arsm, Infra.NomeSaida("GrupoSS", concursoBase + 1));
-            Infra.SalvaSaidaW(arsn, Infra.NomeSaida("GrupoNS", concursoBase + 1));
-
-
-            Infra.SalvaSaidaW(OcorrenciaSS, Infra.NomeSaida("OcorrenciasSS", concursoBase + 1));
-            Infra.SalvaSaidaW(OcorrenciaNS, Infra.NomeSaida("OcorrenciasNS", concursoBase + 1));
-
-            ExibirResultados(OcorrenciaSS); // Exibe as ocorrências SS
-            // TerminarPrograma(); // Removido para permitir visualização
+            TerminarPrograma();
         }
 
         /// <summary>
@@ -624,6 +566,11 @@ namespace Dashboard
         /// </summary>
         private void Dezessete_Click(object sender, RoutedEventArgs e)
         {
+            int alvo = Convert.ToInt32(T1.Text);
+
+            Lances A = Estudos.Estudo17(alvo);
+
+            Infra.SalvaSaidaW(A, Infra.NomeSaida("ListaEstudo17", alvo));
             TerminarPrograma();
         }
 
@@ -632,6 +579,13 @@ namespace Dashboard
         /// </summary>
         private void Dezoito_Click(object sender, RoutedEventArgs e)
         {
+
+            int alvo = Convert.ToInt32(T1.Text);
+
+            Lances A = Estudos.Estudo18(alvo);
+
+            Infra.SalvaSaidaW(A, Infra.NomeSaida("ListaEstudo18", alvo));
+
             TerminarPrograma();
         }
 
@@ -690,6 +644,72 @@ namespace Dashboard
         }
 
 
+        private void MLAnalise2()
+        {
+            int concursoBase = Convert.ToInt32(T1.Text) - 1;
+
+            Lances OcorrenciaSS = new();
+            Lances OcorrenciaNS = new();
+
+            Lances arsm = new();
+            Lances arsn = new();
+            try
+            {
+                if (_palpiteService1 == null)
+                {
+                    _palpiteService1 = new PalpiteService1(_logger, _modelSS, _modelNS, concursoBase);
+                    _logger.LogInformation($"Serviço inicializado com concurso base: {concursoBase}");
+                }
+
+                // Obter grupos SS e NS apenas uma vez
+                arsm.AddRange(_palpiteService1.GetGrupoSS());
+                arsn.AddRange(_palpiteService1.GetGrupoNS());
+
+                List<int> all_lsm = new List<int>();
+                List<int> all_lsn = new List<int>();
+
+                int loopCount = 40; // Reduzido para teste mais rápido
+                _logger.LogInformation($"Iniciando loop de {loopCount} iterações (Catorze_Click).");
+
+                for (int i = 0; i < loopCount; i++)
+                {
+                    var palpitesAleatorios = _palpiteService1.GerarPalpitesAleatorios(1000, 9); // Reduzido para teste
+
+                    foreach (Lance o in palpitesAleatorios) { all_lsm.Add(o.M); all_lsn.Add(o.N); }
+                    _logger.LogDebug($"Loop {i + 1}/{loopCount} concluído.");
+                }
+
+                _logger.LogInformation("Contando ocorrências acumuladas.");
+                // Contar ocorrências acumuladas após o loop
+                var groupedCountsSS = all_lsm.GroupBy(id => id)
+                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
+                                            .OrderByDescending(l => l.F1);
+                OcorrenciaSS = groupedCountsSS.ToLances1();
+
+                var groupedCountsNS = all_lsn.GroupBy(id => id)
+                                            .Select(g => new Lance(g.Key, new List<int>()) { F1 = g.Count() })
+                                            .OrderByDescending(l => l.F1);
+                OcorrenciaNS = groupedCountsNS.ToLances1();
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro (Catorze_Click): {ex.Message}", ex);
+                MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            _logger.LogInformation("Salvando resultados (Catorze_Click).");
+            Infra.SalvaSaidaW(arsm, Infra.NomeSaida("GrupoSS", concursoBase + 1));
+            Infra.SalvaSaidaW(arsn, Infra.NomeSaida("GrupoNS", concursoBase + 1));
+
+
+            Infra.SalvaSaidaW(OcorrenciaSS, Infra.NomeSaida("OcorrenciasSS", concursoBase + 1));
+            Infra.SalvaSaidaW(OcorrenciaNS, Infra.NomeSaida("OcorrenciasNS", concursoBase + 1));
+
+            ExibirResultados(OcorrenciaSS); // Exibe as ocorrências SS
+        }
+
         private void ExibirResultadosV0(Lances palpitesClassificados)
         {
             // Corrigido: Usar o nome correto do XAML
@@ -715,15 +735,18 @@ namespace Dashboard
         {
             int concursoBase = Convert.ToInt32(T1.Text);
             List<string> itemsAsString = new List<string>();
-            foreach (var item in listBoxResultados.Items) // Corrigido: Usar o nome correto do XAML
-            {
-                itemsAsString.Add(item?.ToString() ?? string.Empty);
-            }
+
+            //foreach (var item in listBoxResultados.Items) // Corrigido: Usar o nome correto do XAML
+            //{
+            //    itemsAsString.Add(item?.ToString() ?? string.Empty);
+            //}
+
+            foreach (Lance o in Infra.arLoto) { itemsAsString.Add(o.Saida); }
 
             try
             {
                 // Salvar diretamente como arquivo de texto
-                string nomeArquivo = Infra.NomeSaida("Resultados", concursoBase) + ".txt"; // Adiciona extensão .txt
+                string nomeArquivo = Infra.NomeSaida("Resultados", concursoBase);
                 string diretorioSaida = Path.Combine(Environment.CurrentDirectory, "Saida", concursoBase.ToString()); // Define diretório Saida/Concurso
                 Directory.CreateDirectory(diretorioSaida); // Garante que o diretório exista
                 string filePath = Path.Combine(diretorioSaida, nomeArquivo);
