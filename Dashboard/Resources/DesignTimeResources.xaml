@@ -1,0 +1,17 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Dashboard.Converters"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    >
+    <!--  Converters  -->
+    <converters:SyncToColorConverter x:Key="SyncToColorConverter" />
+    <converters:ForceToColorConverter x:Key="ForceToColorConverter" />
+    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+    <!--  Basic Styles  -->
+    <Style BasedOn="{StaticResource MaterialDesignRaisedButton}" TargetType="Button">
+        <Setter Property="Margin" Value="5" />
+        <Setter Property="Padding" Value="10" />
+    </Style>
+</ResourceDictionary>

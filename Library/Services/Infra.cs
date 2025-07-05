@@ -177,6 +177,19 @@ namespace LotoLibrary.Services
         }
 
 
+        public static void SalvaSaidaW(List<double> matrizSaida, string nome)
+        {
+            StringBuilder salvaKey = new StringBuilder();
+
+            foreach (double o in matrizSaida)
+            {
+                // Formata o número com duas casas decimais
+                salvaKey.AppendLine(o.ToString("F2"));
+            }
+
+            File.WriteAllText(nome, salvaKey.ToString());
+        }
+
 
         #endregion
 
@@ -3439,6 +3452,62 @@ namespace LotoLibrary.Services
             if (!Directory.Exists(caminho)) { Directory.CreateDirectory(caminho); }
 
             return Path.Combine(caminho + "\\" + nome + "-" + alvo.ToString() + ".txt");
+        }
+
+
+        public static Uvas DevolveMaisFrequentesUvas(Lances L, int T)
+        {
+            List<int> ints = new();
+
+            foreach (Lance o in L) { ints.AddRange(o.Lista); }
+
+            Uvas uvas = new Uvas();
+
+            for (int i = 1; i < 26; i++)
+            {
+                int s = ints.Count(num => num == i);
+
+                Uva u = new(i, s);
+
+                uvas.Add(u);
+            }
+
+            uvas.Sort();
+
+            return uvas;
+        }
+        public static Lance DevolveMaisFrequentesIDX(Lances L, int T)
+        {
+            List<int> ints = new();
+
+            foreach (Lance o in L) { ints.AddRange(o.Lista); }
+
+            Uvas uvas = new Uvas();
+
+            for (int i = 1; i < 26; i++)
+            {
+                int s = ints.Count(num => num == i);
+
+                Uva u = new(i, s);
+
+                uvas.Add(u);
+            }
+
+            uvas.Sort();
+
+            List<int> ls = new();
+
+            for (int j = 0; j < T; j++)
+            {
+                var u = uvas[j];
+                ls.Add(u.Pt);
+            }
+
+            //ls.Sort();
+
+            Lance U = new Lance(0, ls);
+
+            return U;
         }
         public static Lance DevolveMaisFrequentes(Lances L, int T)
         {

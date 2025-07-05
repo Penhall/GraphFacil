@@ -214,6 +214,397 @@ public static class Estudos
     }
 
 
+
+    public static Lances Estudo4(int alvo)
+    {
+
+        Infra.CombinarGeral();
+
+        Lances ars = new();
+        Lances ars2 = new();
+        Lances ars3 = new();
+
+        Lance oAlvo = Infra.arLoto[alvo - 2];
+        Lance oposto = Infra.DevolveOposto(oAlvo);
+
+
+        Random random = new Random();
+
+        while (ars.Count < 10000)
+        {
+            Lances ars1 = new();
+
+            while (ars1.Count < 5)
+            {
+                Lance a = Infra.arGeral[random.Next(Infra.arGeral.Count)];
+                if (Infra.Contapontos(a, oAlvo) == 13) ars1.Add(a);
+            }
+
+            ars.Add(Infra.DevolveMenosFrequentes(ars1, 4));
+        }
+
+        while (ars3.Count < 10000)
+        {
+            Lances ars4 = new();
+
+            while (ars4.Count < 5)
+            {
+                Lance a = Infra.arGeral[random.Next(Infra.arGeral.Count)];
+                if (Infra.Contapontos(a, oposto) == 7) ars4.Add(a);
+            }
+
+            ars3.Add(Infra.DevolveMenosFrequentes(ars4, 4));
+        }
+
+        while (ars2.Count < 1000) ars2.Add(Infra.arGeral[random.Next(Infra.arGeral.Count)]);
+
+
+
+        Infra.SalvaSaidaW(ars3, Infra.NomeSaida("ListaEstudoM", alvo));
+        Infra.SalvaSaidaW(ars2, Infra.NomeSaida("Geral", alvo));
+
+        return ars;
+    }
+
+    public static Lances Estudo5(int alvo)
+    {
+
+        Infra.CombinarGeral();
+
+        Lances ars = new();
+        Lances ars2 = new();
+        Lances ars3 = new();
+
+        Lance oAlvo = Infra.arLoto[alvo - 2];
+        Lance oposto = Infra.DevolveOposto(oAlvo);
+
+
+        Lances ars9 = GerarCombinacoes.Combinar15a9(oAlvo.Lista);
+
+        Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+
+
+
+
+        Random random = new Random();
+
+        while (ars.Count < 10000)
+        {
+            Lances ars1 = new();
+
+            while (ars1.Count < 5)
+            {
+                Lance a = Infra.arGeral[random.Next(Infra.arGeral.Count)];
+                if (Infra.Contapontos(a, oAlvo) == 13) ars1.Add(a);
+            }
+
+            ars.Add(Infra.DevolveMenosFrequentes(ars1, 4));
+        }
+
+        while (ars3.Count < 10000)
+        {
+            Lances ars4 = new();
+
+            while (ars4.Count < 5)
+            {
+                Lance a = Infra.arGeral[random.Next(Infra.arGeral.Count)];
+                if (Infra.Contapontos(a, oposto) == 7) ars4.Add(a);
+            }
+
+            ars3.Add(Infra.DevolveMenosFrequentes(ars4, 4));
+        }
+
+        while (ars2.Count < 1000) ars2.Add(Infra.arGeral[random.Next(Infra.arGeral.Count)]);
+
+        List<double> l6 = new();
+        List<double> l9 = new();
+
+
+
+
+
+        foreach (Lance o in ars6)
+        {
+            var pontos = ars.Select(p => Infra.Contapontos(o, p)).ToList();
+            int b = pontos.Count(x => x == 0);
+            int c = pontos.Count(x => x == 4);
+
+            double d = Math.Round((double)b / c * 100, 2);
+
+            l6.Add(d);
+        }
+
+        foreach (Lance o in ars9)
+        {
+            var pontos = ars3.Select(p => Infra.Contapontos(o, p)).ToList();
+            int b = pontos.Count(x => x == 0);
+            int c = pontos.Count(x => x == 4);
+
+            double d = Math.Round((double)b / c * 100, 2);
+            l9.Add(d);
+        }
+
+
+        Infra.SalvaSaidaW(l6, Infra.NomeSaida("ListaEstudo-PT", alvo));
+        Infra.SalvaSaidaW(l9, Infra.NomeSaida("ListaEstudoM-PT", alvo));
+
+        Infra.SalvaSaidaW(ars9, Infra.NomeSaida("Lista9", alvo));
+        Infra.SalvaSaidaW(ars6, Infra.NomeSaida("Lista6", alvo));
+
+        Infra.SalvaSaidaW(ars3, Infra.NomeSaida("ListaEstudoM", alvo));
+        Infra.SalvaSaidaW(ars2, Infra.NomeSaida("Geral", alvo));
+
+        return ars;
+    }
+
+    //public static Lances Estudo6(int alvo)
+    //{
+
+    //    Infra.CombinarGeral();
+
+    //    Lances ars = new();
+    //    Lances ars1 = new();
+
+    //    Lance oAlvo = Infra.arLoto[alvo - 2];
+    //    Lance oposto = Infra.DevolveOposto(oAlvo);
+
+    //    Lances ars6 = GerarCombinacoes.Combinar10a6(Infra.DevolveOposto(oAlvo).Lista);
+
+    //    Lance complementar = Infra.DevolveComplementar(oposto, ars6[0]);
+
+
+    //    Random random = new Random();
+
+
+    //    foreach (Lance o in ars6)
+    //    {
+    //        List<int> ls = o.Lista;
+
+    //        List<int> ln = complementar.Lista;
+
+    //        for (int i = 1; i < 5; i++)
+    //        {
+
+    //            while (ars.Count < 1000)
+    //            {
+
+    //                Lance a = Infra.arGeral[random.Next(Infra.arGeral.Count)];
+    //                int s = Infra.Contapontos(a, ls);
+    //                int n = Infra.Contapontos(a, ln);
+
+
+
+
+    //                if ((s == ls.Count) && (n == 0)) ars.Add(a);
+    //            }
+
+
+
+    //            Uvas lsa = Infra.DevolveMaisFrequentesUvas(ars, 25);
+
+
+    //            int firstZeroIndex = lsa.FindIndex(u => u.Pt == 0);
+    //            int last1000Index = lsa.FindLastIndex(u => u.Pt == 1000);
+
+    //            int adx = (last1000Index != -1) ? last1000Index + 1 : -1;
+    //            int ndx = (firstZeroIndex != -1) ? firstZeroIndex - 1 : -1;
+
+    //            // Verificação de limites
+    //            if (adx >= lsa.Count) adx = -1;
+    //            if (ndx < 0) ndx = -1;
+
+
+    //            Uva uva1 = lsa[adx];
+    //            Uva uva2 = lsa[ndx];
+    //            Uva uva3 = lsa[ndx - 1];
+
+    //            ls.Add(uva3.Id);
+    //            ls.Add(uva2.Id);
+    //            ln.Add(uva1.Id);
+
+    //            ars.Clear();
+
+    //        }
+
+    //        ars1.Add(new Lance(ars1.Count, ls));
+    //    }
+
+    //    Infra.SalvaSaidaW(ars, Infra.NomeSaida("Lista6Especial", alvo));
+
+    //    return ars;
+    //}
+
+
+    public static Lances Estudo6(int alvo)
+    {
+        Infra.CombinarGeral();
+
+        Lances ars = new();
+
+
+        Lances resultados = new Lances();
+        Lance lanceAlvo = Infra.arLoto[alvo - 2];
+        Lance oposto = Infra.DevolveOposto(lanceAlvo);
+
+        Random random = new Random();
+
+        // Todas combinações de 6 números entre os 10 opostos
+        Lances combinacoesBase = GerarCombinacoes.Combinar10a6(oposto.Lista);
+
+        foreach (Lance combinacao in combinacoesBase)
+        {
+            List<int> ls = new List<int>(combinacao.Lista); // Inicia com 6 números
+            List<int> ln = new List<int>(Infra.DevolveComplementar(oposto, combinacao).Lista); // 4 números
+
+            for (int iteracao = 0; iteracao < 4; iteracao++)
+            {
+                Lances combinacoesValidas = FiltrarCombinacoes(ls, ln);
+
+                //if (combinacoesValidas.Count == 0)
+                //{
+                //    // Registra falha no refinamento
+                //   // Infra.LogErro($"Falha no refinamento para combinação {combinacao.Id}");
+                //    break;
+                //}
+
+                Uvas frequencias = Infra.DevolveMaisFrequentesUvas(combinacoesValidas, 25);
+
+                var expansao = SelecionarNumerosExpansao(frequencias, ls, ln);
+
+                // Atualiza listas
+                ls.AddRange(expansao.adicionarLs);
+                ln.Add(expansao.adicionarLn);
+
+                // Garante que não ultrapasse os limites
+                if (ls.Count >= 15) break;
+            }
+
+            // Garante ter exatamente 15 números
+            resultados.Add(new Lance(resultados.Count, ls.Count > 15 ? ls.Take(15).ToList() : ls));
+
+            if (resultados.Count > 105) break;
+        }
+
+
+        while (ars.Count < 1000) ars.Add(Infra.arGeral[random.Next(Infra.arGeral.Count)]);
+
+
+        Infra.SalvaSaidaW(ars, Infra.NomeSaida("Aleatorios", alvo));
+
+        return resultados;
+    }
+
+    public static Lances Estudo7(int alvo)
+    {
+        Infra.CombinarGeral();
+
+        Lances resultados = new Lances();
+        Lance lanceAlvo = Infra.arLoto[alvo - 2];
+        Lance oposto = Infra.DevolveOposto(lanceAlvo);
+
+        // Todas combinações de 9 números entre os 10 opostos
+        Lances combinacoesBase = GerarCombinacoes.Combinar15a9(lanceAlvo.Lista);
+
+        foreach (Lance combinacao in combinacoesBase)
+        {
+            List<int> ls = new List<int>(combinacao.Lista); // Inicia com 9 números
+            List<int> ln = new List<int>(Infra.DevolveComplementar(lanceAlvo, combinacao).Lista); // 6 números
+
+            for (int iteracao = 0; iteracao < 4; iteracao++)
+            {
+                Lances combinacoesValidas = FiltrarCombinacoes(ls, ln);
+
+                //if (combinacoesValidas.Count == 0)
+                //{
+                //    // Registra falha no refinamento
+                //   // Infra.LogErro($"Falha no refinamento para combinação {combinacao.Id}");
+                //    break;
+                //}
+
+                Uvas frequencias = Infra.DevolveMaisFrequentesUvas(combinacoesValidas, 25);
+
+                var expansao = SelecionarNumerosExpansao(frequencias, ls, ln);
+
+                // Atualiza listas
+                ls.AddRange(expansao.adicionarLs);
+                ln.Add(expansao.adicionarLn);
+
+                // Garante que não ultrapasse os limites
+                if (ls.Count >= 15) break;
+            }
+
+            // Garante ter exatamente 15 números
+            resultados.Add(new Lance(resultados.Count, ls.Count > 15 ? ls.Take(15).ToList() : ls));
+        }
+
+        return resultados;
+    }
+
+    private static (List<int> adicionarLs, int adicionarLn) SelecionarNumerosExpansao(Uvas frequencias, List<int> ls, List<int> ln)
+    {
+        var classificados = new HashSet<int>(ls.Concat(ln));
+
+        // Ordena por frequência (do menos frequente ao mais frequente)
+        var candidatos = frequencias
+            .Where(u => !classificados.Contains(u.Id))
+            .OrderBy(u => u.Pt)
+            .ToList();
+
+        if (candidatos.Count < 3)
+        {
+            throw new InvalidOperationException("Números insuficientes para expansão");
+        }
+
+        // Dois números mais raros para LS
+        var adicionarLs = new List<int> { candidatos[0].Id, candidatos[1].Id };
+
+        // Número mais frequente não classificado para LN
+        int adicionarLn = candidatos.Last().Id;
+
+        return (adicionarLs, adicionarLn);
+    }
+
+    private static Lances FiltrarCombinacoes(List<int> ls, List<int> ln)
+    {
+        Lances resultado = new Lances();
+        var setLs = new HashSet<int>(ls);
+        var setLn = new HashSet<int>(ln);
+
+        // Otimização: pré-computa o tamanho para verificação rápida
+        int requiredLsCount = setLs.Count;
+
+        foreach (Lance combinacao in Infra.arGeral)
+        {
+            // Verifica se contém todos os números de LS
+            int contagemLs = 0;
+            foreach (int num in combinacao.Lista)
+            {
+                if (setLs.Contains(num))
+                    contagemLs++;
+            }
+
+            // Verifica se não contém nenhum número de LN
+            bool contemLn = false;
+            foreach (int num in combinacao.Lista)
+            {
+                if (setLn.Contains(num))
+                {
+                    contemLn = true;
+                    break;
+                }
+            }
+
+            if (contagemLs == requiredLsCount && !contemLn)
+            {
+                resultado.Add(combinacao);
+            }
+        }
+
+        return resultado;
+    }
+
+
+
     public static Lances Estudo11(int alvo)
     {
 
