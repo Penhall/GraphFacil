@@ -1,28 +1,37 @@
 using Dashboard.ViewModel;
-using LotoLibrary.Services;
 using System.Windows;
 
-namespace Dashboard
+namespace Dashboard;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+
+        try
         {
-            InitializeComponent();
-
-            Infra.CarregarConcursos();
-
-            DataContext = new MainWindowViewModel(Infra.arLoto);
+            this.DataContext = new MainWindowViewModel();
         }
-
-        private void GridBarraTitulo_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        catch (System.Exception ex)
         {
-            DragMove();
-        }
+            MessageBox.Show($"Erro ao inicializar o ViewModel: {ex.Message}",
+                "Erro de Inicialização",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
 
-        private void BtnFechar_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
+            // Fechar a aplicação se houver erro crítico na inicialização
+            this.Close();
         }
+    }
+
+    private void GridBarraTitulo_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        DragMove();
+    }
+
+    private void BtnFechar_Click(object sender, RoutedEventArgs e)
+    {
+        Application.Current.Shutdown();
     }
 }

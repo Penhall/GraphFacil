@@ -1,15 +1,23 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace Dashboard.Converters;
 
+/// <summary>
+/// Converter para sincronização para cores
+/// </summary>
 public class SyncToColorConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return (value is bool b && b) ? Brushes.Green : Brushes.Gray;
+        if (value is bool isSync)
+        {
+            return isSync ?
+                System.Windows.Media.Brushes.Green :
+                System.Windows.Media.Brushes.LightGray;
+        }
+        return System.Windows.Media.Brushes.LightGray;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
