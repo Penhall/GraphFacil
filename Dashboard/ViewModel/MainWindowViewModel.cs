@@ -66,7 +66,7 @@ namespace Dashboard.ViewModel
 
                 // Inicialização do Motor de Metrônomos
                 _metronomoEngine = new MetronomoEngine(_historico);
-                
+
                 // Bind das propriedades do engine
                 BindEngineProperties();
 
@@ -77,7 +77,7 @@ namespace Dashboard.ViewModel
             catch (Exception ex)
             {
                 StatusEngine = $"❌ Erro na inicialização: {ex.Message}";
-                MessageBox.Show($"Erro na inicialização: {ex.Message}", 
+                MessageBox.Show($"Erro na inicialização: {ex.Message}",
                     "Erro de Inicialização", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -118,9 +118,9 @@ namespace Dashboard.ViewModel
             try
             {
                 IsProcessing = true;
-                
+
                 var sucesso = await _metronomoEngine.InicializarMetronomosAsync();
-                
+
                 if (sucesso)
                 {
                     // Atualizar coleção observável
@@ -137,7 +137,7 @@ namespace Dashboard.ViewModel
             catch (Exception ex)
             {
                 StatusEngine = $"❌ Erro ao inicializar: {ex.Message}";
-                MessageBox.Show($"Erro ao inicializar metrônomos: {ex.Message}", 
+                MessageBox.Show($"Erro ao inicializar metrônomos: {ex.Message}",
                     "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -151,7 +151,7 @@ namespace Dashboard.ViewModel
         {
             if (!_metronomoEngine.IsInicializado)
             {
-                MessageBox.Show("Inicie os metrônomos primeiro!", "Aviso", 
+                MessageBox.Show("Inicie os metrônomos primeiro!", "Aviso",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -160,7 +160,7 @@ namespace Dashboard.ViewModel
             {
                 var palpite = _metronomoEngine.GerarPalpiteOtimizado();
                 AtualizarUltimoPalpite();
-                
+
                 // Atualizar visual dos metrônomos
                 foreach (var metronomo in Metronomos)
                 {
@@ -171,7 +171,7 @@ namespace Dashboard.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao gerar palpite: {ex.Message}", 
+                MessageBox.Show($"Erro ao gerar palpite: {ex.Message}",
                     "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -181,7 +181,7 @@ namespace Dashboard.ViewModel
         {
             if (!_metronomoEngine.IsInicializado)
             {
-                MessageBox.Show("Inicie os metrônomos primeiro!", "Aviso", 
+                MessageBox.Show("Inicie os metrônomos primeiro!", "Aviso",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -189,33 +189,83 @@ namespace Dashboard.ViewModel
             try
             {
                 IsProcessing = true;
-                StatusEngine = "Executando validação com 100 sorteios...";
+                StatusEngine = "Executando validação integrada...";
 
-                var resultado = await _metronomoEngine.ValidarModeloAsync();
+                var metricas = await _metronomoEngine.ValidarModeloAsync();
 
-                if (resultado.Sucesso)
-                {
-                    var mensagem = $"=== RESULTADO DA VALIDAÇÃO ===\n\n" +
-                                 $"📊 Sorteios testados: {resultado.TotalSorteios}\n" +
-                                 $"🎯 Média de acertos: {resultado.MediaAcertos:F1}/15\n" +
-                                 $"📈 Melhor resultado: {resultado.MelhorAcerto}/15\n" +
-                                 $"📉 Pior resultado: {resultado.PiorAcerto}/15\n" +
-                                 $"📊 Desvio padrão: ±{resultado.DesvioPadrao:F1}\n" +
-                                 $"✅ Taxa de sucesso (≥11): {resultado.TaxaSucesso:P1}\n\n" +
-                                 $"💡 Sistema {(resultado.MediaAcertos >= 8 ? "APROVADO" : "EM CALIBRAÇÃO")}";
+                var mensagem = $"=== VALIDAÇÃO DE METRÔNOMOS ===\n\n" +
+                             $"📊 Testes realizados: {metricas.TotalTestes}\n" +
+                             $"🎯 Taxa de acerto: {metricas.TaxaAcertoMedia:P2}\n" +
+                             $"📈 Média de acertos: {metricas.MediaAcertos:F1}/15\n" +
+                             $"🏆 Melhor resultado: {metricas.MelhorResultado}/15\n" +
+                             $"📉 Pior resultado: {metricas.PiorResultado}/15\n" +
+                             $"📊 Desvio padrão: {metricas.DesvioPadrao:P2}\n" +
+                             $"⚡ Precision: {metricas.Precision:P2}\n" +
+                             $"🔄 Recall: {metricas.Recall:P2}\n" +
+                             $"🎯 F1-Score: {metricas.F1Score:P2}\n\n" +
+                             $"💡 Avaliação: {(metricas.TaxaAcertoMedia >= 0.45 ? "EXCELENTE" : metricas.TaxaAcertoMedia >= 0.40 ? "BOM" : "EM CALIBRAÇÃO")}";
 
-                    MessageBox.Show(mensagem, "Validação Concluída", 
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    MessageBox.Show($"Erro na validação: {resultado.Erro}", 
-                        "Erro de Validação", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                MessageBox.Show(mensagem, "Validação Concluída",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro durante validação: {ex.Message}", 
+                MessageBox.Show($"Erro durante validação: {ex.Message}",
+                    "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task CompararEstrategias()
+        {
+            if (!_metronomoEngine.IsInicializado)
+            {
+                MessageBox.Show("Inicie os metrônomos primeiro!", "Aviso",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                IsProcessing = true;
+                StatusEngine = "Comparando metrônomos com outras estratégias...";
+
+                var comparacao = await _metronomoEngine.CompararComOutrasEstrategiasAsync();
+
+                var relatorio = "=== COMPARAÇÃO DE ESTRATÉGIAS ===\n\n";
+
+                var estrategiasOrdenadas = comparacao
+                    .OrderByDescending(kvp => kvp.Value.TaxaAcertoMedia)
+                    .ToList();
+
+                for (int i = 0; i < estrategiasOrdenadas.Count; i++)
+                {
+                    var estrategia = estrategiasOrdenadas[i];
+                    var posicao = i + 1;
+                    var emoji = posicao == 1 ? "🏆" : posicao == 2 ? "🥈" : posicao == 3 ? "🥉" : "📊";
+
+                    relatorio += $"{emoji} {posicao}º {estrategia.Key}:\n";
+                    relatorio += $"   Taxa: {estrategia.Value.TaxaAcertoMedia:P2} | ";
+                    relatorio += $"Média: {estrategia.Value.MediaAcertos:F1}/15 | ";
+                    relatorio += $"Melhor: {estrategia.Value.MelhorResultado}\n\n";
+                }
+
+                // Verificar posição dos metrônomos
+                var posicaoMetronomos = estrategiasOrdenadas
+                    .FindIndex(e => e.Key.Contains("Metrônomo")) + 1;
+
+                relatorio += $"🎯 RESULTADO: Metrônomos ficaram em {posicaoMetronomos}º lugar de {estrategiasOrdenadas.Count}";
+
+                MessageBox.Show(relatorio, "Comparação de Estratégias",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro durante comparação: {ex.Message}",
                     "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -227,26 +277,55 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void AlterarConcursoAlvo()
         {
-            var inputDialog = new InputDialog("Alterar Concurso Alvo", 
-                $"Concurso atual: {ConcursoAlvo}", ConcursoAlvo.ToString());
-            
-            if (inputDialog.ShowDialog() == true)
+            try
             {
-                if (int.TryParse(inputDialog.Answer, out int novoConcurso) && novoConcurso > 0)
+                var ultimoConcurso = _historico.LastOrDefault()?.Id ?? 3000;
+                var primeiroConcurso = _historico.FirstOrDefault()?.Id ?? 1;
+
+                var dialog = new SeletorConcursoDialog(
+                    ConcursoAlvo,
+                    primeiroConcurso,
+                    ultimoConcurso + 50 // Permitir concursos futuros
+                );
+
+                if (dialog.ShowDialog() == true)
                 {
+                    var novoConcurso = dialog.ConcursoSelecionado;
+                    var tipoSelecao = dialog.TipoSelecao;
+
                     _metronomoEngine.AlterarConcursoAlvo(novoConcurso);
-                    
-                    // Atualizar metrônomos visualmente
-                    foreach (var metronomo in Metronomos)
+
+                    // Gerar novo palpite automaticamente se solicitado
+                    if (dialog.GerarPalpiteAutomatico && _metronomoEngine.IsInicializado)
                     {
-                        metronomo.AtualizarEstadoAtual(novoConcurso);
+                        GerarPalpite();
                     }
+
+                    var status = tipoSelecao switch
+                    {
+                        "Historico" => $"🎯 Concurso {novoConcurso} (histórico) - palpite para análise",
+                        "Futuro" => $"🔮 Concurso {novoConcurso} (futuro) - previsão",
+                        "Proximo" => $"⚡ Próximo concurso {novoConcurso} - palpite atual",
+                        _ => $"🎯 Concurso alvo: {novoConcurso}"
+                    };
+
+                    StatusEngine = status;
+
+                    MessageBox.Show(
+                        $"Concurso alvo alterado para: {novoConcurso}\n\n" +
+                        $"Tipo: {tipoSelecao}\n" +
+                        $"Status: {(novoConcurso <= ultimoConcurso ? "Dados históricos disponíveis" : "Previsão futura")}\n\n" +
+                        $"{(dialog.GerarPalpiteAutomatico ? "Palpite gerado automaticamente!" : "Use 'Gerar Palpite' para criar novo palpite.")}",
+                        "Concurso Alterado",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                 }
-                else
-                {
-                    MessageBox.Show("Número de concurso inválido!", "Erro", 
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao alterar concurso: {ex.Message}",
+                    "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         #endregion
@@ -255,7 +334,7 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void Primeiro()
         {
-            ExecutarEstudo(1, () => 
+            ExecutarEstudo(1, () =>
             {
                 int alvo = ConcursoAlvo;
                 var resultado = Estudos.Estudo1(alvo);
@@ -267,7 +346,7 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void Segundo()
         {
-            ExecutarEstudo(2, () => 
+            ExecutarEstudo(2, () =>
             {
                 int alvo = ConcursoAlvo;
                 var resultado = Estudos.Estudo2(alvo);
@@ -279,7 +358,7 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void Terceiro()
         {
-            ExecutarEstudo(3, () => 
+            ExecutarEstudo(3, () =>
             {
                 // Implementar Estudo3 conforme necessário
                 return new Lances();
@@ -289,7 +368,7 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void Quarto()
         {
-            ExecutarEstudo(4, () => 
+            ExecutarEstudo(4, () =>
             {
                 // Implementar Estudo4 conforme necessário
                 return new Lances();
@@ -299,7 +378,7 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void Quinto()
         {
-            ExecutarEstudo(5, () => 
+            ExecutarEstudo(5, () =>
             {
                 // Implementar Estudo5 conforme necessário
                 return new Lances();
@@ -309,7 +388,7 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void Sexto()
         {
-            ExecutarEstudo(6, () => 
+            ExecutarEstudo(6, () =>
             {
                 // Implementar Estudo6 conforme necessário
                 return new Lances();
@@ -319,7 +398,7 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void Setimo()
         {
-            ExecutarEstudo(7, () => 
+            ExecutarEstudo(7, () =>
             {
                 // Implementar Estudo7 conforme necessário
                 return new Lances();
@@ -329,11 +408,55 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void Oitavo()
         {
-            ExecutarEstudo(8, () => 
+            ExecutarEstudo(8, () =>
             {
                 // Implementar Estudo8 conforme necessário
                 return new Lances();
             });
+        }
+        #endregion
+
+        #region Diagnostic Commands
+        [RelayCommand]
+        private void DiagnosticarMetronomos()
+        {
+            try
+            {
+                _metronomoEngine.DiagnosticarMetronomosCommand.Execute(null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro no diagnóstico: {ex.Message}",
+                    "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        [RelayCommand]
+        private void ForcarRecalculoMetronomos()
+        {
+            try
+            {
+                _metronomoEngine.ForcarRecalculoMetronomosCommand.Execute(null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro no recálculo: {ex.Message}",
+                    "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        [RelayCommand]
+        private void ConfigurarTreinamento()
+        {
+            try
+            {
+                _metronomoEngine.ConfigurarTreinamentoCommand.Execute(null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro na configuração: {ex.Message}",
+                    "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         #endregion
 
@@ -345,22 +468,22 @@ namespace Dashboard.ViewModel
             {
                 if (!_metronomoEngine.IsInicializado)
                 {
-                    MessageBox.Show("Sistema não inicializado!", "Aviso", 
+                    MessageBox.Show("Sistema não inicializado!", "Aviso",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 var relatorio = _metronomoEngine.ObterRelatorioCompleto();
                 var nomeArquivo = $"Relatorio_Metronomos_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
-                
+
                 System.IO.File.WriteAllText(nomeArquivo, relatorio);
-                
-                MessageBox.Show($"Relatório salvo em: {nomeArquivo}", "Sucesso", 
+
+                MessageBox.Show($"Relatório salvo em: {nomeArquivo}", "Sucesso",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao salvar: {ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao salvar: {ex.Message}", "Erro",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -368,9 +491,9 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void TerminarPrograma()
         {
-            var resultado = MessageBox.Show("Deseja realmente sair do programa?", 
+            var resultado = MessageBox.Show("Deseja realmente sair do programa?",
                 "Confirmar Saída", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            
+
             if (resultado == MessageBoxResult.Yes)
             {
                 Application.Current.Shutdown();
@@ -402,11 +525,11 @@ namespace Dashboard.ViewModel
         private void SelecionarMetronomo(MetronomoIndividual? metronomo)
         {
             MetronomoSelecionado = metronomo;
-            
+
             if (metronomo != null)
             {
                 var analise = metronomo.ObterAnaliseDetalhada();
-                MessageBox.Show(analise, $"Análise - Dezena {metronomo.Numero:D2}", 
+                MessageBox.Show(analise, $"Análise - Dezena {metronomo.Numero:D2}",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
@@ -421,14 +544,14 @@ namespace Dashboard.ViewModel
                 IsProcessing = true;
 
                 var resultado = executarEstudo();
-                
+
                 MessageBox.Show($"Estudo {numeroEstudo} executado com sucesso!\n" +
-                               $"Resultados: {resultado.Count} itens gerados", 
+                               $"Resultados: {resultado.Count} itens gerados",
                     "Estudo Concluído", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro no Estudo {numeroEstudo}: {ex.Message}", 
+                MessageBox.Show($"Erro no Estudo {numeroEstudo}: {ex.Message}",
                     "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -458,7 +581,7 @@ namespace Dashboard.ViewModel
                 var dezenas = _metronomoEngine.UltimoPalpite
                     .Select(d => d.ToString("D2"))
                     .ToArray();
-                
+
                 UltimoPalpite = $"[{string.Join("-", dezenas)}] " +
                                $"(Confiança: {ConfiancaAtual:P1})";
             }
@@ -471,12 +594,12 @@ namespace Dashboard.ViewModel
 
         #region Public Properties for Data Binding
         public string VersaoSistema => "Sistema de Metrônomos v2.0";
-        
-        public string StatusCompleto => 
+
+        public string StatusCompleto =>
             $"{StatusEngine} | Metrônomos: {Metronomos.Count}/25 | " +
             $"Processando: {(IsProcessing ? "SIM" : "NÃO")}";
 
-        public List<TipoMetronomo> TiposMetronomo => 
+        public List<TipoMetronomo> TiposMetronomo =>
             Enum.GetValues<TipoMetronomo>().ToList();
 
         public Dictionary<TipoMetronomo, int> EstatisticasPorTipo
@@ -491,70 +614,147 @@ namespace Dashboard.ViewModel
         #endregion
     }
 
-    #region Helper Classes
     /// <summary>
-    /// Dialog simples para entrada de texto
+    /// Dialog para seleção de concurso
     /// </summary>
-    public partial class InputDialog : Window
+    public class SeletorConcursoDialog : Window
     {
-        public string Answer => AnswerTextBox.Text;
+        public int ConcursoSelecionado { get; private set; }
+        public string TipoSelecao { get; private set; } = "Personalizado";
+        public bool GerarPalpiteAutomatico { get; private set; }
 
-        public InputDialog(string title, string question, string defaultAnswer = "")
+        private System.Windows.Controls.TextBox _textBoxConcurso;
+        private System.Windows.Controls.ComboBox _comboTipo;
+        private System.Windows.Controls.CheckBox _checkGerarPalpite;
+
+        public SeletorConcursoDialog(int concursoAtual, int minimo, int maximo)
         {
-            Width = 350;
-            Height = 200;
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            Title = title;
+            Title = "Selecionar Concurso Alvo";
+            Width = 400;
+            Height = 280;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            var stackPanel = new System.Windows.Controls.StackPanel 
-            { 
-                Margin = new Thickness(15) 
+            var stackPanel = new System.Windows.Controls.StackPanel
+            {
+                Margin = new Thickness(20)
             };
 
-            var questionLabel = new System.Windows.Controls.Label 
-            { 
-                Content = question 
-            };
-            
-            AnswerTextBox = new System.Windows.Controls.TextBox 
-            { 
-                Text = defaultAnswer,
-                Margin = new Thickness(0, 10, 0, 10)
+            // Título
+            var titulo = new System.Windows.Controls.TextBlock
+            {
+                Text = "🎯 Selecionar Concurso para Análise",
+                FontSize = 16,
+                FontWeight = FontWeights.Bold,
+                Margin = new Thickness(0, 0, 0, 15)
             };
 
-            var buttonPanel = new System.Windows.Controls.StackPanel 
-            { 
+            // Informações
+            var info = new System.Windows.Controls.TextBlock
+            {
+                Text = $"Concurso atual: {concursoAtual}\nRange disponível: {minimo} - {maximo}",
+                Margin = new Thickness(0, 0, 0, 15),
+                Foreground = System.Windows.Media.Brushes.Gray
+            };
+
+            // Tipo de seleção
+            var labelTipo = new System.Windows.Controls.Label { Content = "Tipo de Análise:" };
+            _comboTipo = new System.Windows.Controls.ComboBox
+            {
+                Margin = new Thickness(0, 0, 0, 10)
+            };
+            _comboTipo.Items.Add(new System.Windows.Controls.ComboBoxItem { Content = "Próximo Concurso", Tag = "Proximo" });
+            _comboTipo.Items.Add(new System.Windows.Controls.ComboBoxItem { Content = "Concurso Histórico", Tag = "Historico" });
+            _comboTipo.Items.Add(new System.Windows.Controls.ComboBoxItem { Content = "Previsão Futura", Tag = "Futuro" });
+            _comboTipo.Items.Add(new System.Windows.Controls.ComboBoxItem { Content = "Personalizado", Tag = "Personalizado" });
+            _comboTipo.SelectedIndex = 0;
+
+            // Número do concurso
+            var labelConcurso = new System.Windows.Controls.Label { Content = "Número do Concurso:" };
+            _textBoxConcurso = new System.Windows.Controls.TextBox
+            {
+                Text = concursoAtual.ToString(),
+                Margin = new Thickness(0, 0, 0, 15)
+            };
+
+            // Checkbox para gerar palpite automaticamente
+            _checkGerarPalpite = new System.Windows.Controls.CheckBox
+            {
+                Content = "Gerar palpite automaticamente",
+                IsChecked = true,
+                Margin = new Thickness(0, 0, 0, 15)
+            };
+
+            // Botões
+            var buttonPanel = new System.Windows.Controls.StackPanel
+            {
                 Orientation = System.Windows.Controls.Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Right
             };
 
-            var okButton = new System.Windows.Controls.Button 
-            { 
-                Content = "OK", 
-                Width = 70, 
-                Margin = new Thickness(5)
+            var okButton = new System.Windows.Controls.Button
+            {
+                Content = "OK",
+                Width = 70,
+                Margin = new Thickness(5),
+                IsDefault = true
             };
-            okButton.Click += (s, e) => { DialogResult = true; Close(); };
+            okButton.Click += (s, e) =>
+            {
+                if (int.TryParse(_textBoxConcurso.Text, out int numero) && numero >= minimo && numero <= maximo + 50)
+                {
+                    ConcursoSelecionado = numero;
+                    var selectedItem = (System.Windows.Controls.ComboBoxItem)_comboTipo.SelectedItem;
+                    TipoSelecao = selectedItem.Tag.ToString();
+                    GerarPalpiteAutomatico = _checkGerarPalpite.IsChecked == true;
+                    DialogResult = true;
+                    Close();
+                }
+                else
+                {
+                    MessageBox.Show($"Digite um número entre {minimo} e {maximo + 50}", "Valor Inválido");
+                }
+            };
 
-            var cancelButton = new System.Windows.Controls.Button 
-            { 
-                Content = "Cancelar", 
-                Width = 70, 
-                Margin = new Thickness(5)
+            var cancelButton = new System.Windows.Controls.Button
+            {
+                Content = "Cancelar",
+                Width = 70,
+                Margin = new Thickness(5),
+                IsCancel = true
             };
             cancelButton.Click += (s, e) => { DialogResult = false; Close(); };
+
+            // Eventos
+            _comboTipo.SelectionChanged += (s, e) =>
+            {
+                var selectedItem = (System.Windows.Controls.ComboBoxItem)_comboTipo.SelectedItem;
+                switch (selectedItem.Tag.ToString())
+                {
+                    case "Proximo":
+                        _textBoxConcurso.Text = (maximo + 1).ToString();
+                        break;
+                    case "Historico":
+                        _textBoxConcurso.Text = maximo.ToString();
+                        break;
+                    case "Futuro":
+                        _textBoxConcurso.Text = (maximo + 10).ToString();
+                        break;
+                }
+            };
 
             buttonPanel.Children.Add(okButton);
             buttonPanel.Children.Add(cancelButton);
 
-            stackPanel.Children.Add(questionLabel);
-            stackPanel.Children.Add(AnswerTextBox);
+            stackPanel.Children.Add(titulo);
+            stackPanel.Children.Add(info);
+            stackPanel.Children.Add(labelTipo);
+            stackPanel.Children.Add(_comboTipo);
+            stackPanel.Children.Add(labelConcurso);
+            stackPanel.Children.Add(_textBoxConcurso);
+            stackPanel.Children.Add(_checkGerarPalpite);
             stackPanel.Children.Add(buttonPanel);
 
             Content = stackPanel;
         }
-
-        private System.Windows.Controls.TextBox AnswerTextBox;
     }
-    #endregion
 }

@@ -166,7 +166,7 @@
                                FontWeight="SemiBold" 
                                VerticalAlignment="Center"/>
                 </StackPanel>
-                
+
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="15,0">
                     <Button x:Name="BtnMinimize" 
                             Content="−" 
@@ -196,14 +196,14 @@
                 BorderThickness="0,0,1,0">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="10">
-                    
+
                     <!-- Seção Metrônomos -->
                     <TextBlock Text="🎵 METRÔNOMOS" 
                                Foreground="White" 
                                FontSize="14" 
                                FontWeight="Bold" 
                                Margin="10,0,0,10"/>
-                    
+
                     <Button Style="{StaticResource MenuButton}" 
                             Command="{Binding IniciarMetronomosCommand}"
                             IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBooleanConverter}}">
@@ -226,6 +226,14 @@
                         <StackPanel Orientation="Horizontal">
                             <md:PackIcon Kind="CheckCircle" VerticalAlignment="Center" Margin="0,0,8,0"/>
                             <TextBlock Text="Validar Modelo"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource MenuButton}" 
+                            Command="{Binding CompararEstrategiasCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="CompareHorizontal" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="Comparar Estratégias"/>
                         </StackPanel>
                     </Button>
 
@@ -425,7 +433,7 @@
                                        Foreground="White" 
                                        FontSize="12" 
                                        TextWrapping="Wrap"/>
-                            
+
                             <TextBlock Text="Confiança:" 
                                        Foreground="#FF95A5A6" 
                                        FontSize="10" 
@@ -464,12 +472,12 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        
+
                                         <TextBlock Grid.Column="0" 
                                                    Text="{Binding Key}" 
                                                    Foreground="White" 
                                                    FontSize="11"/>
-                                        
+
                                         <TextBlock Grid.Column="1" 
                                                    Text="{Binding Value}" 
                                                    Foreground="#FF3B82F6" 
