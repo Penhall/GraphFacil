@@ -48,7 +48,7 @@ namespace LotoLibrary.Services
         {
             _historicoCompleto = historico;
             (_dadosTreino, _dadosValidacao) = SplitData(historico, 100);
-            ConcursoAlvo = (_historicoCompleto.LastOrDefault()?.Numero ?? 3000) + 1;
+            ConcursoAlvo = (_historicoCompleto.LastOrDefault()?.Id ?? 3000) + 1;
         }
         #endregion
 
@@ -97,7 +97,7 @@ namespace LotoLibrary.Services
         {
             return _dadosTreino
                 .Where(lance => lance.Lista.Contains(dezena))
-                .Select(lance => lance.Numero)
+                .Select(lance => lance.Id)
                 .OrderBy(num => num)
                 .ToList();
         }
@@ -169,14 +169,14 @@ namespace LotoLibrary.Services
             foreach (var metronomo in Metronomos.Values)
             {
                 bool foiSorteada = novoSorteio.Lista.Contains(metronomo.Numero);
-                metronomo.AtualizarComSorteio(novoSorteio.Numero, foiSorteada);
+                metronomo.AtualizarComSorteio(novoSorteio.Id, foiSorteada);
             }
 
             // Atualizar concurso alvo
-            ConcursoAlvo = novoSorteio.Numero + 1;
+            ConcursoAlvo = novoSorteio.Id + 1;
             AtualizarEstadoAtual();
 
-            StatusEngine = $"✅ Processado sorteio {novoSorteio.Numero}";
+            StatusEngine = $"✅ Processado sorteio {novoSorteio.Id}";
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace LotoLibrary.Services
                     foreach (var sorteio in _dadosValidacao)
                     {
                         // Gerar palpite para este sorteio
-                        ConcursoAlvo = sorteio.Numero;
+                        ConcursoAlvo = sorteio.Id;
                         var palpite = GerarPalpiteOtimizado();
                         palpitesGerados.Add(palpite);
 

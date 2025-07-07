@@ -443,7 +443,7 @@ namespace Dashboard.ViewModel
             if (_historico?.Count > 0)
             {
                 var ultimoConcurso = _historico.Last();
-                TextoConcurso = $"Próximo: {ConcursoAlvo} (Último: {ultimoConcurso.Numero})";
+                TextoConcurso = $"Próximo: {ConcursoAlvo} (Último: {ultimoConcurso.Id})";
             }
             else
             {
