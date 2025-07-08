@@ -1,284 +1,405 @@
-﻿using LotoLibrary.Models;
+﻿// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\OscillatorStrategy.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LotoLibrary.Services
+namespace LotoLibrary.Models
 {
+    /// <summary>
+    /// Estratégias para osciladores - VERSÃO CORRIGIDA E COMPLETA
+    /// </summary>
     public static class OscillatorStrategy
     {
-        private static readonly Random _random = new Random();
-
         /// <summary>
         /// Aplica estratégia de tendência de curto prazo
         /// </summary>
-        public static void AplicarTendenciaCurtoPrazo(List<DezenaOscilante> dezenas, List<Lance> ultimosSorteios)
+        public static void AplicarTendenciaCurtoPrazo(List<LotoLibrary.Services.DezenaOscilante> osciladores, List<Lance> historico)
         {
-            if (ultimosSorteios == null || !ultimosSorteios.Any()) return;
+            if (!historico.Any() || !osciladores.Any()) return;
 
-            var recentes = ultimosSorteios.TakeLast(5).SelectMany(l => l.Lista).ToList();
-            var contadorRecentes = recentes.GroupBy(n => n).ToDictionary(g => g.Key, g => g.Count());
-
-            foreach (var dezena in dezenas)
+            try
             {
-                if (contadorRecentes.TryGetValue(dezena.Numero, out var count))
+                // Analisar os últimos 10 concursos
+                var recentGames = historico.TakeLast(10).ToList();
+
+                foreach (var osc in osciladores)
                 {
-                    // Números que saíram recentemente têm maior força
-                    dezena.ForcaSincronizacao = Math.Min(1.0, dezena.ForcaSincronizacao + (count * 0.1));
-                    dezena.UltimoAtraso = 0;
-                }
-                else
-                {
-                    // Aumenta o atraso para números que não saíram
-                    dezena.UltimoAtraso++;
-                }
-            }
-        }
+                    // Calcular frequência recente
+                    var frequency = recentGames.Count(g => g.Lista?.Contains(osc.Numero) == true);
 
-        /// <summary>
-        /// Aplica estratégia baseada em padrões de grupos
-        /// </summary>
-        public static void AplicarPadroesGrupos(List<DezenaOscilante> dezenas, List<int[]> gruposFrequentes)
-        {
-            if (gruposFrequentes == null) return;
+                    // Ajustar frequência baseada na tendência
+                    osc.Frequencia = Math.Max(0.5, Math.Min(2.0, 1.0 + frequency * 0.15));
 
-            foreach (var grupo in gruposFrequentes)
-            {
-                var membros = dezenas.Where(d => grupo.Contains(d.Numero)).ToList();
-                if (membros.Count < 2) continue;
-
-                double mediaForca = membros.Average(d => d.ForcaSincronizacao);
-                double mediaFase = membros.Average(d => d.Fase);
-
-                foreach (var dezena in membros)
-                {
-                    // Sincroniza a força entre membros do grupo
-                    dezena.ForcaSincronizacao = (dezena.ForcaSincronizacao + mediaForca) / 2;
-
-                    // Puxa as fases em direção à média do grupo
-                    double diferencaFase = mediaFase - dezena.Fase;
-                    if (Math.Abs(diferencaFase) > 180) // Considera o círculo
-                        diferencaFase = diferencaFase > 0 ? diferencaFase - 360 : diferencaFase + 360;
-
-                    dezena.Fase += diferencaFase * 0.1;
-                    dezena.Fase = (dezena.Fase % 360 + 360) % 360;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Aplica estratégia baseada em ciclos históricos
-        /// </summary>
-        public static void AplicarCiclos(List<DezenaOscilante> dezenas, Dictionary<int, int> ciclosMedios)
-        {
-            if (ciclosMedios == null) return;
-
-            foreach (var dezena in dezenas)
-            {
-                if (ciclosMedios.TryGetValue(dezena.Numero, out var ciclo) && ciclo > 0)
-                {
-                    // Ajusta a frequência baseada no ciclo médio
-                    double fatorCiclo = Math.Sin((dezena.UltimoAtraso / (double)ciclo) * Math.PI);
-                    dezena.Frequencia *= 1 + (fatorCiclo * 0.2);
-
-                    // Números próximos ao final do ciclo ganham mais força
-                    if (dezena.UltimoAtraso >= ciclo * 0.8)
+                    // Aumentar força de sincronização para números "quentes"
+                    if (frequency >= 3)
                     {
-                        dezena.ForcaSincronizacao = Math.Min(1.0, dezena.ForcaSincronizacao + 0.15);
+                        osc.ForcaSincronizacao = Math.Min(1.0, osc.ForcaSincronizacao + 0.2);
+                    }
+                    else if (frequency == 0)
+                    {
+                        // Números "frios" também podem estar para sair
+                        osc.ForcaSincronizacao = Math.Min(1.0, osc.ForcaSincronizacao + 0.1);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro em AplicarTendenciaCurtoPrazo: {ex.Message}");
             }
         }
 
         /// <summary>
         /// Aplica estratégia de números quentes e frios
         /// </summary>
-        public static void AplicarQuentesFrios(List<DezenaOscilante> dezenas, List<Lance> historico)
+        public static void AplicarQuentesFrios(List<LotoLibrary.Services.DezenaOscilante> osciladores, List<Lance> historico)
         {
-            if (historico == null || !historico.Any()) return;
+            if (!historico.Any() || !osciladores.Any()) return;
 
-            // Calcula frequência de cada número nos últimos sorteios
-            var frequencias = historico
-                .SelectMany(l => l.Lista)
-                .GroupBy(n => n)
-                .ToDictionary(g => g.Key, g => g.Count());
-
-            double mediaFrequencia = frequencias.Values.Average();
-
-            foreach (var dezena in dezenas)
+            try
             {
-                if (frequencias.TryGetValue(dezena.Numero, out var freq))
-                {
-                    dezena.FrequenciaHistorica = freq;
+                // Analisar últimos 20 concursos para identificar padrões
+                var recentHistory = historico.TakeLast(20).ToList();
 
-                    if (freq > mediaFrequencia * 1.2) // Número quente
+                // Calcular frequências
+                var frequencias = new Dictionary<int, int>();
+                foreach (var lance in recentHistory)
+                {
+                    if (lance.Lista != null)
                     {
-                        dezena.Frequencia = Math.Min(3.0, dezena.Frequencia * 1.1);
+                        foreach (var numero in lance.Lista)
+                        {
+                            frequencias[numero] = frequencias.GetValueOrDefault(numero, 0) + 1;
+                        }
                     }
-                    else if (freq < mediaFrequencia * 0.8) // Número frio
+                }
+
+                // Identificar quartis
+                var valores = frequencias.Values.OrderBy(x => x).ToList();
+                if (valores.Count >= 4)
+                {
+                    var q1 = valores[valores.Count / 4];
+                    var q3 = valores[3 * valores.Count / 4];
+
+                    foreach (var osc in osciladores)
                     {
-                        dezena.ForcaSincronizacao = Math.Min(1.0, dezena.ForcaSincronizacao + 0.1);
+                        var freq = frequencias.GetValueOrDefault(osc.Numero, 0);
+
+                        if (freq >= q3) // Número quente
+                        {
+                            osc.Amplitude = Math.Min(2.0, osc.Amplitude * 1.1);
+                            osc.ForcaSincronizacao = Math.Min(1.0, osc.ForcaSincronizacao + 0.15);
+                        }
+                        else if (freq <= q1) // Número frio
+                        {
+                            osc.Amplitude = Math.Min(2.0, osc.Amplitude * 1.05);
+                            osc.ForcaSincronizacao = Math.Min(1.0, osc.ForcaSincronizacao + 0.1);
+                        }
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Gera palpite inteligente baseado em múltiplos critérios (VERSÃO CORRIGIDA)
-        /// </summary>
-        public static List<int> GerarPalpiteValidacao(List<DezenaOscilante> dezenas, List<Lance> dadosValidacao)
-        {
-            if (dezenas == null || !dezenas.Any())
-                return Enumerable.Range(1, 15).ToList(); // Fallback
-
-            // Atualiza todas as probabilidades antes de gerar o palpite
-            foreach (var dezena in dezenas)
+            catch (Exception ex)
             {
-                AtualizarProbabilidadeCompleta(dezena, dadosValidacao);
+                System.Diagnostics.Debug.WriteLine($"Erro em AplicarQuentesFrios: {ex.Message}");
             }
-
-            // Estratégia híbrida para seleção
-            var candidatos = dezenas.Select(d => new
-            {
-                Numero = d.Numero,
-                Score = CalcularScoreAvancado(d),
-                Probabilidade = d.Probabilidade,
-                Sincronizada = d.EstaSincronizada
-            }).ToList();
-
-            // Ordena por score e adiciona elemento de aleatoriedade
-            var selecionados = new List<int>();
-            var candidatosOrdenados = candidatos.OrderByDescending(c => c.Score).ToList();
-
-            // Seleciona os 10 melhores por score
-            selecionados.AddRange(candidatosOrdenados.Take(10).Select(c => c.Numero));
-
-            // Seleciona 3 dos próximos 10 (elemento de aleatoriedade)
-            var proximosCandidatos = candidatosOrdenados.Skip(10).Take(10).ToList();
-            var selecionadosAleatorios = proximosCandidatos
-                .OrderBy(x => _random.Next())
-                .Take(3)
-                .Select(c => c.Numero);
-            selecionados.AddRange(selecionadosAleatorios);
-
-            // Seleciona 2 números sincronizados que ainda não foram selecionados
-            var sincronizados = candidatos
-                .Where(c => c.Sincronizada && !selecionados.Contains(c.Numero))
-                .OrderByDescending(c => c.Probabilidade)
-                .Take(2)
-                .Select(c => c.Numero);
-            selecionados.AddRange(sincronizados);
-
-            // Se ainda faltam números, completa com os melhores restantes
-            while (selecionados.Count < 15)
-            {
-                var proximo = candidatos
-                    .Where(c => !selecionados.Contains(c.Numero))
-                    .OrderByDescending(c => c.Score)
-                    .FirstOrDefault();
-
-                if (proximo != null)
-                    selecionados.Add(proximo.Numero);
-                else
-                    break;
-            }
-
-            return selecionados.Take(15).OrderBy(x => x).ToList();
         }
 
         /// <summary>
-        /// Atualiza probabilidade completa considerando contexto histórico
+        /// Aplica estratégia de padrões de grupos
         /// </summary>
-        private static void AtualizarProbabilidadeCompleta(DezenaOscilante dezena, List<Lance> dadosValidacao)
+        public static void AplicarPadroesGrupos(List<LotoLibrary.Services.DezenaOscilante> osciladores, List<int[]> gruposFrequentes)
         {
-            if (dadosValidacao == null || !dadosValidacao.Any()) return;
+            if (!gruposFrequentes.Any() || !osciladores.Any()) return;
 
-            // Fator baseado na fase atual
-            double fatorFase = (Math.Sin(dezena.Fase * Math.PI / 180) + 1) / 2;
-
-            // Fator baseado no atraso
-            double fatorAtraso = Math.Min(1.0, dezena.UltimoAtraso / 15.0);
-
-            // Fator baseado na frequência histórica
-            double mediaFrequencia = dadosValidacao.SelectMany(l => l.Lista).Count() / 25.0;
-            double fatorFrequencia = Math.Min(1.0, dezena.FrequenciaHistorica / mediaFrequencia);
-
-            // Fator baseado na sincronização
-            double fatorSync = dezena.ForcaSincronizacao;
-
-            // Fator de aleatoriedade para evitar sempre os mesmos números
-            double fatorAleatorio = _random.NextDouble() * 0.2; // 20% de aleatoriedade
-
-            // Combina todos os fatores
-            dezena.Probabilidade = (fatorFase * 0.25) +
-                                  (fatorAtraso * 0.25) +
-                                  (fatorFrequencia * 0.2) +
-                                  (fatorSync * 0.2) +
-                                  (fatorAleatorio * 0.1);
-
-            dezena.Probabilidade = Math.Max(0.1, Math.Min(0.9, dezena.Probabilidade));
-        }
-
-        /// <summary>
-        /// Calcula score avançado para ranking das dezenas
-        /// </summary>
-        private static double CalcularScoreAvancado(DezenaOscilante dezena)
-        {
-            double scoreBase = dezena.Probabilidade * 100;
-
-            // Bônus para números sincronizados
-            double bonusSync = dezena.EstaSincronizada ? 15 : 0;
-
-            // Bônus/penalidade baseado no atraso
-            double bonusAtraso = dezena.UltimoAtraso > 10 ? dezena.UltimoAtraso * 1.5 : 0;
-            double penalidadeAtraso = dezena.UltimoAtraso > 25 ? dezena.UltimoAtraso * 0.5 : 0;
-
-            // Bônus para força de sincronização alta
-            double bonusForca = dezena.ForcaSincronizacao > 0.7 ? dezena.ForcaSincronizacao * 20 : 0;
-
-            // Fator de aleatoriedade para quebrar empates
-            double fatorAleatorio = _random.NextDouble() * 5;
-
-            return scoreBase + bonusSync + bonusAtraso - penalidadeAtraso + bonusForca + fatorAleatorio;
-        }
-
-        /// <summary>
-        /// Analisa padrões de grupos frequentes no histórico
-        /// </summary>
-        public static List<int[]> IdentificarGruposFrequentes(List<Lance> historico, int tamanhoGrupo = 3)
-        {
-            if (historico == null || !historico.Any()) return new List<int[]>();
-
-            var grupos = new Dictionary<string, int>();
-
-            foreach (var lance in historico)
+            try
             {
-                var combinacoes = GerarCombinacoes(lance.Lista, tamanhoGrupo);
-                foreach (var combo in combinacoes)
+                foreach (var grupo in gruposFrequentes)
                 {
-                    var chave = string.Join(",", combo.OrderBy(x => x));
-                    grupos[chave] = grupos.TryGetValue(chave, out var count) ? count + 1 : 1;
+                    var membros = osciladores.Where(d => grupo.Contains(d.Numero)).ToList();
+
+                    if (membros.Count >= 2)
+                    {
+                        double mediaForca = membros.Average(d => d.ForcaSincronizacao);
+                        double mediaFase = membros.Average(d => d.Fase);
+
+                        foreach (var dezena in membros)
+                        {
+                            // Sincronizar força
+                            dezena.ForcaSincronizacao = (dezena.ForcaSincronizacao + mediaForca) / 2;
+
+                            // Aproximar fases
+                            var diferencaFase = mediaFase - dezena.Fase;
+                            if (Math.Abs(diferencaFase) > 180)
+                            {
+                                diferencaFase = diferencaFase > 0 ? diferencaFase - 360 : diferencaFase + 360;
+                            }
+                            dezena.Fase += diferencaFase * 0.1; // Ajuste gradual
+                            dezena.Fase = (dezena.Fase % 360 + 360) % 360; // Normalizar
+                        }
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro em AplicarPadroesGrupos: {ex.Message}");
+            }
+        }
 
-            return grupos
-                .Where(g => g.Value >= historico.Count * 0.1) // Aparece em pelo menos 10% dos sorteios
-                .OrderByDescending(g => g.Value)
-                .Take(10)
-                .Select(g => g.Key.Split(',').Select(int.Parse).ToArray())
+        /// <summary>
+        /// Aplica estratégia baseada em ciclos históricos
+        /// </summary>
+        public static void AplicarCiclos(List<LotoLibrary.Services.DezenaOscilante> osciladores, Dictionary<int, int> ciclosMedios)
+        {
+            if (!ciclosMedios.Any() || !osciladores.Any()) return;
+
+            try
+            {
+                foreach (var osc in osciladores)
+                {
+                    if (ciclosMedios.TryGetValue(osc.Numero, out var ciclo) && ciclo > 0)
+                    {
+                        // Calcular posição no ciclo
+                        double posicaoNoCiclo = (double)osc.UltimoAtraso / ciclo;
+
+                        // Ajustar frequência baseada na posição no ciclo
+                        double ajuste = Math.Sin(posicaoNoCiclo * Math.PI * 2) * 0.3;
+                        osc.Frequencia = Math.Max(0.5, Math.Min(2.0, osc.Frequencia * (1 + ajuste)));
+
+                        // Ajustar probabilidade
+                        double probabilidadeCiclo = 1.0 - Math.Abs(posicaoNoCiclo - 1.0);
+                        osc.Probabilidade = Math.Max(0.1, Math.Min(0.9,
+                            (osc.Probabilidade + probabilidadeCiclo) / 2));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro em AplicarCiclos: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Gera palpite para validação baseado nos osciladores
+        /// </summary>
+        public static List<int> GerarPalpiteValidacao(List<LotoLibrary.Services.DezenaOscilante> osciladores, List<Lance> dadosValidacao)
+        {
+            if (!osciladores.Any()) return GerarPalpiteAleatorio();
+
+            try
+            {
+                // Atualizar probabilidades baseadas no estado atual
+                AtualizarProbabilidades(osciladores);
+
+                // Estratégia 1: Dezenas sincronizadas com alta força
+                var sincronizadas = osciladores
+                    .Where(o => o.EstaSincronizada && o.ForcaSincronizacao > 0.5)
+                    .OrderByDescending(o => o.ForcaSincronizacao)
+                    .ThenByDescending(o => o.Probabilidade)
+                    .Take(8)
+                    .Select(o => o.Numero)
+                    .ToList();
+
+                // Estratégia 2: Dezenas com alta probabilidade
+                var altaProbabilidade = osciladores
+                    .Where(o => o.Probabilidade > 0.6)
+                    .OrderByDescending(o => o.Probabilidade)
+                    .ThenByDescending(o => o.Amplitude)
+                    .Take(10)
+                    .Select(o => o.Numero)
+                    .ToList();
+
+                // Estratégia 3: Dezenas em fase ótima (pico da onda)
+                var faseOtima = osciladores
+                    .Where(o => Math.Abs(Math.Sin(o.Fase * Math.PI / 180)) > 0.7)
+                    .OrderByDescending(o => Math.Abs(Math.Sin(o.Fase * Math.PI / 180)))
+                    .Take(7)
+                    .Select(o => o.Numero)
+                    .ToList();
+
+                // Combinar estratégias sem duplicatas
+                var candidatos = sincronizadas
+                    .Union(altaProbabilidade)
+                    .Union(faseOtima)
+                    .Distinct()
+                    .ToList();
+
+                // Se não temos candidatos suficientes, adicionar os melhores por score geral
+                if (candidatos.Count < 15)
+                {
+                    var restantes = osciladores
+                        .Where(o => !candidatos.Contains(o.Numero))
+                        .OrderByDescending(o => CalcularScoreGeral(o))
+                        .Take(15 - candidatos.Count)
+                        .Select(o => o.Numero);
+
+                    candidatos.AddRange(restantes);
+                }
+
+                // Retornar os 15 melhores, ordenados
+                return candidatos.Take(15).OrderBy(n => n).ToList();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro em GerarPalpiteValidacao: {ex.Message}");
+                return GerarPalpiteAleatorio();
+            }
+        }
+
+        /// <summary>
+        /// Gera palpite para próximo concurso
+        /// </summary>
+        public static List<int> GerarPalpiteProximoConcurso(List<LotoLibrary.Services.DezenaOscilante> osciladores)
+        {
+            return GerarPalpiteValidacao(osciladores, new List<Lance>());
+        }
+
+        /// <summary>
+        /// Atualiza probabilidades de todos os osciladores
+        /// </summary>
+        private static void AtualizarProbabilidades(List<LotoLibrary.Services.DezenaOscilante> osciladores)
+        {
+            foreach (var osc in osciladores)
+            {
+                // Fator baseado na fase (onda senoidal)
+                double fatorFase = (Math.Sin(osc.Fase * Math.PI / 180) + 1) / 2; // 0-1
+
+                // Fator baseado no atraso
+                double fatorAtraso = Math.Min(1.0, osc.UltimoAtraso / 20.0);
+
+                // Fator baseado na sincronização
+                double fatorSync = osc.ForcaSincronizacao;
+
+                // Fator baseado na amplitude
+                double fatorAmplitude = Math.Min(1.0, osc.Amplitude / 2.0);
+
+                // Combinar fatores
+                osc.Probabilidade = (fatorFase * 0.3) +
+                                   (fatorAtraso * 0.25) +
+                                   (fatorSync * 0.25) +
+                                   (fatorAmplitude * 0.2);
+
+                // Normalizar
+                osc.Probabilidade = Math.Max(0.1, Math.Min(0.9, osc.Probabilidade));
+            }
+        }
+
+        /// <summary>
+        /// Calcula score geral de um oscilador
+        /// </summary>
+        private static double CalcularScoreGeral(LotoLibrary.Services.DezenaOscilante osc)
+        {
+            var scoreProb = osc.Probabilidade * 0.4;
+            var scoreForca = osc.ForcaSincronizacao * 0.3;
+            var scoreAmplitude = Math.Min(1.0, osc.Amplitude / 2.0) * 0.2;
+            var scoreFase = Math.Abs(Math.Sin(osc.Fase * Math.PI / 180)) * 0.1;
+
+            return scoreProb + scoreForca + scoreAmplitude + scoreFase;
+        }
+
+        /// <summary>
+        /// Gera palpite aleatório como fallback
+        /// </summary>
+        private static List<int> GerarPalpiteAleatorio()
+        {
+            var random = new Random();
+            return Enumerable.Range(1, 25)
+                .OrderBy(x => random.Next())
+                .Take(15)
+                .OrderBy(x => x)
                 .ToList();
         }
 
         /// <summary>
-        /// Gera todas as combinações de um tamanho específico
+        /// Aplica sincronização mútua entre osciladores
         /// </summary>
-        private static IEnumerable<List<int>> GerarCombinacoes(List<int> lista, int tamanho)
+        public static void AplicarSincronizacaoMutua(List<LotoLibrary.Services.DezenaOscilante> osciladores, double intensidade = 0.1)
         {
-            if (tamanho == 1)
-                return lista.Select(x => new List<int> { x });
+            if (!osciladores.Any()) return;
 
-            return GerarCombinacoes(lista, tamanho - 1)
-                .SelectMany(t => lista.Where(o => o > t.Last()), (t, o) => t.Concat(new[] { o }).ToList());
+            try
+            {
+                // Cada oscilador é influenciado pelos outros
+                var influencias = new Dictionary<int, double>();
+
+                foreach (var dezena in osciladores)
+                {
+                    double influenciaTotal = 0;
+
+                    foreach (var outra in osciladores)
+                    {
+                        if (outra.Numero != dezena.Numero)
+                        {
+                            // Calcular influência baseada na diferença de fase
+                            var diferencaFase = outra.Fase - dezena.Fase;
+                            var influencia = Math.Sin(diferencaFase * Math.PI / 180) *
+                                           outra.ForcaSincronizacao * intensidade;
+
+                            influenciaTotal += influencia;
+                        }
+                    }
+
+                    influencias[dezena.Numero] = influenciaTotal;
+                }
+
+                // Aplicar influências
+                foreach (var dezena in osciladores)
+                {
+                    if (influencias.TryGetValue(dezena.Numero, out var influencia))
+                    {
+                        dezena.AplicarInfluencia(influencia);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro em AplicarSincronizacaoMutua: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Verifica se dois osciladores estão sincronizados
+        /// </summary>
+        public static bool EstaoSincronizados(LotoLibrary.Services.DezenaOscilante osc1, LotoLibrary.Services.DezenaOscilante osc2, double tolerancia = 30.0)
+        {
+            if (osc1 == null || osc2 == null) return false;
+
+            var diferencaFase = Math.Abs(osc1.Fase - osc2.Fase);
+            diferencaFase = Math.Min(diferencaFase, 360 - diferencaFase); // Distância circular
+
+            return diferencaFase <= tolerancia;
+        }
+
+        /// <summary>
+        /// Encontra grupos de osciladores sincronizados
+        /// </summary>
+        public static List<List<int>> EncontrarGruposSincronizados(List<LotoLibrary.Services.DezenaOscilante> osciladores, double tolerancia = 30.0)
+        {
+            var grupos = new List<List<int>>();
+
+            foreach (var osc in osciladores)
+            {
+                // Verificar se já está em algum grupo
+                if (grupos.Any(g => g.Contains(osc.Numero))) continue;
+
+                // Criar novo grupo
+                var novoGrupo = new List<int> { osc.Numero };
+
+                // Encontrar osciladores sincronizados
+                foreach (var outro in osciladores)
+                {
+                    if (outro.Numero != osc.Numero && EstaoSincronizados(osc, outro, tolerancia))
+                    {
+                        novoGrupo.Add(outro.Numero);
+                    }
+                }
+
+                // Adicionar grupo se tem mais de 1 membro
+                if (novoGrupo.Count > 1)
+                {
+                    grupos.Add(novoGrupo);
+                }
+            }
+
+            return grupos;
         }
     }
 }

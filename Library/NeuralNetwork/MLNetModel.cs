@@ -1,6 +1,6 @@
-﻿using LotoLibrary.Interfaces;
+﻿using LotoLibrary.Infrastructure;
+using LotoLibrary.Interfaces;
 using LotoLibrary.NeuralNetwork.Models;
-using LotoLibrary.Services;
 using Microsoft.ML;
 using Microsoft.ML.Trainers.FastTree;
 using System;

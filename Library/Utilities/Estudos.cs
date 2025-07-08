@@ -1,9 +1,11 @@
+using LotoLibrary.Infrastructure;
 using LotoLibrary.Models;
+using LotoLibrary.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LotoLibrary.Services;
+namespace LotoLibrary.Utilities;
 
 public static class Estudos
 {
@@ -743,12 +745,12 @@ public static class Estudos
             int soma = 0;
             foreach (Lance o in ars6)
             {
-                soma += (Infra.Contapontos(o, q) * l6[o.Id]);
+                soma += Infra.Contapontos(o, q) * l6[o.Id];
             }
 
             foreach (Lance o in ars9)
             {
-                soma += (Infra.Contapontos(o, q) * l9[o.Id]);
+                soma += Infra.Contapontos(o, q) * l9[o.Id];
             }
             LTPosicaoMult.Add(soma);
         }

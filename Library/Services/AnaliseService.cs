@@ -1,4 +1,5 @@
-﻿using LotoLibrary.Infrastructure.Logging;
+﻿using LotoLibrary.Infrastructure;
+using LotoLibrary.Infrastructure.Logging;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.NeuralNetwork;

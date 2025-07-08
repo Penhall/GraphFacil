@@ -1,9 +1,10 @@
 ﻿using LotoLibrary.Models;
+using LotoLibrary.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LotoLibrary.Services;
+namespace LotoLibrary.Engines;
 
 public class OscillatorEngine
 {

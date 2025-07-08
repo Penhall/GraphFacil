@@ -1,5 +1,5 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Constants\Phase1Constants.cs
-namespace LotoLibrary.Constants
+namespace LotoLibrary.Constantes
 {
     /// <summary>
     /// Constantes específicas da Fase 1

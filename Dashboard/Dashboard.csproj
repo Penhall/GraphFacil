@@ -24,4 +24,8 @@
 		<Resource Include="**\*.resx" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Scripts\" />
+	</ItemGroup>
+
 </Project>

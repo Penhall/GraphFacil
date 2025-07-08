@@ -2,7 +2,7 @@ using LotoLibrary.Models;
 using System;
 using System.Collections.Generic;
 
-namespace LotoLibrary.Services
+namespace LotoLibrary.Infrastructure
 {
     public class GerarCombinacoes
     {

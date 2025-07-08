@@ -1,3 +1,4 @@
+using LotoLibrary.Engines;
 using LotoLibrary.Models;
 using System;
 using System.Collections.Generic;
@@ -5,59 +6,6 @@ using System.Linq;
 
 namespace LotoLibrary.Services
 {
-    /// <summary>
-    /// Resultado da validação de um palpite individual
-    /// </summary>
-    public class ResultadoValidacao
-    {
-        public int ConcursoId { get; set; }
-        public List<int> PalpiteGerado { get; set; } = new();
-        public List<int> ResultadoReal { get; set; } = new();
-        public int Acertos { get; set; }
-        public double TaxaAcerto { get; set; }
-        public List<int> NumerosAcertados { get; set; } = new();
-        public List<int> NumerosPerdidos { get; set; } = new();
-        public DateTime DataTeste { get; set; }
-        public string TipoEstrategia { get; set; } = "Osciladores";
-    }
-
-    /// <summary>
-    /// Métricas consolidadas de performance
-    /// </summary>
-    public class MetricasPerformance
-    {
-        public string NomeEstrategia { get; set; } = string.Empty;
-        public int TotalTestes { get; set; }
-        public double TaxaAcertoMedia { get; set; }
-        public double DesvioPadrao { get; set; }
-        public double TaxaAcertoMinima { get; set; }
-        public double TaxaAcertoMaxima { get; set; }
-        public double MediaAcertos { get; set; }
-        public int MelhorResultado { get; set; }
-        public int PiorResultado { get; set; }
-
-        // Distribuição de acertos
-        public Dictionary<int, int> DistribuicaoAcertos { get; set; } = new();
-
-        // Métricas avançadas
-        public double Precision { get; set; }
-        public double Recall { get; set; }
-        public double F1Score { get; set; }
-
-        // Comparação com baseline
-        public double GanhoSobreAleatorio { get; set; }
-        public double GanhoSobreFrequencia { get; set; }
-
-        // Consistência temporal
-        public double VariabilidadeTemporal { get; set; }
-        public List<double> TendenciaTemporeal { get; set; } = new();
-
-        public override string ToString()
-        {
-            return $"{NomeEstrategia}: {TaxaAcertoMedia:P2} ± {DesvioPadrao:P2} " +
-                   $"(Acertos: {MediaAcertos:F1}/15, Melhor: {MelhorResultado})";
-        }
-    }
 
     /// <summary>
     /// Sistema completo de validação e métricas para osciladores

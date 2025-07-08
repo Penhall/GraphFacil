@@ -1,7 +1,7 @@
 ﻿// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\PerformanceComparison.cs
 namespace Dashboard.ViewModel
 {
-public partial class MainWindowViewModel
+    public partial class MainWindowViewModel
     {
         private class PerformanceComparison
         {
@@ -16,7 +16,6 @@ public partial class MainWindowViewModel
             public double PerformanceImprovement { get; set; }
             public string QualityImprovement { get; set; }
         }
-        #endregion
 
 
     }

@@ -1,4 +1,4 @@
-﻿namespace LotoLibrary.Services;
+﻿namespace LotoLibrary.Enums;
 
 public enum TipoIndicador
 {

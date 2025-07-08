@@ -1,5 +1,5 @@
-﻿using LotoLibrary.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace LotoLibrary.Constantes
 {
@@ -13,6 +13,8 @@ namespace LotoLibrary.Constantes
         public const string ArqLoto = "Lotofacil";
 
         public const string ArqLotoJson = "Lotofacil.json";
+
+        public static List<int> ListaG = Enumerable.Range(1, 25).ToList();
 
     }
 }

@@ -1,198 +1,329 @@
-﻿<Window x:Class="Dashboard.Views.ValidationWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Validação dos Osciladores - Análise de Performance" 
-        Height="800" Width="1200"
-        WindowStartupLocation="CenterScreen"
-        Background="{DynamicResource MaterialDesignPaper}">
+﻿<Window
+    x:Class="Dashboard.Views.ValidationWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    Title="Validação dos Osciladores - Análise de Performance"
+    Width="1200"
+    Height="800"
+    Background="{DynamicResource MaterialDesignPaper}"
+    WindowStartupLocation="CenterScreen"
+    >
 
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
 
-        <!-- Converter para cores baseadas na performance -->
+        <!--  Converter para cores baseadas na performance  -->
         <Style x:Key="PerformanceTextStyle" TargetType="TextBlock">
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#4CAF50"/>
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#4CAF50" />
         </Style>
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Border Grid.Row="0" Background="{DynamicResource PrimaryHueMidBrush}" Padding="20,15">
+        <!--  Header  -->
+        <Border
+            Grid.Row="0"
+            Padding="20,15"
+            Background="{DynamicResource PrimaryHueMidBrush}"
+            >
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <md:PackIcon Kind="ChartLine" Foreground="White" Width="32" Height="32" Margin="0,0,10,0"/>
-                    <TextBlock Text="Validação dos Osciladores - Análise de Performance" 
-                               Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <md:PackIcon
+                        Width="32"
+                        Height="32"
+                        Margin="0,0,10,0"
+                        Foreground="White"
+                        Kind="ChartLine"
+                        />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Validação dos Osciladores - Análise de Performance"
+                        />
                 </StackPanel>
 
-                <Button Grid.Column="1" Content="Fechar" Click="FecharWindow" 
-                        Background="Transparent" BorderBrush="White" Foreground="White"/>
+                <Button
+                    Grid.Column="1"
+                    Background="Transparent"
+                    BorderBrush="White"
+                    Click="FecharWindow"
+                    Content="Fechar"
+                    Foreground="White"
+                    />
             </Grid>
         </Border>
 
-        <!-- Controles de Validação -->
-        <Border Grid.Row="1" Background="#F5F5F5" Padding="20,10">
+        <!--  Controles de Validação  -->
+        <Border
+            Grid.Row="1"
+            Padding="20,10"
+            Background="#F5F5F5"
+            >
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="Número de Testes:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <TextBox Text="{Binding NumeroTestes}" Width="80" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        Text="Número de Testes:"
+                        />
+                    <TextBox
+                        Width="80"
+                        Margin="0,0,20,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding NumeroTestes}"
+                        />
 
-                    <TextBlock Text="Tamanho Validação:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <TextBox Text="{Binding TamanhoValidacao}" Width="80" VerticalAlignment="Center"/>
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        Text="Tamanho Validação:"
+                        />
+                    <TextBox
+                        Width="80"
+                        VerticalAlignment="Center"
+                        Text="{Binding TamanhoValidacao}"
+                        />
                 </StackPanel>
 
-                <Button Grid.Column="1" Command="{Binding ExecutarValidacaoCommand}" Margin="10,0">
+                <Button
+                    Grid.Column="1"
+                    Margin="10,0"
+                    Command="{Binding ExecutarValidacaoCommand}"
+                    >
                     <StackPanel Orientation="Horizontal">
-                        <md:PackIcon Kind="Play" Margin="0,0,5,0"/>
-                        <TextBlock Text="EXECUTAR VALIDAÇÃO"/>
+                        <md:PackIcon Margin="0,0,5,0" Kind="Play" />
+                        <TextBlock Text="EXECUTAR VALIDAÇÃO" />
                     </StackPanel>
                 </Button>
 
                 <Button Grid.Column="2" Command="{Binding CompararEstrategiasCommand}">
                     <StackPanel Orientation="Horizontal">
-                        <md:PackIcon Kind="Compare" Margin="0,0,5,0"/>
-                        <TextBlock Text="COMPARAR ESTRATÉGIAS"/>
+                        <md:PackIcon Margin="0,0,5,0" Kind="Compare" />
+                        <TextBlock Text="COMPARAR ESTRATÉGIAS" />
                     </StackPanel>
                 </Button>
             </Grid>
         </Border>
 
-        <!-- Conteúdo Principal -->
+        <!--  Conteúdo Principal  -->
         <Grid Grid.Row="2" Margin="20">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
 
-            <!-- Resultados da Validação -->
-            <GroupBox Grid.Column="0" Header="Resultados da Validação" Margin="0,0,10,0">
+            <!--  Resultados da Validação  -->
+            <GroupBox
+                Grid.Column="0"
+                Margin="0,0,10,0"
+                Header="Resultados da Validação"
+                >
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <!-- Resumo das Métricas -->
-                    <Border Grid.Row="0" Background="#E3F2FD" Padding="15" Margin="0,0,0,10" CornerRadius="5">
+                    <!--  Resumo das Métricas  -->
+                    <Border
+                        Grid.Row="0"
+                        Margin="0,0,0,10"
+                        Padding="15"
+                        Background="#E3F2FD"
+                        CornerRadius="5"
+                        >
                         <Grid Visibility="{Binding MetricasOsciladores, Converter={StaticResource BoolToVisConverter}}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Taxa de Acerto Média" FontSize="12" Foreground="#666"/>
-                                <TextBlock Text="{Binding MetricasOsciladores.TaxaAcertoMedia, StringFormat=P2}" 
-                                           FontSize="18" FontWeight="Bold" Foreground="#1976D2"/>
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="#666"
+                                    Text="Taxa de Acerto Média"
+                                    />
+                                <TextBlock
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    Foreground="#1976D2"
+                                    Text="{Binding MetricasOsciladores.TaxaAcertoMedia, StringFormat=P2}"
+                                    />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
-                                <TextBlock Text="Média de Acertos" FontSize="12" Foreground="#666"/>
-                                <TextBlock Text="{Binding MetricasOsciladores.MediaAcertos, StringFormat=F1}" 
-                                           FontSize="18" FontWeight="Bold" Foreground="#1976D2"/>
-                                <TextBlock Text="/ 15 números" FontSize="10" Foreground="#999"/>
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="#666"
+                                    Text="Média de Acertos"
+                                    />
+                                <TextBlock
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    Foreground="#1976D2"
+                                    Text="{Binding MetricasOsciladores.MediaAcertos, StringFormat=F1}"
+                                    />
+                                <TextBlock
+                                    FontSize="10"
+                                    Foreground="#999"
+                                    Text="/ 15 números"
+                                    />
                             </StackPanel>
 
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Melhor Resultado" FontSize="12" Foreground="#666"/>
-                                <TextBlock Text="{Binding MetricasOsciladores.MelhorResultado}" 
-                                           FontSize="18" FontWeight="Bold" Foreground="#4CAF50"/>
-                                <TextBlock Text="acertos" FontSize="10" Foreground="#999"/>
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="#666"
+                                    Text="Melhor Resultado"
+                                    />
+                                <TextBlock
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    Foreground="#4CAF50"
+                                    Text="{Binding MetricasOsciladores.MelhorResultado}"
+                                    />
+                                <TextBlock
+                                    FontSize="10"
+                                    Foreground="#999"
+                                    Text="acertos"
+                                    />
                             </StackPanel>
 
                             <StackPanel Grid.Column="3">
-                                <TextBlock Text="Desvio Padrão" FontSize="12" Foreground="#666"/>
-                                <TextBlock Text="{Binding MetricasOsciladores.DesvioPadrao, StringFormat=P2}" 
-                                           FontSize="18" FontWeight="Bold" Foreground="#FF9800"/>
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="#666"
+                                    Text="Desvio Padrão"
+                                    />
+                                <TextBlock
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    Foreground="#FF9800"
+                                    Text="{Binding MetricasOsciladores.DesvioPadrao, StringFormat=P2}"
+                                    />
                             </StackPanel>
                         </Grid>
                     </Border>
 
-                    <!-- Lista Detalhada -->
+                    <!--  Lista Detalhada  -->
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding ResultadosValidacao}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" 
-                                            Margin="0,2" Padding="10" CornerRadius="3">
+                                    <Border
+                                        Margin="0,2"
+                                        Padding="10"
+                                        Background="White"
+                                        BorderBrush="#E0E0E0"
+                                        BorderThickness="1"
+                                        CornerRadius="3"
+                                        >
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <TextBlock Grid.Column="0" Text="{Binding ConcursoId, StringFormat=#{0}}" 
-                                                       FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Margin="0,0,15,0"
+                                                VerticalAlignment="Center"
+                                                FontWeight="Bold"
+                                                Text="{Binding ConcursoId, StringFormat=#{0}}"
+                                                />
 
                                             <StackPanel Grid.Column="1" Orientation="Vertical">
-                                                <TextBlock Text="{Binding PalpiteGerado, StringFormat='Palpite: {0}'}" 
-                                                           FontFamily="Courier New" FontSize="11"/>
-                                                <TextBlock Text="{Binding ResultadoReal, StringFormat='Real: {0}'}" 
-                                                           FontFamily="Courier New" FontSize="11" Foreground="#666"/>
-                                                <TextBlock Text="{Binding NumerosAcertados, StringFormat='Acertos: {0}'}" 
-                                                           FontFamily="Courier New" FontSize="11" Foreground="#4CAF50"/>
+                                                <TextBlock
+                                                    FontFamily="Courier New"
+                                                    FontSize="11"
+                                                    Text="{Binding PalpiteGerado, StringFormat='Palpite: {0}'}"
+                                                    />
+                                                <TextBlock
+                                                    FontFamily="Courier New"
+                                                    FontSize="11"
+                                                    Foreground="#666"
+                                                    Text="{Binding ResultadoReal, StringFormat='Real: {0}'}"
+                                                    />
+                                                <TextBlock
+                                                    FontFamily="Courier New"
+                                                    FontSize="11"
+                                                    Foreground="#4CAF50"
+                                                    Text="{Binding NumerosAcertados, StringFormat='Acertos: {0}'}"
+                                                    />
                                             </StackPanel>
 
-                                            <TextBlock Grid.Column="2" Text="{Binding Acertos}" 
-                                                       FontSize="20" FontWeight="Bold" VerticalAlignment="Center"
-                                                       Margin="10,0" HorizontalAlignment="Center">
+                                            <TextBlock
+                                                Grid.Column="2"
+                                                Margin="10,0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontSize="20"
+                                                FontWeight="Bold"
+                                                Text="{Binding Acertos}"
+                                                >
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="Foreground" Value="#666"/>
+                                                        <Setter Property="Foreground" Value="#666" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Acertos}" Value="11">
-                                                                <Setter Property="Foreground" Value="#4CAF50"/>
+                                                                <Setter Property="Foreground" Value="#4CAF50" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Acertos}" Value="12">
-                                                                <Setter Property="Foreground" Value="#4CAF50"/>
+                                                                <Setter Property="Foreground" Value="#4CAF50" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Acertos}" Value="13">
-                                                                <Setter Property="Foreground" Value="#4CAF50"/>
+                                                                <Setter Property="Foreground" Value="#4CAF50" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Acertos}" Value="14">
-                                                                <Setter Property="Foreground" Value="#4CAF50"/>
+                                                                <Setter Property="Foreground" Value="#4CAF50" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Acertos}" Value="15">
-                                                                <Setter Property="Foreground" Value="#4CAF50"/>
+                                                                <Setter Property="Foreground" Value="#4CAF50" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Acertos}" Value="5">
-                                                                <Setter Property="Foreground" Value="#F44336"/>
+                                                                <Setter Property="Foreground" Value="#F44336" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Acertos}" Value="6">
-                                                                <Setter Property="Foreground" Value="#F44336"/>
+                                                                <Setter Property="Foreground" Value="#F44336" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
 
-                                            <TextBlock Grid.Column="3" Text="{Binding TaxaAcerto, StringFormat=P1}" 
-                                                       VerticalAlignment="Center" FontWeight="Bold"/>
+                                            <TextBlock
+                                                Grid.Column="3"
+                                                VerticalAlignment="Center"
+                                                FontWeight="Bold"
+                                                Text="{Binding TaxaAcerto, StringFormat=P1}"
+                                                />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -202,95 +333,162 @@
                 </Grid>
             </GroupBox>
 
-            <!-- Divisor -->
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" 
-                          Background="{DynamicResource MaterialDesignDivider}"/>
+            <!--  Divisor  -->
+            <GridSplitter
+                Grid.Column="1"
+                Width="5"
+                HorizontalAlignment="Center"
+                Background="{DynamicResource MaterialDesignDivider}"
+                />
 
-            <!-- Comparação de Estratégias -->
+            <!--  Comparação de Estratégias  -->
             <GroupBox Grid.Column="2" Header="Comparação de Estratégias">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <!-- Indicador de Progresso -->
-                        <Border Background="#FFF3E0" Padding="10" CornerRadius="5" Margin="0,0,0,10"
-                                Visibility="{Binding IsValidando, Converter={StaticResource BoolToVisConverter}}">
+                        <!--  Indicador de Progresso  -->
+                        <Border
+                            Margin="0,0,0,10"
+                            Padding="10"
+                            Background="#FFF3E0"
+                            CornerRadius="5"
+                            Visibility="{Binding IsValidando, Converter={StaticResource BoolToVisConverter}}"
+                            >
                             <StackPanel>
-                                <TextBlock Text="Executando Validação..." FontWeight="Bold" Margin="0,0,0,5"/>
-                                <ProgressBar IsIndeterminate="True" Height="20"/>
-                                <TextBlock Text="{Binding ProgressoValidacao}" FontSize="12" Margin="0,5,0,0"/>
+                                <TextBlock
+                                    Margin="0,0,0,5"
+                                    FontWeight="Bold"
+                                    Text="Executando Validação..."
+                                    />
+                                <ProgressBar Height="20" IsIndeterminate="True" />
+                                <TextBlock
+                                    Margin="0,5,0,0"
+                                    FontSize="12"
+                                    Text="{Binding ProgressoValidacao}"
+                                    />
                             </StackPanel>
                         </Border>
 
-                        <!-- Lista de Estratégias -->
+                        <!--  Lista de Estratégias  -->
                         <ItemsControl ItemsSource="{Binding ComparacaoEstrategias}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1" 
-                                            Margin="0,5" Padding="15" CornerRadius="5">
+                                    <Border
+                                        Margin="0,5"
+                                        Padding="15"
+                                        Background="White"
+                                        BorderBrush="#E0E0E0"
+                                        BorderThickness="1"
+                                        CornerRadius="5"
+                                        >
                                         <StackPanel>
-                                            <TextBlock Text="{Binding NomeEstrategia}" FontWeight="Bold" FontSize="14"/>
+                                            <TextBlock
+                                                FontSize="14"
+                                                FontWeight="Bold"
+                                                Text="{Binding NomeEstrategia}"
+                                                />
 
                                             <Grid Margin="0,5,0,0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <TextBlock Grid.Column="0" Text="Taxa de Acerto:" FontSize="12"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding TaxaAcertoMedia, StringFormat=P2}" 
-                                                           FontWeight="Bold" Style="{StaticResource PerformanceTextStyle}"/>
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    FontSize="12"
+                                                    Text="Taxa de Acerto:"
+                                                    />
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    FontWeight="Bold"
+                                                    Style="{StaticResource PerformanceTextStyle}"
+                                                    Text="{Binding TaxaAcertoMedia, StringFormat=P2}"
+                                                    />
                                             </Grid>
 
                                             <Grid Margin="0,2,0,0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <TextBlock Grid.Column="0" Text="Média Acertos:" FontSize="12"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding MediaAcertos, StringFormat=F1}" 
-                                                           FontWeight="Bold"/>
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    FontSize="12"
+                                                    Text="Média Acertos:"
+                                                    />
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    FontWeight="Bold"
+                                                    Text="{Binding MediaAcertos, StringFormat=F1}"
+                                                    />
                                             </Grid>
 
                                             <Grid Margin="0,2,0,0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <TextBlock Grid.Column="0" Text="Melhor Resultado:" FontSize="12"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding MelhorResultado}" 
-                                                           FontWeight="Bold" Foreground="#4CAF50"/>
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    FontSize="12"
+                                                    Text="Melhor Resultado:"
+                                                    />
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    FontWeight="Bold"
+                                                    Foreground="#4CAF50"
+                                                    Text="{Binding MelhorResultado}"
+                                                    />
                                             </Grid>
 
                                             <Grid Margin="0,2,0,0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <TextBlock Grid.Column="0" Text="vs Aleatório:" FontSize="12"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding GanhoSobreAleatorio, StringFormat=+P1}" 
-                                                           FontWeight="Bold">
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    FontSize="12"
+                                                    Text="vs Aleatório:"
+                                                    />
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    FontWeight="Bold"
+                                                    Text="{Binding GanhoSobreAleatorio, StringFormat=+P1}"
+                                                    >
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="#4CAF50"/>
+                                                            <Setter Property="Foreground" Value="#4CAF50" />
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
                                             </Grid>
 
-                                            <!-- Distribuição de Acertos -->
-                                            <TextBlock Text="Distribuição:" FontWeight="Bold" FontSize="12" Margin="0,10,0,5"/>
+                                            <!--  Distribuição de Acertos  -->
+                                            <TextBlock
+                                                Margin="0,10,0,5"
+                                                FontSize="12"
+                                                FontWeight="Bold"
+                                                Text="Distribuição:"
+                                                />
                                             <ItemsControl ItemsSource="{Binding DistribuicaoAcertos}">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <WrapPanel/>
+                                                        <WrapPanel />
                                                     </ItemsPanelTemplate>
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Border Background="#E3F2FD" Padding="5,2" Margin="2" CornerRadius="3">
-                                                            <TextBlock Text="{Binding ., StringFormat='{}{0.Key}: {0.Value}x'}" FontSize="10"/>
+                                                        <Border
+                                                            Margin="2"
+                                                            Padding="5,2"
+                                                            Background="#E3F2FD"
+                                                            CornerRadius="3"
+                                                            >
+                                                            <TextBlock FontSize="10" Text="{Binding ., StringFormat='{}{0.Key}: {0.Value}x'}" />
                                                         </Border>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -305,17 +503,29 @@
             </GroupBox>
         </Grid>
 
-        <!-- Status Bar -->
-        <Border Grid.Row="3" Background="{DynamicResource MaterialDesignDivider}" Padding="15,5">
+        <!--  Status Bar  -->
+        <Border
+            Grid.Row="3"
+            Padding="15,5"
+            Background="{DynamicResource MaterialDesignDivider}"
+            >
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Text="{Binding StatusValidacao}" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Text="{Binding UltimaValidacao, StringFormat='Última validação: {0:dd/MM/yyyy HH:mm}'}" 
-                           VerticalAlignment="Center" FontSize="12"/>
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Text="{Binding StatusValidacao}"
+                    />
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Text="{Binding UltimaValidacao, StringFormat='Última validação: {0:dd/MM/yyyy HH:mm}'}"
+                    />
             </Grid>
         </Border>
     </Grid>

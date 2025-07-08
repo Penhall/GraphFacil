@@ -1,117 +1,147 @@
-<!-- D:\PROJETOS\GraphFacil\Dashboard\Resources\Phase1Resources.xaml - NOVO ARQUIVO -->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converters="clr-namespace:Dashboard.Converters">
+<!--  D:\PROJETOS\GraphFacil\Dashboard\Resources\Phase1Resources.xaml - NOVO ARQUIVO  -->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Dashboard.Converters"
+    >
 
-    <!-- ========================================= -->
-    <!-- CONVERTERS -->
-    <!-- ========================================= -->
-    <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
-    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <!--  =========================================  -->
+    <!--  CONVERTERS  -->
+    <!--  =========================================  -->
+    <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
-    <!-- ========================================= -->
-    <!-- CORES DA FASE 1 (Nord Theme Inspired) -->
-    <!-- ========================================= -->
-    
-    <!-- Cores Base -->
-    <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="#FF2E3440"/>
-    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#FF3B4252"/>
-    <SolidColorBrush x:Key="AccentBackgroundBrush" Color="#FF434C5E"/>
-    <SolidColorBrush x:Key="BorderBrush" Color="#FF434C5E"/>
-    
-    <!-- Cores de Texto -->
-    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#FFECEFF4"/>
-    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#FFD8DEE9"/>
-    <SolidColorBrush x:Key="AccentTextBrush" Color="#FF88C0D0"/>
-    
-    <!-- Cores de Status -->
-    <SolidColorBrush x:Key="SuccessBrush" Color="#FFA3BE8C"/>
-    <SolidColorBrush x:Key="WarningBrush" Color="#FFEBCB8B"/>
-    <SolidColorBrush x:Key="ErrorBrush" Color="#FFBF616A"/>
-    <SolidColorBrush x:Key="InfoBrush" Color="#FF88C0D0"/>
-    
-    <!-- Cores de Botões -->
-    <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="#FF5E81AC"/>
-    <SolidColorBrush x:Key="ButtonSecondaryBrush" Color="#FF4C566A"/>
-    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#FF81A1C1"/>
-    <SolidColorBrush x:Key="ButtonPressedBrush" Color="#FF434C5E"/>
-    
-    <!-- Cores Específicas dos Botões da Fase 1 -->
-    <SolidColorBrush x:Key="PalpiteButtonBrush" Color="#FF5E81AC"/>
-    <SolidColorBrush x:Key="DiagnosticButtonBrush" Color="#FFBF616A"/>
-    <SolidColorBrush x:Key="ValidationButtonBrush" Color="#FFA3BE8C"/>
-    <SolidColorBrush x:Key="ComparisonButtonBrush" Color="#FFB48EAD"/>
+    <!--  =========================================  -->
+    <!--  CORES DA FASE 1 (Nord Theme Inspired)  -->
+    <!--  =========================================  -->
 
-    <!-- ========================================= -->
-    <!-- FONTES -->
-    <!-- ========================================= -->
+    <!--  Cores Base  -->
+    <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="#FF2E3440" />
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#FF3B4252" />
+    <SolidColorBrush x:Key="AccentBackgroundBrush" Color="#FF434C5E" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#FF434C5E" />
+
+    <!--  Cores de Texto  -->
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#FFECEFF4" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#FFD8DEE9" />
+    <SolidColorBrush x:Key="AccentTextBrush" Color="#FF88C0D0" />
+
+    <!--  Cores de Status  -->
+    <SolidColorBrush x:Key="SuccessBrush" Color="#FFA3BE8C" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FFEBCB8B" />
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FFBF616A" />
+    <SolidColorBrush x:Key="InfoBrush" Color="#FF88C0D0" />
+
+    <!--  Cores de Botões  -->
+    <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="#FF5E81AC" />
+    <SolidColorBrush x:Key="ButtonSecondaryBrush" Color="#FF4C566A" />
+    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#FF81A1C1" />
+    <SolidColorBrush x:Key="ButtonPressedBrush" Color="#FF434C5E" />
+
+    <!--  Cores Específicas dos Botões da Fase 1  -->
+    <SolidColorBrush x:Key="PalpiteButtonBrush" Color="#FF5E81AC" />
+    <SolidColorBrush x:Key="DiagnosticButtonBrush" Color="#FFBF616A" />
+    <SolidColorBrush x:Key="ValidationButtonBrush" Color="#FFA3BE8C" />
+    <SolidColorBrush x:Key="ComparisonButtonBrush" Color="#FFB48EAD" />
+
+    <!--  =========================================  -->
+    <!--  FONTES  -->
+    <!--  =========================================  -->
     <FontFamily x:Key="PrimaryFontFamily">Segoe UI</FontFamily>
     <FontFamily x:Key="MonospaceFontFamily">Consolas</FontFamily>
-    
-    <!-- Tamanhos de Fonte -->
-    <sys:Double x:Key="TitleFontSize" xmlns:sys="clr-namespace:System;assembly=mscorlib">16</sys:Double>
-    <sys:Double x:Key="SubtitleFontSize" xmlns:sys="clr-namespace:System;assembly=mscorlib">14</sys:Double>
-    <sys:Double x:Key="NormalFontSize" xmlns:sys="clr-namespace:System;assembly=mscorlib">12</sys:Double>
-    <sys:Double x:Key="SmallFontSize" xmlns:sys="clr-namespace:System;assembly=mscorlib">11</sys:Double>
-    <sys:Double x:Key="TinyFontSize" xmlns:sys="clr-namespace:System;assembly=mscorlib">10</sys:Double>
 
-    <!-- ========================================= -->
-    <!-- DIMENSÕES E ESPAÇAMENTOS -->
-    <!-- ========================================= -->
+    <!--  Tamanhos de Fonte  -->
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="TitleFontSize">16</sys:Double>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="SubtitleFontSize">14</sys:Double>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="NormalFontSize">12</sys:Double>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="SmallFontSize">11</sys:Double>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="TinyFontSize">10</sys:Double>
+
+    <!--  =========================================  -->
+    <!--  DIMENSÕES E ESPAÇAMENTOS  -->
+    <!--  =========================================  -->
     <Thickness x:Key="DefaultMargin">10</Thickness>
     <Thickness x:Key="SmallMargin">5</Thickness>
     <Thickness x:Key="TinyMargin">2</Thickness>
     <Thickness x:Key="DefaultPadding">15</Thickness>
     <Thickness x:Key="SmallPadding">8</Thickness>
-    
-    <sys:Double x:Key="DefaultCornerRadius" xmlns:sys="clr-namespace:System;assembly=mscorlib">8</sys:Double>
-    <sys:Double x:Key="ButtonCornerRadius" xmlns:sys="clr-namespace:System;assembly=mscorlib">6</sys:Double>
-    
-    <!-- ========================================= -->
-    <!-- ÍCONES E SÍMBOLOS -->
-    <!-- ========================================= -->
-    <sys:String x:Key="CheckIcon" xmlns:sys="clr-namespace:System;assembly=mscorlib">✅</sys:String>
-    <sys:String x:Key="ErrorIcon" xmlns:sys="clr-namespace:System;assembly=mscorlib">❌</sys:String>
-    <sys:String x:Key="WarningIcon" xmlns:sys="clr-namespace:System;assembly=mscorlib">⚠️</sys:String>
-    <sys:String x:Key="LoadingIcon" xmlns:sys="clr-namespace:System;assembly=mscorlib">⏳</sys:String>
-    <sys:String x:Key="RocketIcon" xmlns:sys="clr-namespace:System;assembly=mscorlib">🚀</sys:String>
-    <sys:String x:Key="ChartIcon" xmlns:sys="clr-namespace:System;assembly=mscorlib">📊</sys:String>
-    <sys:String x:Key="TargetIcon" xmlns:sys="clr-namespace:System;assembly=mscorlib">🎯</sys:String>
 
-    <!-- ========================================= -->
-    <!-- ANIMAÇÕES -->
-    <!-- ========================================= -->
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="DefaultCornerRadius">8</sys:Double>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="ButtonCornerRadius">6</sys:Double>
+
+    <!--  =========================================  -->
+    <!--  ÍCONES E SÍMBOLOS  -->
+    <!--  =========================================  -->
+    <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="CheckIcon">✅</sys:String>
+    <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="ErrorIcon">❌</sys:String>
+    <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="WarningIcon">⚠️</sys:String>
+    <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="LoadingIcon">⏳</sys:String>
+    <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="RocketIcon">🚀</sys:String>
+    <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="ChartIcon">📊</sys:String>
+    <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="TargetIcon">🎯</sys:String>
+
+    <!--  =========================================  -->
+    <!--  ANIMAÇÕES  -->
+    <!--  =========================================  -->
     <Storyboard x:Key="LoadingAnimation" RepeatBehavior="Forever">
-        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                         From="0" To="360" Duration="0:0:1"/>
-    </Storyboard>
-    
-    <Storyboard x:Key="FadeInAnimation">
-        <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                         From="0" To="1" Duration="0:0:0.3"/>
+        <DoubleAnimation
+            Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+            From="0"
+            To="360"
+            Duration="0:0:1"
+            />
     </Storyboard>
 
-    <!-- ========================================= -->
-    <!-- TEMPLATES DE DADOS -->
-    <!-- ========================================= -->
-    
-    <!-- Template para Status com Ícone -->
+    <Storyboard x:Key="FadeInAnimation">
+        <DoubleAnimation
+            Storyboard.TargetProperty="Opacity"
+            From="0"
+            To="1"
+            Duration="0:0:0.3"
+            />
+    </Storyboard>
+
+    <!--  =========================================  -->
+    <!--  TEMPLATES DE DADOS  -->
+    <!--  =========================================  -->
+
+    <!--  Template para Status com Ícone  -->
     <DataTemplate x:Key="StatusTemplate">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Icon}" FontSize="12" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBlock Text="{Binding Message}" FontSize="11" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            <TextBlock
+                Margin="0,0,5,0"
+                VerticalAlignment="Center"
+                FontSize="12"
+                Text="{Binding Icon}"
+                />
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="11"
+                Text="{Binding Message}"
+                TextWrapping="Wrap"
+                />
         </StackPanel>
     </DataTemplate>
-    
-    <!-- Template para Métricas -->
+
+    <!--  Template para Métricas  -->
     <DataTemplate x:Key="MetricTemplate">
         <Grid Margin="0,2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="{StaticResource SecondaryTextBrush}" FontWeight="SemiBold"/>
-            <TextBlock Grid.Column="1" Text="{Binding Value}" Foreground="{StaticResource SuccessBrush}" FontSize="11"/>
+            <TextBlock
+                Grid.Column="0"
+                FontWeight="SemiBold"
+                Foreground="{StaticResource SecondaryTextBrush}"
+                Text="{Binding Name}"
+                />
+            <TextBlock
+                Grid.Column="1"
+                FontSize="11"
+                Foreground="{StaticResource SuccessBrush}"
+                Text="{Binding Value}"
+                />
         </Grid>
     </DataTemplate>
 

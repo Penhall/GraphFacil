@@ -1,6 +1,7 @@
 // D:\PROJETOS\GraphFacil\Library\Services\MetronomoEngine.cs
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LotoLibrary.Enums;
 using LotoLibrary.Models;
 using System;
 using System.Collections.Generic;

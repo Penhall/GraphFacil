@@ -1,7 +1,7 @@
-﻿using LotoLibrary.Infrastructure.Validation;
+﻿using LotoLibrary.Infrastructure;
+using LotoLibrary.Infrastructure.Validation;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
-using LotoLibrary.Services;
 using Microsoft.ML;
 using Microsoft.ML.Trainers.FastTree;
 using System;

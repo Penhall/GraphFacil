@@ -2552,45 +2552,8 @@ namespace LotoLibrary.Services
         }
 
 
-        // Combina 25 - 6 a 6
-        public static Lances Combinar25a6()
-        {
 
-            Lances ARS = new();
 
-            for (var A = 0; A <= 19; A++)
-            {
-                for (var B = A + 1; B <= 20; B++)
-                {
-                    for (var C = B + 1; C <= 21; C++)
-                    {
-                        for (var D = C + 1; D <= 22; D++)
-                        {
-                            for (var E = D + 1; E <= 23; E++)
-                            {
-                                for (var F = E + 1; F <= 24; F++)
-                                {
-                                    List<int> ls = new()
-                                    {
-                                        Constante.ListaG[A],
-                                        Constante.ListaG[B],
-                                        Constante.ListaG[C],
-                                        Constante.ListaG[D],
-                                       Constante.ListaG[E],
-                                        Constante.ListaG[F]
-                                    };
-
-                                    Lance u = new Lance(ARS.Count, ls);
-                                    ARS.Add(u);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return ARS;
-        }
 
         // Combina 25 - 15 a 15
         public static Lances Combinar25()

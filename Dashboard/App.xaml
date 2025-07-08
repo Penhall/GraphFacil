@@ -1,4 +1,4 @@
-﻿<!--  Dashboard/App.xaml  -->
+﻿<!--  D:\PROJETOS\GraphFacil\Dashboard\App.xaml  -->
 <Application
     x:Class="Dashboard.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -10,141 +10,143 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--  Material Design Themes  -->
+
+                <!--  Material Design Base Themes  -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+
+                <!--  Material Design Controls  -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ProgressBar.xaml" />
+
+                <!--  Material Design Colors (Nord-inspired)  -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.BlueGrey.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.LightBlue.xaml" />
+
+
+
             </ResourceDictionary.MergedDictionaries>
 
-            <!--  Conversores Globais  -->
-            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <!--  =========================================  -->
+            <!--  CONVERTERS GLOBAIS DA APLICAÇÃO  -->
+            <!--  =========================================  -->
+
             <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
-            <converters:BoolToYesNoConverter x:Key="BoolToYesNoConverter" />
             <converters:ProbabilityToColorConverter x:Key="ProbabilityToColorConverter" />
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <converters:BoolToYesNoConverter x:Key="BoolToYesNoConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:SyncToColorConverter x:Key="SyncToColorConverter" />
+            <converters:ForceToColorConverter x:Key="ForceToColorConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
             <converters:MetronomoTypeToIconConverter x:Key="MetronomoTypeToIconConverter" />
+            <converters:ValidationStatusToColorConverter x:Key="ValidationStatusToColorConverter" />
+            <converters:PerformanceToColorConverter x:Key="PerformanceToColorConverter" />
+            <converters:DezenasCountToTextConverter x:Key="DezenasCountToTextConverter" />
+            <converters:ProcessingTimeToTextConverter x:Key="ProcessingTimeToTextConverter" />
+            <converters:ConfidenceToDisplayConverter x:Key="ConfidenceToDisplayConverter" />
+            <converters:EngineStatusToIconConverter x:Key="EngineStatusToIconConverter" />
 
-            <!--  Estilos Globais  -->
-            <Style x:Key="BaseTextBlock" TargetType="TextBlock">
-                <Setter Property="FontFamily" Value="Segoe UI" />
-                <Setter Property="FontSize" Value="12" />
-                <Setter Property="Foreground" Value="#FF2C3E50" />
-            </Style>
 
-            <Style
-                x:Key="HeaderTextBlock"
-                BasedOn="{StaticResource BaseTextBlock}"
-                TargetType="TextBlock"
-                >
-                <Setter Property="FontSize" Value="18" />
+            <!--  =========================================  -->
+            <!--  ESTILOS GLOBAIS DA APLICAÇÃO  -->
+            <!--  =========================================  -->
+
+            <!--  Global Button Style Override  -->
+            <Style BasedOn="{StaticResource MaterialDesignRaisedButton}" TargetType="Button">
+                <Setter Property="FontFamily" Value="{StaticResource PrimaryFontFamily}" />
                 <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="Margin" Value="0,0,0,10" />
+                <Setter Property="Cursor" Value="Hand" />
             </Style>
 
-            <Style
-                x:Key="SubHeaderTextBlock"
-                BasedOn="{StaticResource BaseTextBlock}"
-                TargetType="TextBlock"
-                >
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="FontWeight" Value="Medium" />
-                <Setter Property="Foreground" Value="#FF34495E" />
+            <!--  Global TextBlock Style  -->
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource PrimaryFontFamily}" />
+                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+                <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
 
-            <!--  Brush Globais  -->
-            <SolidColorBrush x:Key="PrimaryBrush" Color="#FF3B82F6" />
-            <SolidColorBrush x:Key="SecondaryBrush" Color="#FF64748B" />
-            <SolidColorBrush x:Key="SuccessBrush" Color="#FF10B981" />
-            <SolidColorBrush x:Key="WarningBrush" Color="#FFF59E0B" />
-            <SolidColorBrush x:Key="ErrorBrush" Color="#FFEF4444" />
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#FFF8FAFC" />
-            <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="BorderBrush" Color="#FFE2E8F0" />
+            <!--  Global TextBox Style  -->
+            <Style BasedOn="{StaticResource MaterialDesignOutlinedTextBox}" TargetType="TextBox">
+                <Setter Property="FontFamily" Value="{StaticResource PrimaryFontFamily}" />
+                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+            </Style>
 
-            <!--  Gradientes  -->
-            <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Offset="0" Color="#FF3B82F6" />
-                <GradientStop Offset="1" Color="#FF1E40AF" />
-            </LinearGradientBrush>
+            <!--  =========================================  -->
+            <!--  TEMPLATES GLOBAIS  -->
+            <!--  =========================================  -->
 
-            <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Offset="0" Color="#FF10B981" />
-                <GradientStop Offset="1" Color="#FF059669" />
-            </LinearGradientBrush>
-
-            <!--  Templates de Dados Globais  -->
+            <!--  Loading Template  -->
             <DataTemplate x:Key="LoadingTemplate">
-                <Grid>
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <ProgressBar
-                            Width="100"
-                            Height="6"
-                            Margin="0,0,0,10"
-                            IsIndeterminate="True"
-                            />
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            Style="{StaticResource BaseTextBlock}"
-                            Text="Carregando..."
-                            />
-                    </StackPanel>
-                </Grid>
-            </DataTemplate>
-
-            <DataTemplate x:Key="ErrorTemplate">
-                <Grid>
-                    <Border
-                        Margin="20"
-                        Padding="15"
-                        Background="{StaticResource ErrorBrush}"
-                        CornerRadius="8"
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        RenderTransformOrigin="0.5,0.5"
+                        Text="⏳"
                         >
-                        <StackPanel>
-                            <TextBlock
-                                Margin="0,0,0,10"
-                                FontSize="16"
-                                FontWeight="Bold"
-                                Foreground="White"
-                                Text="❌ Erro"
-                                />
-                            <TextBlock
-                                Foreground="White"
-                                Text="{Binding}"
-                                TextWrapping="Wrap"
-                                />
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                        <TextBlock.RenderTransform>
+                            <RotateTransform />
+                        </TextBlock.RenderTransform>
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                            From="0"
+                                            To="360"
+                                            Duration="0:0:2"
+                                            />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource SecondaryTextBrush}"
+                        Text="Carregando..."
+                        />
+                </StackPanel>
             </DataTemplate>
 
-            <!--  Animações  -->
-            <Storyboard x:Key="FadeInAnimation">
-                <DoubleAnimation
-                    Storyboard.TargetProperty="Opacity"
-                    From="0"
-                    To="1"
-                    Duration="0:0:0.3"
-                    />
-            </Storyboard>
+            <!--  Error Template  -->
+            <DataTemplate x:Key="ErrorTemplate">
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="❌"
+                        />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource ErrorBrush}"
+                        Text="{Binding}"
+                        />
+                </StackPanel>
+            </DataTemplate>
 
-            <Storyboard x:Key="SlideInFromLeftAnimation">
-                <DoubleAnimation
-                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                    From="-50"
-                    To="0"
-                    Duration="0:0:0.4"
-                    >
-                    <DoubleAnimation.EasingFunction>
-                        <QuadraticEase EasingMode="EaseOut" />
-                    </DoubleAnimation.EasingFunction>
-                </DoubleAnimation>
-                <DoubleAnimation
-                    Storyboard.TargetProperty="Opacity"
-                    From="0"
-                    To="1"
-                    Duration="0:0:0.4"
-                    />
-            </Storyboard>
+            <!--  Success Template  -->
+            <DataTemplate x:Key="SuccessTemplate">
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="✅"
+                        />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource SuccessBrush}"
+                        Text="{Binding}"
+                        />
+                </StackPanel>
+            </DataTemplate>
 
         </ResourceDictionary>
     </Application.Resources>

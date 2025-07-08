@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using System.Globalization;
 using System.Threading;
+using LotoLibrary.Infrastructure;
 
 namespace LotoLibrary.NeuralNetwork.Models;
 

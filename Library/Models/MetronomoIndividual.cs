@@ -1,5 +1,7 @@
 // LotoLibrary/Services/MetronomoIndividual.cs
 using CommunityToolkit.Mvvm.ComponentModel;
+using LotoLibrary.Enums;
+using LotoLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,7 @@ namespace LotoLibrary.Services
     /// <summary>
     /// Representa um metrônomo individual para uma dezena específica
     /// Cada dezena tem seu padrão único baseado no histórico real
+    /// VERSÃO CORRIGIDA - Inclui propriedade Fase para compatibilidade com Osciladores
     /// </summary>
     public partial class MetronomoIndividual : ObservableObject
     {
@@ -46,21 +49,48 @@ namespace LotoLibrary.Services
         [ObservableProperty]
         private List<PrevisaoConcurso> _proximasPrevisoes = new();
 
+        // CORREÇÃO: Adicionada propriedade Fase para compatibilidade com sistema de osciladores
+        [ObservableProperty]
+        private double _fase = 0.0;
+
+        // CORREÇÃO: Propriedade Frequencia para compatibilidade
+        [ObservableProperty]
+        private double _frequencia = 1.0;
+
         public List<double> Intervalos { get; private set; } = new();
         public DateTime UltimaAnalise { get; private set; }
         public double Confiabilidade { get; private set; }
         #endregion
 
-        #region Constructor
+        #region Constructors
+
+        // CORREÇÃO: Construtor padrão
         public MetronomoIndividual()
         {
+            InicializarValoresPadrao();
         }
 
+        // CORREÇÃO: Construtor que aceita apenas o número (para resolver CS1729)
+        public MetronomoIndividual(int numero)
+        {
+            Numero = numero;
+            InicializarValoresPadrao();
+        }
+
+        // Construtor original com histórico
         public MetronomoIndividual(int numero, List<int> historico)
         {
             Numero = numero;
             HistoricoAparicoes = historico.OrderBy(x => x).ToList();
+            InicializarValoresPadrao();
             AnalisarPadroes();
+        }
+
+        private void InicializarValoresPadrao()
+        {
+            var random = new Random(Numero); // Seed baseado no número para consistência
+            Fase = random.NextDouble() * 360;
+            Frequencia = 1.0 + (random.NextDouble() - 0.5) * 0.4; // 0.8 - 1.2
         }
         #endregion
 
@@ -93,6 +123,9 @@ namespace LotoLibrary.Services
 
             // 6. Gerar previsões
             GerarPrevisoes();
+
+            // 7. Atualizar fase baseada no padrão detectado
+            AtualizarFaseComPadrao();
 
             UltimaAnalise = DateTime.Now;
         }
@@ -148,6 +181,11 @@ namespace LotoLibrary.Services
                 // 9. Adicionar pequena variação única baseada na dezena para evitar empates
                 probabilidadeFinal += (Numero * 0.0001) + (intervaloAtual * 0.00001);
 
+                // 10. Atualizar propriedades relacionadas
+                ProbabilidadeAtual = probabilidadeFinal;
+                IntervalAtual = intervaloAtual;
+                EmFaseOtima = probabilidadeFinal > 0.65;
+
                 return probabilidadeFinal;
             }
             catch (Exception ex)
@@ -175,6 +213,22 @@ namespace LotoLibrary.Services
             {
                 // Apenas atualiza estado atual
                 AtualizarEstadoAtual(concurso);
+            }
+        }
+
+        /// <summary>
+        /// Atualiza a fase do metrônomo (compatibilidade com osciladores)
+        /// </summary>
+        public void AtualizarFase(double deltaTime = 1.0)
+        {
+            Fase += Frequencia * deltaTime;
+            Fase = (Fase % 360 + 360) % 360; // Normaliza para 0-360
+
+            // Atualizar probabilidade quando a fase muda
+            if (HistoricoAparicoes.Any())
+            {
+                var proximoConcurso = HistoricoAparicoes.LastOrDefault() + 1;
+                ProbabilidadeAtual = CalcularProbabilidadePara(proximoConcurso);
             }
         }
         #endregion
@@ -402,6 +456,30 @@ namespace LotoLibrary.Services
         }
 
         /// <summary>
+        /// Atualiza a fase baseada no padrão detectado
+        /// </summary>
+        private void AtualizarFaseComPadrao()
+        {
+            if (UltimaAparicao > 0 && CicloMedio > 0)
+            {
+                // Calcular posição no ciclo
+                var posicaoNoCiclo = IntervalAtual % CicloMedio;
+                Fase = (posicaoNoCiclo / CicloMedio) * 360;
+
+                // Ajustar frequência baseada no tipo de padrão
+                Frequencia = TipoMetronomo switch
+                {
+                    TipoMetronomo.Regular => 1.0,
+                    TipoMetronomo.Alternado => 2.0,
+                    TipoMetronomo.CicloLongo => 0.5,
+                    TipoMetronomo.Tendencial => 1.2,
+                    TipoMetronomo.MultiModal => 1.5,
+                    _ => 1.0
+                };
+            }
+        }
+
+        /// <summary>
         /// Calcula ciclo médio de forma segura
         /// </summary>
         private double CalcularCicloMedioSeguro()
@@ -574,7 +652,9 @@ namespace LotoLibrary.Services
             analise += $"Ciclo médio: {CicloMedio:F1} concursos\n";
             analise += $"Variação: ±{Math.Sqrt(VariancaCiclo):F1} concursos\n";
             analise += $"Tipo de padrão: {TipoMetronomo}\n";
-            analise += $"Confiabilidade: {Confiabilidade:P1}\n\n";
+            analise += $"Confiabilidade: {Confiabilidade:P1}\n";
+            analise += $"Fase atual: {Fase:F1}°\n";
+            analise += $"Frequência: {Frequencia:F2}\n\n";
 
             analise += $"🎯 ESTADO ATUAL:\n";
             analise += $"Última aparição: Concurso {UltimaAparicao}\n";
@@ -607,42 +687,40 @@ namespace LotoLibrary.Services
 
         public override string ToString()
         {
-            return $"Dezena {Numero:D2}: {DescricaoPadrao} ({ProbabilidadeAtual:P1})";
+            return $"Dezena {Numero:D2}: {DescricaoPadrao} ({ProbabilidadeAtual:P1}) - Fase: {Fase:F1}°";
         }
         #endregion
-    }
 
-    #region Enums and Helper Classes
-    public enum TipoMetronomo
-    {
-        DadosInsuficientes,
-        Regular,        // Intervalos consistentes
-        Alternado,      // Padrão A-B-A-B
-        CicloLongo,     // Padrão repetitivo longo
-        Tendencial,     // Intervalos com tendência
-        MultiModal,     // Múltiplos picos de frequência
-        Irregular       // Sem padrão claro
-    }
+        #region Compatibility Methods for Oscillator System
 
-    public enum ConfiancaPrevisao
-    {
-        MuitoBaixa,
-        Baixa,
-        Media,
-        Alta
-    }
+        /// <summary>
+        /// Verifica se o metrônomo está sincronizado (compatibilidade com osciladores)
+        /// </summary>
+        public bool EstaSincronizado => EmFaseOtima && Confiabilidade > 0.5;
 
-    public class PrevisaoConcurso
-    {
-        public int Concurso { get; set; }
-        public double Probabilidade { get; set; }
-        public int IntervaloEsperado { get; set; }
-        public ConfiancaPrevisao Confianca { get; set; }
+        /// <summary>
+        /// Força de sincronização baseada na confiabilidade
+        /// </summary>
+        public double ForcaSincronizacao => Confiabilidade * (EmFaseOtima ? 1.2 : 0.8);
 
-        public override string ToString()
+        /// <summary>
+        /// Valor atual da "onda" baseado na fase
+        /// </summary>
+        public double ValorAtual => Math.Sin(Fase * Math.PI / 180);
+
+        /// <summary>
+        /// Aplica influência externa (compatibilidade com sistema de osciladores)
+        /// </summary>
+        public void AplicarInfluencia(double influencia)
         {
-            return $"Concurso {Concurso}: {Probabilidade:P1}";
+            // Ajustar frequência baseada na influência
+            var ajuste = influencia * 0.1;
+            Frequencia = Math.Max(0.5, Math.Min(2.0, Frequencia + ajuste));
+
+            // Atualizar fase
+            AtualizarFase();
         }
+
+        #endregion
     }
-    #endregion
 }

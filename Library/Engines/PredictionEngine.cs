@@ -5,6 +5,7 @@ using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.Individual;
+using LotoLibrary.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -68,7 +69,7 @@ namespace LotoLibrary.Engines
         {
             _modelFactory = modelFactory ?? new DefaultModelFactory();
             _performanceAnalyzer = performanceAnalyzer ?? new DefaultPerformanceAnalyzer();
-            
+
             PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(StatusEngine))
@@ -157,7 +158,7 @@ namespace LotoLibrary.Engines
                 }
 
                 // Conectar eventos
-                model.OnStatusChanged += (s, status) => 
+                model.OnStatusChanged += (s, status) =>
                 {
                     StatusEngine = $"[{name}] {status}";
                 };
@@ -294,7 +295,7 @@ namespace LotoLibrary.Engines
                 {
                     await _ensembleModel.InitializeAsync(_historicalData);
                     await _ensembleModel.TrainAsync(_historicalData);
-                    
+
                     StatusEngine = $"✅ Ensemble criado com {availableModels.Count} modelos";
                 }
             }
@@ -356,7 +357,7 @@ namespace LotoLibrary.Engines
                 {
                     var avgAccuracy = reports.Average(r => r.ValidationResults.Accuracy);
                     var bestModel = reports.OrderByDescending(r => r.ValidationResults.Accuracy).First();
-                    
+
                     PerformanceSummary = $"Accuracy média: {avgAccuracy:P2} | Melhor: {bestModel.ModelName} ({bestModel.ValidationResults.Accuracy:P2})";
                 }
 
@@ -384,7 +385,7 @@ namespace LotoLibrary.Engines
                 }
 
                 StatusEngine = "Comparando modelos...";
-                
+
                 var modelsList = _models.Values.Where(m => m.IsInitialized).ToList();
                 var comparison = await _performanceAnalyzer.CompareModelsAsync(modelsList, _historicalData);
 
@@ -421,8 +422,8 @@ namespace LotoLibrary.Engines
                 {
                     var report = DiagnosticService.AnalisarDistribuicaoDezenas(testPredictions);
                     var summary = DiagnosticService.GerarRelatorioTexto(report);
-                    
-                    StatusEngine = report.TemProblemaDistribuicao 
+
+                    StatusEngine = report.TemProblemaDistribuicao
                         ? $"⚠️ Problemas detectados - Gravidade: {report.GravidadeProblema}"
                         : "✅ Distribuição normal detectada";
 
@@ -514,13 +515,13 @@ namespace LotoLibrary.Engines
         {
             // Implementação básica - será expandida
             var validation = await model.ValidateAsync(testData);
-            
+
             return new PerformanceReport
             {
                 ModelName = model.ModelName,
                 ReportTime = DateTime.Now,
                 ValidationResults = validation,
-                Grade = validation.Accuracy > 0.7 ? PerformanceGrade.A : 
+                Grade = validation.Accuracy > 0.7 ? PerformanceGrade.A :
                        validation.Accuracy > 0.6 ? PerformanceGrade.B : PerformanceGrade.C
             };
         }
@@ -528,7 +529,7 @@ namespace LotoLibrary.Engines
         public async Task<ComparisonReport> CompareModelsAsync(List<IPredictionModel> models, Lances testData)
         {
             var comparisons = new List<ModelComparison>();
-            
+
             foreach (var model in models)
             {
                 var report = await AnalyzeAsync(model, testData);
