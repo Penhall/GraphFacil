@@ -1,6 +1,7 @@
-﻿// Dashboard/ViewModel/MainWindowViewModel.cs
+﻿// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\MainWindowViewModel.cs
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Dashboard.Views;
 using LotoLibrary.Models;
 using LotoLibrary.Services;
 using System;
@@ -13,13 +14,14 @@ using System.Windows;
 namespace Dashboard.ViewModel
 {
     /// <summary>
-    /// ViewModel principal da aplicação, agora integrado com sistema de Metrônomos
+    /// ViewModel principal da aplicação, integrado com sistema de Metrônomos
     /// </summary>
     public partial class MainWindowViewModel : ObservableObject
     {
         #region Private Fields
-        private readonly MetronomoEngine _metronomoEngine;
-        private readonly Lances _historico;
+        private MetronomoEngine _metronomoEngine;
+        private Lances _historico;
+        private bool _isInitialized = false;
         #endregion
 
         #region Observable Properties
@@ -39,7 +41,7 @@ namespace Dashboard.ViewModel
         private bool _isProcessing = false;
 
         [ObservableProperty]
-        private string _statusEngine = "Aguardando inicialização...";
+        private string _statusEngine = "Inicializando sistema...";
 
         [ObservableProperty]
         private double _confiancaAtual = 0.0;
@@ -57,28 +59,135 @@ namespace Dashboard.ViewModel
         #region Constructor
         public MainWindowViewModel()
         {
+            // Inicialização assíncrona para não travar a UI
+            _ = InicializarAsync();
+        }
+
+        private async Task InicializarAsync()
+        {
             try
             {
-                // Inicialização dos dados históricos
                 StatusEngine = "Carregando dados históricos...";
-                Infra.CarregarConcursos();
-                _historico = Infra.arLoto;
 
-                // Inicialização do Motor de Metrônomos
+                // Tentar carregamento seguro dos dados
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        _historico = Infra.CarregarConcursosSeguro();
+                    }
+                    catch (Exception ex)
+                    {
+                        StatusEngine = $"❌ Erro ao carregar dados: {ex.Message}";
+                        throw;
+                    }
+                });
+
+                StatusEngine = "Inicializando motor de metrônomos...";
+
+                // Verificar se dados foram carregados
+                if (_historico == null || !_historico.Any())
+                {
+                    StatusEngine = "⚠️ Nenhum dado histórico carregado - criando dados padrão";
+                    _historico = new Lances();
+                    ConcursoAlvo = 3001;
+                }
+                else
+                {
+                    ConcursoAlvo = (_historico.LastOrDefault()?.Id ?? 3000) + 1;
+                }
+
+                // Inicializar engine com validação
                 _metronomoEngine = new MetronomoEngine(_historico);
+
+                if (_metronomoEngine == null)
+                {
+                    throw new InvalidOperationException("Falha ao criar MetronomoEngine");
+                }
+
+                // Conectar eventos do engine
+                ConectarEventosEngine();
 
                 // Bind das propriedades do engine
                 BindEngineProperties();
 
                 // Atualizar informações iniciais
                 AtualizarTextoConcurso();
-                StatusEngine = "Sistema inicializado. Pressione 'Iniciar Metrônomos' para começar.";
+
+                _isInitialized = true;
+                StatusEngine = "✅ Sistema inicializado. Pressione 'Iniciar Metrônomos' para começar.";
             }
             catch (Exception ex)
             {
                 StatusEngine = $"❌ Erro na inicialização: {ex.Message}";
-                MessageBox.Show($"Erro na inicialização: {ex.Message}",
-                    "Erro de Inicialização", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Log detalhado para debug
+                System.Diagnostics.Debug.WriteLine($"Erro detalhado na inicialização:");
+                System.Diagnostics.Debug.WriteLine($"Mensagem: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+
+                // Mostrar erro na UI
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show(
+                        $"Erro na inicialização do sistema:\n\n{ex.Message}\n\n" +
+                        "Verifique se:\n" +
+                        "1. O arquivo Lotofacil.json não está sendo usado por outro programa\n" +
+                        "2. Você tem permissões de leitura na pasta\n" +
+                        "3. O arquivo não está corrompido",
+                        "Erro de Inicialização",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                });
+            }
+        }
+        #endregion
+
+        #region Engine Events Connection
+        private void ConectarEventosEngine()
+        {
+            if (_metronomoEngine == null) return;
+
+            try
+            {
+                // Conectar evento para mostrar mensagens
+                _metronomoEngine.OnMostrarMensagem += (mensagem) =>
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        MessageBox.Show(mensagem, "Diagnóstico dos Metrônomos",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                    });
+                };
+
+                // Conectar evento para configuração de treinamento
+                _metronomoEngine.OnSolicitarConfiguracaoTreinamento += (configuracao) =>
+                {
+                    try
+                    {
+                        bool resultado = false;
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            var dialog = new ConfiguracaoTreinamentoDialog(configuracao);
+                            dialog.Owner = Application.Current.MainWindow;
+                            resultado = dialog.ShowDialog() == true;
+                        });
+                        return resultado;
+                    }
+                    catch (Exception ex)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            MessageBox.Show($"Erro ao abrir configuração: {ex.Message}",
+                                "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                        });
+                        return false;
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao conectar eventos: {ex.Message}");
             }
         }
         #endregion
@@ -86,26 +195,42 @@ namespace Dashboard.ViewModel
         #region Engine Binding
         private void BindEngineProperties()
         {
-            // Sincronizar propriedades do engine com o ViewModel
-            _metronomoEngine.PropertyChanged += (s, e) =>
+            if (_metronomoEngine == null) return;
+
+            try
             {
-                switch (e.PropertyName)
+                // Sincronizar propriedades do engine com o ViewModel
+                _metronomoEngine.PropertyChanged += (s, e) =>
                 {
-                    case nameof(_metronomoEngine.StatusEngine):
-                        StatusEngine = _metronomoEngine.StatusEngine;
-                        break;
-                    case nameof(_metronomoEngine.ConfiancaGeralPalpite):
-                        ConfiancaAtual = _metronomoEngine.ConfiancaGeralPalpite;
-                        break;
-                    case nameof(_metronomoEngine.ConcursoAlvo):
-                        ConcursoAlvo = _metronomoEngine.ConcursoAlvo;
-                        AtualizarTextoConcurso();
-                        break;
-                    case nameof(_metronomoEngine.UltimoPalpite):
-                        AtualizarUltimoPalpite();
-                        break;
-                }
-            };
+                    try
+                    {
+                        switch (e.PropertyName)
+                        {
+                            case nameof(_metronomoEngine.StatusEngine):
+                                StatusEngine = _metronomoEngine.StatusEngine ?? "Status desconhecido";
+                                break;
+                            case nameof(_metronomoEngine.ConfiancaGeralPalpite):
+                                ConfiancaAtual = _metronomoEngine.ConfiancaGeralPalpite;
+                                break;
+                            case nameof(_metronomoEngine.ConcursoAlvo):
+                                ConcursoAlvo = _metronomoEngine.ConcursoAlvo;
+                                AtualizarTextoConcurso();
+                                break;
+                            case nameof(_metronomoEngine.UltimoPalpite):
+                                AtualizarUltimoPalpite();
+                                break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Erro no binding de propriedades: {ex.Message}");
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Erro ao configurar binding: {ex.Message}");
+            }
         }
         #endregion
 
@@ -113,7 +238,7 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private async Task IniciarMetronomos()
         {
-            if (IsProcessing) return;
+            if (!ValidarInicializacao() || IsProcessing) return;
 
             try
             {
@@ -149,6 +274,8 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void GerarPalpite()
         {
+            if (!ValidarInicializacao()) return;
+
             if (!_metronomoEngine.IsInicializado)
             {
                 MessageBox.Show("Inicie os metrônomos primeiro!", "Aviso",
@@ -159,6 +286,14 @@ namespace Dashboard.ViewModel
             try
             {
                 var palpite = _metronomoEngine.GerarPalpiteOtimizado();
+
+                if (palpite == null || !palpite.Any())
+                {
+                    MessageBox.Show("Não foi possível gerar palpite. Verifique se os metrônomos estão funcionando.",
+                        "Erro", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 AtualizarUltimoPalpite();
 
                 // Atualizar visual dos metrônomos
@@ -179,6 +314,8 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private async Task ValidarModelo()
         {
+            if (!ValidarInicializacao()) return;
+
             if (!_metronomoEngine.IsInicializado)
             {
                 MessageBox.Show("Inicie os metrônomos primeiro!", "Aviso",
@@ -222,6 +359,8 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private async Task CompararEstrategias()
         {
+            if (!ValidarInicializacao()) return;
+
             if (!_metronomoEngine.IsInicializado)
             {
                 MessageBox.Show("Inicie os metrônomos primeiro!", "Aviso",
@@ -277,10 +416,12 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void AlterarConcursoAlvo()
         {
+            if (!ValidarInicializacao()) return;
+
             try
             {
-                var ultimoConcurso = _historico.LastOrDefault()?.Id ?? 3000;
-                var primeiroConcurso = _historico.FirstOrDefault()?.Id ?? 1;
+                var ultimoConcurso = _historico?.LastOrDefault()?.Id ?? 3000;
+                var primeiroConcurso = _historico?.FirstOrDefault()?.Id ?? 1;
 
                 var dialog = new SeletorConcursoDialog(
                     ConcursoAlvo,
@@ -420,6 +561,8 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void DiagnosticarMetronomos()
         {
+            if (!ValidarInicializacao()) return;
+
             try
             {
                 _metronomoEngine.DiagnosticarMetronomosCommand.Execute(null);
@@ -434,6 +577,8 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void ForcarRecalculoMetronomos()
         {
+            if (!ValidarInicializacao()) return;
+
             try
             {
                 _metronomoEngine.ForcarRecalculoMetronomosCommand.Execute(null);
@@ -448,6 +593,8 @@ namespace Dashboard.ViewModel
         [RelayCommand]
         private void ConfigurarTreinamento()
         {
+            if (!ValidarInicializacao()) return;
+
             try
             {
                 _metronomoEngine.ConfigurarTreinamentoCommand.Execute(null);
@@ -458,12 +605,56 @@ namespace Dashboard.ViewModel
                     "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        [RelayCommand]
+        private void VerificarStatusArquivos()
+        {
+            try
+            {
+                var status = Infra.VerificarStatusJSON();
+                MessageBox.Show(status, "Status dos Arquivos",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao verificar status: {ex.Message}",
+                    "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        [RelayCommand]
+        private void ForcarLiberacaoArquivos()
+        {
+            try
+            {
+                IsProcessing = true;
+                StatusEngine = "Forçando liberação de arquivos...";
+
+                Infra.ForcarLiberacaoERecarregar();
+
+                StatusEngine = "✅ Arquivos liberados e recarregados";
+                MessageBox.Show("Arquivos foram liberados e dados recarregados com sucesso!",
+                    "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                StatusEngine = $"❌ Erro ao liberar arquivos: {ex.Message}";
+                MessageBox.Show($"Erro ao forçar liberação: {ex.Message}",
+                    "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+        }
         #endregion
 
         #region Utility Commands
         [RelayCommand]
         private void SalvarResultados()
         {
+            if (!ValidarInicializacao()) return;
+
             try
             {
                 if (!_metronomoEngine.IsInicializado)
@@ -505,8 +696,8 @@ namespace Dashboard.ViewModel
         {
             try
             {
-                var validationWindow = new Dashboard.Views.ValidationWindow();
-                validationWindow.ShowDialog();
+                MessageBox.Show("Funcionalidade de análise ML em desenvolvimento.",
+                    "Em Desenvolvimento", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -536,6 +727,17 @@ namespace Dashboard.ViewModel
         #endregion
 
         #region Helper Methods
+        private bool ValidarInicializacao()
+        {
+            if (!_isInitialized || _metronomoEngine == null)
+            {
+                MessageBox.Show("Sistema ainda não foi inicializado completamente. Aguarde...",
+                    "Sistema Inicializando", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            return true;
+        }
+
         private void ExecutarEstudo(int numeroEstudo, Func<Lances> executarEstudo)
         {
             try
@@ -563,31 +765,45 @@ namespace Dashboard.ViewModel
 
         private void AtualizarTextoConcurso()
         {
-            if (_historico?.Count > 0)
+            try
             {
-                var ultimoConcurso = _historico.Last();
-                TextoConcurso = $"Próximo: {ConcursoAlvo} (Último: {ultimoConcurso.Id})";
+                if (_historico?.Count > 0)
+                {
+                    var ultimoConcurso = _historico.Last();
+                    TextoConcurso = $"Próximo: {ConcursoAlvo} (Último: {ultimoConcurso.Id})";
+                }
+                else
+                {
+                    TextoConcurso = $"Concurso Alvo: {ConcursoAlvo}";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TextoConcurso = $"Concurso Alvo: {ConcursoAlvo}";
+                TextoConcurso = $"Concurso Alvo: {ConcursoAlvo} (Erro: {ex.Message})";
             }
         }
 
         private void AtualizarUltimoPalpite()
         {
-            if (_metronomoEngine.UltimoPalpite.Any())
+            try
             {
-                var dezenas = _metronomoEngine.UltimoPalpite
-                    .Select(d => d.ToString("D2"))
-                    .ToArray();
+                if (_metronomoEngine?.UltimoPalpite?.Any() == true)
+                {
+                    var dezenas = _metronomoEngine.UltimoPalpite
+                        .Select(d => d.ToString("D2"))
+                        .ToArray();
 
-                UltimoPalpite = $"[{string.Join("-", dezenas)}] " +
-                               $"(Confiança: {ConfiancaAtual:P1})";
+                    UltimoPalpite = $"[{string.Join("-", dezenas)}] " +
+                                   $"(Confiança: {ConfiancaAtual:P1})";
+                }
+                else
+                {
+                    UltimoPalpite = "Nenhum palpite gerado ainda";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                UltimoPalpite = "Nenhum palpite gerado ainda";
+                UltimoPalpite = $"Erro na atualização: {ex.Message}";
             }
         }
         #endregion
@@ -615,7 +831,7 @@ namespace Dashboard.ViewModel
     }
 
     /// <summary>
-    /// Dialog para seleção de concurso
+    /// Dialog para seleção de concurso (mantido do código original)
     /// </summary>
     public class SeletorConcursoDialog : Window
     {
@@ -750,6 +966,7 @@ namespace Dashboard.ViewModel
             stackPanel.Children.Add(labelTipo);
             stackPanel.Children.Add(_comboTipo);
             stackPanel.Children.Add(labelConcurso);
+            // stackPanel.Children.Add(_textBoxFim);
             stackPanel.Children.Add(_textBoxConcurso);
             stackPanel.Children.Add(_checkGerarPalpite);
             stackPanel.Children.Add(buttonPanel);

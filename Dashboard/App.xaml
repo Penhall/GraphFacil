@@ -18,10 +18,8 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!--  Conversores Globais  -->
-            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
             <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
-            <converters:BoolToGreenRedConverter x:Key="BoolToGreenRedConverter" />
             <converters:BoolToYesNoConverter x:Key="BoolToYesNoConverter" />
             <converters:ProbabilityToColorConverter x:Key="ProbabilityToColorConverter" />
             <converters:MetronomoTypeToIconConverter x:Key="MetronomoTypeToIconConverter" />

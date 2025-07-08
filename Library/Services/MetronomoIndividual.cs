@@ -369,7 +369,7 @@ namespace LotoLibrary.Services
             };
         }
 
-        private void AtualizarEstadoAtual(int? concursoAtual = null)
+        public void AtualizarEstadoAtual(int? concursoAtual = null)
         {
             var concurso = concursoAtual ?? (UltimaAparicao + 1);
             IntervalAtual = concurso - UltimaAparicao;

@@ -1,4 +1,4 @@
-// LotoLibrary/Services/MetronomoEngine.cs
+// D:\PROJETOS\GraphFacil\Library\Services\MetronomoEngine.cs
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LotoLibrary.Models;
@@ -11,7 +11,7 @@ namespace LotoLibrary.Services
 {
     /// <summary>
     /// Motor principal que gerencia todos os metrônomos individuais
-    /// Integrado com o sistema ValidationMetrics.cs original (SEM duplicações)
+    /// Integrado com o sistema ValidationMetrics.cs original (SEM dependências WPF)
     /// </summary>
     public partial class MetronomoEngine : ObservableObject
     {
@@ -50,6 +50,10 @@ namespace LotoLibrary.Services
         private List<Lance> _dadosTreino;
         private List<Lance> _dadosValidacao;
         private readonly ValidationMetricsService _validationService;
+
+        // Eventos para comunicação com a UI
+        public event Action<string> OnMostrarMensagem;
+        public event Func<ConfiguracaoTreinamento, bool> OnSolicitarConfiguracaoTreinamento;
         #endregion
 
         #region Constructor
@@ -136,20 +140,24 @@ namespace LotoLibrary.Services
         [RelayCommand]
         private void ConfigurarTreinamento()
         {
-            var dialog = new ConfiguracaoTreinamentoDialog(
-                TamanhoValidacao,
-                ConcursoInicioTreinamento,
-                ConcursoFimTreinamento,
-                _historicoCompleto.FirstOrDefault()?.Id ?? 1,
-                _historicoCompleto.LastOrDefault()?.Id ?? 3000
-            );
+            var configuracao = new ConfiguracaoTreinamento
+            {
+                TamanhoValidacao = TamanhoValidacao,
+                ConcursoInicio = ConcursoInicioTreinamento,
+                ConcursoFim = ConcursoFimTreinamento,
+                ConcursoMinimo = _historicoCompleto.FirstOrDefault()?.Id ?? 1,
+                ConcursoMaximo = _historicoCompleto.LastOrDefault()?.Id ?? 3000
+            };
 
-            if (dialog.ShowDialog() == true)
+            // Solicitar configuração via evento (será implementado na UI)
+            var aprovado = OnSolicitarConfiguracaoTreinamento?.Invoke(configuracao) ?? false;
+
+            if (aprovado)
             {
                 ConfigurarDadosTreinamento(
-                    dialog.TamanhoValidacao,
-                    dialog.ConcursoInicio > 1 ? dialog.ConcursoInicio : null,
-                    dialog.ConcursoFim > 0 ? dialog.ConcursoFim : null
+                    configuracao.TamanhoValidacao,
+                    configuracao.ConcursoInicio > 1 ? configuracao.ConcursoInicio : null,
+                    configuracao.ConcursoFim > 0 ? configuracao.ConcursoFim : null
                 );
 
                 StatusEngine = $"✅ Configuração atualizada: {_dadosTreino.Count} treino, {_dadosValidacao.Count} validação";
@@ -563,8 +571,8 @@ namespace LotoLibrary.Services
             diagnostico += $"Primeiro concurso: {_dadosTreino?.FirstOrDefault()?.Id}\n";
             diagnostico += $"Último concurso: {_dadosTreino?.LastOrDefault()?.Id}\n";
 
-            MessageBox.Show(diagnostico, "Diagnóstico dos Metrônomos",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            // Enviar via evento para a UI mostrar
+            OnMostrarMensagem?.Invoke(diagnostico);
         }
 
         [RelayCommand]
@@ -751,112 +759,14 @@ namespace LotoLibrary.Services
     }
 
     /// <summary>
-    /// Dialog para configuração de treinamento
+    /// Classe para configuração de treinamento (sem dependências WPF)
     /// </summary>
-    public class ConfiguracaoTreinamentoDialog : Window
+    public class ConfiguracaoTreinamento
     {
-        public int TamanhoValidacao { get; private set; }
-        public int ConcursoInicio { get; private set; }
-        public int ConcursoFim { get; private set; }
-
-        private System.Windows.Controls.TextBox _textBoxValidacao;
-        private System.Windows.Controls.TextBox _textBoxInicio;
-        private System.Windows.Controls.TextBox _textBoxFim;
-
-        public ConfiguracaoTreinamentoDialog(int tamanhoAtual, int inicioAtual, int fimAtual, int minimo, int maximo)
-        {
-            Title = "Configuração de Treinamento";
-            Width = 450;
-            Height = 300;
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-            var stackPanel = new System.Windows.Controls.StackPanel { Margin = new Thickness(20) };
-
-            // Título
-            var titulo = new System.Windows.Controls.TextBlock
-            {
-                Text = "🔧 Configurar Dados de Treinamento",
-                FontSize = 16,
-                FontWeight = FontWeights.Bold,
-                Margin = new Thickness(0, 0, 0, 15)
-            };
-
-            // Tamanho da validação
-            var labelValidacao = new System.Windows.Controls.Label { Content = "Tamanho da Validação:" };
-            _textBoxValidacao = new System.Windows.Controls.TextBox
-            {
-                Text = tamanhoAtual.ToString(),
-                Margin = new Thickness(0, 0, 0, 10)
-            };
-
-            // Concurso início
-            var labelInicio = new System.Windows.Controls.Label { Content = $"Concurso Início (mín: {minimo}):" };
-            _textBoxInicio = new System.Windows.Controls.TextBox
-            {
-                Text = inicioAtual > 1 ? inicioAtual.ToString() : "",
-                Margin = new Thickness(0, 0, 0, 10)
-            };
-
-            // Concurso fim
-            var labelFim = new System.Windows.Controls.Label { Content = $"Concurso Fim (máx: {maximo}, 0=sem limite):" };
-            _textBoxFim = new System.Windows.Controls.TextBox
-            {
-                Text = fimAtual > 0 ? fimAtual.ToString() : "",
-                Margin = new Thickness(0, 0, 0, 15)
-            };
-
-            // Botões
-            var buttonPanel = new System.Windows.Controls.StackPanel
-            {
-                Orientation = System.Windows.Controls.Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-
-            var okButton = new System.Windows.Controls.Button
-            {
-                Content = "OK",
-                Width = 70,
-                Margin = new Thickness(5),
-                IsDefault = true
-            };
-            okButton.Click += (s, e) =>
-            {
-                if (int.TryParse(_textBoxValidacao.Text, out int validacao) && validacao > 0)
-                {
-                    TamanhoValidacao = validacao;
-                    ConcursoInicio = int.TryParse(_textBoxInicio.Text, out int inicio) ? inicio : 1;
-                    ConcursoFim = int.TryParse(_textBoxFim.Text, out int fim) ? fim : -1;
-                    DialogResult = true;
-                    Close();
-                }
-                else
-                {
-                    MessageBox.Show("Tamanho de validação deve ser um número maior que 0", "Valor Inválido");
-                }
-            };
-
-            var cancelButton = new System.Windows.Controls.Button
-            {
-                Content = "Cancelar",
-                Width = 70,
-                Margin = new Thickness(5),
-                IsCancel = true
-            };
-            cancelButton.Click += (s, e) => { DialogResult = false; Close(); };
-
-            buttonPanel.Children.Add(okButton);
-            buttonPanel.Children.Add(cancelButton);
-
-            stackPanel.Children.Add(titulo);
-            stackPanel.Children.Add(labelValidacao);
-            stackPanel.Children.Add(_textBoxValidacao);
-            stackPanel.Children.Add(labelInicio);
-            stackPanel.Children.Add(_textBoxInicio);
-            stackPanel.Children.Add(labelFim);
-            stackPanel.Children.Add(_textBoxFim);
-            stackPanel.Children.Add(buttonPanel);
-
-            Content = stackPanel;
-        }
+        public int TamanhoValidacao { get; set; }
+        public int ConcursoInicio { get; set; }
+        public int ConcursoFim { get; set; }
+        public int ConcursoMinimo { get; set; }
+        public int ConcursoMaximo { get; set; }
     }
 }

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace LotoLibrary.Services
 {
 
-    public class Infra
+    public partial class Infra
     {
 
         public static Lances arGeral = new();
