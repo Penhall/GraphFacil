@@ -1,149 +1,180 @@
-﻿<!-- D:\PROJETOS\GraphFacil\Dashboard\MainWindow.xaml -->
-<Window x:Class="Dashboard.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:vm="clr-namespace:Dashboard.ViewModel"
-        xmlns:converters="clr-namespace:Dashboard.Converters"
-        mc:Ignorable="d"
-        Width="1400"
-        Height="900"
-        WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
-        Background="#FF2C3E50"
-        ResizeMode="CanResize">
+﻿<!--  D:\PROJETOS\GraphFacil\Dashboard\MainWindow.xaml  -->
+<Window
+    x:Class="Dashboard.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Dashboard.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:vm="clr-namespace:Dashboard.ViewModel"
+    Width="1400"
+    Height="900"
+    Background="#FF2C3E50"
+    ResizeMode="CanResize"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d"
+    >
 
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Conversores Simplificados -->
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
-            <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-            <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
-            <converters:ProbabilityToColorConverter x:Key="ProbabilityToColorConverter"/>
+            <!--  Conversores Simplificados  -->
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <converters:ProbabilityToColorConverter x:Key="ProbabilityToColorConverter" />
 
-            <!-- Estilos Personalizados -->
-            <Style x:Key="MenuButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                <Setter Property="Background" Value="#FF34495E"/>
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="BorderBrush" Value="#FF5D6D7E"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="15,8"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Height" Value="45"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <!--  Estilos Personalizados  -->
+            <Style
+                x:Key="MenuButton"
+                BasedOn="{StaticResource MaterialDesignRaisedButton}"
+                TargetType="Button"
+                >
+                <Setter Property="Background" Value="#FF34495E" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="BorderBrush" Value="#FF5D6D7E" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="15,8" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Height" Value="45" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
                 <Setter Property="Effect">
                     <Setter.Value>
-                        <DropShadowEffect Color="Black" Direction="320" ShadowDepth="2" BlurRadius="4" Opacity="0.3"/>
+                        <DropShadowEffect
+                            BlurRadius="4"
+                            Direction="320"
+                            Opacity="0.3"
+                            ShadowDepth="2"
+                            Color="Black"
+                            />
                     </Setter.Value>
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#FF3B82F6"/>
-                        <Setter Property="BorderBrush" Value="#FF60A5FA"/>
+                        <Setter Property="Background" Value="#FF3B82F6" />
+                        <Setter Property="BorderBrush" Value="#FF60A5FA" />
                     </Trigger>
                     <Trigger Property="IsPressed" Value="True">
-                        <Setter Property="Background" Value="#FF1E40AF"/>
+                        <Setter Property="Background" Value="#FF1E40AF" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
 
             <Style x:Key="MetronomoCard" TargetType="Border">
-                <Setter Property="Background" Value="White"/>
-                <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="Padding" Value="15"/>
-                <Setter Property="Margin" Value="5"/>
+                <Setter Property="Background" Value="White" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="15" />
+                <Setter Property="Margin" Value="5" />
                 <Setter Property="Effect">
                     <Setter.Value>
-                        <DropShadowEffect Color="Black" Direction="320" ShadowDepth="3" BlurRadius="6" Opacity="0.2"/>
+                        <DropShadowEffect
+                            BlurRadius="6"
+                            Direction="320"
+                            Opacity="0.2"
+                            ShadowDepth="3"
+                            Color="Black"
+                            />
                     </Setter.Value>
                 </Setter>
             </Style>
 
             <Style x:Key="StatusBar" TargetType="Border">
-                <Setter Property="Background" Value="#FF1A252F"/>
-                <Setter Property="Padding" Value="10,5"/>
-                <Setter Property="BorderBrush" Value="#FF34495E"/>
-                <Setter Property="BorderThickness" Value="0,1,0,0"/>
+                <Setter Property="Background" Value="#FF1A252F" />
+                <Setter Property="Padding" Value="10,5" />
+                <Setter Property="BorderBrush" Value="#FF34495E" />
+                <Setter Property="BorderThickness" Value="0,1,0,0" />
             </Style>
 
-            <!-- Data Templates -->
+            <!--  Data Templates  -->
             <DataTemplate x:Key="MetronomoTemplate">
-                <Border Style="{StaticResource MetronomoCard}"
-                        MouseLeftButtonDown="Border_MouseLeftButtonDown">
+                <Border MouseLeftButtonDown="Border_MouseLeftButtonDown" Style="{StaticResource MetronomoCard}">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <!-- Número da Dezena -->
-                        <TextBlock Grid.Row="0"
-                                   Text="{Binding Numero, StringFormat='D2'}"
-                                   FontSize="24"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   Foreground="#FF2C3E50"/>
+                        <!--  Número da Dezena  -->
+                        <TextBlock
+                            Grid.Row="0"
+                            HorizontalAlignment="Center"
+                            FontSize="24"
+                            FontWeight="Bold"
+                            Foreground="#FF2C3E50"
+                            Text="{Binding Numero, StringFormat='D2'}"
+                            />
 
-                        <!-- Probabilidade -->
-                        <TextBlock Grid.Row="1"
-                                   Text="{Binding ProbabilidadeAtual, StringFormat='P1'}"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"
-                                   HorizontalAlignment="Center"
-                                   Foreground="#FF3B82F6"
-                                   Margin="0,5"/>
+                        <!--  Probabilidade  -->
+                        <TextBlock
+                            Grid.Row="1"
+                            Margin="0,5"
+                            HorizontalAlignment="Center"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Foreground="#FF3B82F6"
+                            Text="{Binding ProbabilidadeAtual, StringFormat='P1'}"
+                            />
 
-                        <!-- Barra de Probabilidade -->
-                        <ProgressBar Grid.Row="2"
-                                     Value="{Binding ProbabilidadeAtual}"
-                                     Maximum="1"
-                                     Height="8"
-                                     Background="#FFECF0F1"
-                                     Foreground="{Binding ProbabilidadeAtual, Converter={StaticResource ProbabilityToColorConverter}}"
-                                     Margin="0,5"/>
+                        <!--  Barra de Probabilidade  -->
+                        <ProgressBar
+                            Grid.Row="2"
+                            Height="8"
+                            Margin="0,5"
+                            Background="#FFECF0F1"
+                            Foreground="{Binding ProbabilidadeAtual, Converter={StaticResource ProbabilityToColorConverter}}"
+                            Maximum="1"
+                            Value="{Binding ProbabilidadeAtual}"
+                            />
 
-                        <!-- Informações Adicionais -->
+                        <!--  Informações Adicionais  -->
                         <StackPanel Grid.Row="3" Margin="0,10,0,0">
-                            <TextBlock Text="{Binding TipoMetronomo}"
-                                       FontSize="10"
-                                       Foreground="#FF7F8C8D"
-                                       HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding CicloMedio, StringFormat='Ciclo: {0:F1}'}"
-                                       FontSize="10"
-                                       Foreground="#FF7F8C8D"
-                                       HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding IntervalAtual, StringFormat='Há {0} concursos'}"
-                                       FontSize="10"
-                                       Foreground="#FF7F8C8D"
-                                       HorizontalAlignment="Center"/>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="10"
+                                Foreground="#FF7F8C8D"
+                                Text="{Binding TipoMetronomo}"
+                                />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="10"
+                                Foreground="#FF7F8C8D"
+                                Text="{Binding CicloMedio, StringFormat='Ciclo: {0:F1}'}"
+                                />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="10"
+                                Foreground="#FF7F8C8D"
+                                Text="{Binding IntervalAtual, StringFormat='Há {0} concursos'}"
+                                />
                         </StackPanel>
 
-                        <!-- Indicador de Fase Ótima (simples) -->
-                        <Ellipse Grid.Row="0"
-                                 Width="12"
-                                 Height="12"
-                                 HorizontalAlignment="Right"
-                                 VerticalAlignment="Top"
-                                 Margin="0,-5,-5,0">
+                        <!--  Indicador de Fase Ótima (simples)  -->
+                        <Ellipse
+                            Grid.Row="0"
+                            Width="12"
+                            Height="12"
+                            Margin="0,-5,-5,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            >
                             <Ellipse.Style>
                                 <Style TargetType="Ellipse">
-                                    <Setter Property="Fill" Value="LightGray"/>
+                                    <Setter Property="Fill" Value="LightGray" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding EmFaseOtima}" Value="True">
-                                            <Setter Property="Fill" Value="LimeGreen"/>
+                                            <Setter Property="Fill" Value="LimeGreen" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -157,217 +188,309 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
-        <!-- Barra de Título -->
-        <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0"
-                Background="#FF1A252F"
-                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+        <!--#region Layout Principal-->
+
+        <!--  Barra de Título  -->
+        <Border
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Background="#FF1A252F"
+            MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+            >
             <Grid>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0">
-                    <md:PackIcon Kind="Analytics" Foreground="#FF3B82F6" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <TextBlock Text="Sistema de Metrônomos Lotofácil v2.0"
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
+                <StackPanel
+                    Margin="15,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    >
+                    <md:PackIcon
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        Foreground="#FF3B82F6"
+                        Kind="Analytics"
+                        />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontWeight="SemiBold"
+                        Foreground="White"
+                        Text="Sistema de Metrônomos Lotofácil v2.0"
+                        />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="15,0">
-                    <Button x:Name="BtnMinimize"
-                            Content="−"
-                            Width="30"
-                            Height="25"
-                            Background="Transparent"
-                            Foreground="White"
-                            BorderThickness="0"
-                            Click="BtnMinimize_Click"/>
-                    <Button x:Name="BtnClose"
-                            Content="×"
-                            Width="30"
-                            Height="25"
-                            Background="Transparent"
-                            Foreground="White"
-                            BorderThickness="0"
-                            Click="BtnClose_Click"
-                            FontSize="16"/>
+                <StackPanel
+                    Margin="15,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    >
+                    <Button
+                        x:Name="BtnMinimize"
+                        Width="30"
+                        Height="25"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="BtnMinimize_Click"
+                        Content="−"
+                        Foreground="White"
+                        />
+                    <Button
+                        x:Name="BtnClose"
+                        Width="30"
+                        Height="25"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="BtnClose_Click"
+                        Content="×"
+                        FontSize="16"
+                        Foreground="White"
+                        />
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Painel Esquerdo - Controles Principais -->
-        <Border Grid.Column="0" Grid.Row="1"
-                Background="#FF34495E"
-                BorderBrush="#FF2C3E50"
-                BorderThickness="0,0,1,0">
+        <!--  Painel Esquerdo - Controles Principais  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="0"
+            Background="#FF34495E"
+            BorderBrush="#FF2C3E50"
+            BorderThickness="0,0,1,0"
+            >
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="10">
 
-                    <!-- Seção Metrônomos -->
-                    <TextBlock Text="🎵 METRÔNOMOS"
-                               Foreground="White"
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Margin="10,0,0,10"/>
+                    <!--  Seção Metrônomos  -->
+                    <TextBlock
+                        Margin="10,0,0,10"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="🎵 METRÔNOMOS"
+                        />
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding IniciarMetronomosCommand}"
-                            IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBooleanConverter}}">
+                    <Button
+                        Command="{Binding IniciarMetronomosCommand}"
+                        IsEnabled="{Binding IsProcessing, Converter={StaticResource InverseBooleanConverter}}"
+                        Style="{StaticResource MenuButton}"
+                        >
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="PlayCircle" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Iniciar Metrônomos"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="PlayCircle"
+                                />
+                            <TextBlock Text="Iniciar Metrônomos" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding GerarPalpiteCommand}">
+                    <Button Command="{Binding GerarPalpiteCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="AutoFix" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Gerar Palpite"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="AutoFix"
+                                />
+                            <TextBlock Text="Gerar Palpite" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding ValidarModeloCommand}">
+                    <Button Command="{Binding ValidarModeloCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="CheckCircle" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Validar Modelo"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="CheckCircle"
+                                />
+                            <TextBlock Text="Validar Modelo" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding CompararEstrategiasCommand}">
+                    <Button Command="{Binding CompararEstrategiasCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="CompareHorizontal" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Comparar Estratégias"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="CompareHorizontal"
+                                />
+                            <TextBlock Text="Comparar Estratégias" />
                         </StackPanel>
                     </Button>
 
-                    <Separator Margin="0,15" Background="#FF5D6D7E"/>
+                    <Separator Margin="0,15" Background="#FF5D6D7E" />
 
-                    <!-- Seção Configurações -->
-                    <TextBlock Text="⚙️ CONFIGURAÇÕES"
-                               Foreground="White"
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Margin="10,0,0,10"/>
+                    <!--  Seção Configurações  -->
+                    <TextBlock
+                        Margin="10,0,0,10"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="⚙️ CONFIGURAÇÕES"
+                        />
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding AlterarConcursoAlvoCommand}">
+                    <Button Command="{Binding AlterarConcursoAlvoCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Target" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Alterar Concurso"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="Target"
+                                />
+                            <TextBlock Text="Alterar Concurso" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding ConfigurarTreinamentoCommand}">
+                    <Button Command="{Binding ConfigurarTreinamentoCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Cog" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Config. Treino"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="Cog"
+                                />
+                            <TextBlock Text="Config. Treino" />
                         </StackPanel>
                     </Button>
 
-                    <Separator Margin="0,15" Background="#FF5D6D7E"/>
+                    <Separator Margin="0,15" Background="#FF5D6D7E" />
 
-                    <!-- Seção Diagnóstico -->
-                    <TextBlock Text="🔧 DIAGNÓSTICO"
-                               Foreground="White"
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Margin="10,0,0,10"/>
+                    <!--  Seção Diagnóstico  -->
+                    <TextBlock
+                        Margin="10,0,0,10"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="🔧 DIAGNÓSTICO"
+                        />
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding DiagnosticarMetronomosCommand}">
+                    <Button Command="{Binding DiagnosticarMetronomosCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Stethoscope" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Diagnosticar"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="Stethoscope"
+                                />
+                            <TextBlock Text="Diagnosticar" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding ForcarRecalculoMetronomosCommand}">
+                    <Button Command="{Binding ForcarRecalculoMetronomosCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Refresh" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Recalcular"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="Refresh"
+                                />
+                            <TextBlock Text="Recalcular" />
                         </StackPanel>
                     </Button>
 
-                    <Separator Margin="0,15" Background="#FF5D6D7E"/>
+                    <Separator Margin="0,15" Background="#FF5D6D7E" />
 
-                    <!-- Seção Estudos -->
-                    <TextBlock Text="📊 ESTUDOS"
-                               Foreground="White"
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Margin="10,0,0,10"/>
+                    <!--  Seção Estudos  -->
+                    <TextBlock
+                        Margin="10,0,0,10"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="📊 ESTUDOS"
+                        />
 
-                    <Button Style="{StaticResource MenuButton}" Command="{Binding PrimeiroCommand}">
+                    <Button Command="{Binding PrimeiroCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Numeric1Circle" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Estudo 1"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="Numeric1Circle"
+                                />
+                            <TextBlock Text="Estudo 1" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}" Command="{Binding SegundoCommand}">
+                    <Button Command="{Binding SegundoCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Numeric2Circle" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Estudo 2"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="Numeric2Circle"
+                                />
+                            <TextBlock Text="Estudo 2" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}" Command="{Binding TerceiroCommand}">
+                    <Button Command="{Binding TerceiroCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Numeric3Circle" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Estudo 3"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="Numeric3Circle"
+                                />
+                            <TextBlock Text="Estudo 3" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}" Command="{Binding QuartoCommand}">
+                    <Button Command="{Binding QuartoCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Numeric4Circle" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Estudo 4"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="Numeric4Circle"
+                                />
+                            <TextBlock Text="Estudo 4" />
                         </StackPanel>
                     </Button>
 
-                    <Separator Margin="0,15" Background="#FF5D6D7E"/>
+                    <Separator Margin="0,15" Background="#FF5D6D7E" />
 
-                    <!-- Seção Ferramentas -->
-                    <TextBlock Text="🛠️ FERRAMENTAS"
-                               Foreground="White"
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Margin="10,0,0,10"/>
+                    <!--  Seção Ferramentas  -->
+                    <TextBlock
+                        Margin="10,0,0,10"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="🛠️ FERRAMENTAS"
+                        />
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding SalvarResultadosCommand}">
+                    <Button Command="{Binding SalvarResultadosCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="ContentSave" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Salvar Relatório"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="ContentSave"
+                                />
+                            <TextBlock Text="Salvar Relatório" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding AbrirValidacaoCommand}">
+                    <Button Command="{Binding AbrirValidacaoCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="ChartLine" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Análise ML"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="ChartLine"
+                                />
+                            <TextBlock Text="Análise ML" />
                         </StackPanel>
                     </Button>
 
-                    <Button Style="{StaticResource MenuButton}"
-                            Command="{Binding TerminarProgramaCommand}">
+                    <Button Command="{Binding TerminarProgramaCommand}" Style="{StaticResource MenuButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="ExitToApp" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="Sair"/>
+                            <md:PackIcon
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Kind="ExitToApp"
+                                />
+                            <TextBlock Text="Sair" />
                         </StackPanel>
                     </Button>
 
@@ -375,190 +498,239 @@
             </ScrollViewer>
         </Border>
 
-        <!-- Área Central - Visualização dos Metrônomos -->
-        <Border Grid.Column="1" Grid.Row="1"
-                Background="#FFECF0F1"
-                Padding="20">
+        <!--  Área Central - Visualização dos Metrônomos  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="1"
+            Padding="20"
+            Background="#FFECF0F1"
+            >
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!-- Header da Área Central -->
+                <!--  Header da Área Central  -->
                 <Grid Grid.Row="0" Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Metrônomos Individuais"
-                                   FontSize="24"
-                                   FontWeight="Bold"
-                                   Foreground="#FF2C3E50"/>
-                        <TextBlock Text="{Binding TextoConcurso}"
-                                   FontSize="14"
-                                   Foreground="#FF7F8C8D"
-                                   Margin="0,5"/>
+                        <TextBlock
+                            FontSize="24"
+                            FontWeight="Bold"
+                            Foreground="#FF2C3E50"
+                            Text="Metrônomos Individuais"
+                            />
+                        <TextBlock
+                            Margin="0,5"
+                            FontSize="14"
+                            Foreground="#FF7F8C8D"
+                            Text="{Binding TextoConcurso}"
+                            />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <ToggleButton x:Name="ToggleView"
-                                      IsChecked="{Binding MostrarMetronomos}"
-                                      Content="{md:PackIcon ViewGrid}"
-                                      Style="{StaticResource MaterialDesignActionToggleButton}"
-                                      ToolTip="Alternar Visualização"
-                                      Margin="5"/>
+                        <ToggleButton
+                            x:Name="ToggleView"
+                            Margin="5"
+                            Content="{md:PackIcon ViewGrid}"
+                            IsChecked="{Binding MostrarMetronomos}"
+                            Style="{StaticResource MaterialDesignActionToggleButton}"
+                            ToolTip="Alternar Visualização"
+                            />
                     </StackPanel>
                 </Grid>
 
-                <!-- Último Palpite -->
-                <Border Grid.Row="1"
-                        Background="#FF3B82F6"
-                        CornerRadius="8"
-                        Padding="15"
-                        Margin="0,0,0,20"
-                        Visibility="{Binding UltimoPalpite, Converter={StaticResource StringToVisibilityConverter}}">
+                <!--  Último Palpite  -->
+                <Border
+                    Grid.Row="1"
+                    Margin="0,0,0,20"
+                    Padding="15"
+                    Background="#FF3B82F6"
+                    CornerRadius="8"
+                    Visibility="{Binding UltimoPalpite, Converter={StaticResource StringToVisibilityConverter}}"
+                    >
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <md:PackIcon Grid.Column="0"
-                                     Kind="TrophyAward"
-                                     Foreground="White"
-                                     VerticalAlignment="Center"
-                                     Margin="0,0,15,0"
-                                     Width="24"
-                                     Height="24"/>
+                        <md:PackIcon
+                            Grid.Column="0"
+                            Width="24"
+                            Height="24"
+                            Margin="0,0,15,0"
+                            VerticalAlignment="Center"
+                            Foreground="White"
+                            Kind="TrophyAward"
+                            />
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="ÚLTIMO PALPITE GERADO"
-                                       Foreground="White"
-                                       FontWeight="Bold"
-                                       FontSize="12"/>
-                            <TextBlock Text="{Binding UltimoPalpite}"
-                                       Foreground="White"
-                                       FontSize="16"
-                                       FontWeight="SemiBold"
-                                       Margin="0,5"/>
+                            <TextBlock
+                                FontSize="12"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="ÚLTIMO PALPITE GERADO"
+                                />
+                            <TextBlock
+                                Margin="0,5"
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Foreground="White"
+                                Text="{Binding UltimoPalpite}"
+                                />
                         </StackPanel>
                     </Grid>
                 </Border>
 
-                <!-- Grid de Metrônomos -->
-                <ScrollViewer Grid.Row="2"
-                              VerticalScrollBarVisibility="Auto"
-                              Visibility="{Binding MostrarMetronomos, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ItemsControl ItemsSource="{Binding Metronomos}"
-                                  ItemTemplate="{StaticResource MetronomoTemplate}">
+                <!--  Grid de Metrônomos  -->
+                <ScrollViewer
+                    Grid.Row="2"
+                    VerticalScrollBarVisibility="Auto"
+                    Visibility="{Binding MostrarMetronomos, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    >
+                    <ItemsControl ItemTemplate="{StaticResource MetronomoTemplate}" ItemsSource="{Binding Metronomos}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid Columns="5"/>
+                                <UniformGrid Columns="5" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
                 </ScrollViewer>
 
-                <!-- Mensagem quando não há dados -->
-                <Border Grid.Row="2"
-                        Background="White"
-                        CornerRadius="10"
-                        Padding="40">
+                <!--  Mensagem quando não há dados  -->
+                <Border
+                    Grid.Row="2"
+                    Padding="40"
+                    Background="White"
+                    CornerRadius="10"
+                    >
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding MostrarMetronomos}" Value="False">
-                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <md:PackIcon Kind="ChartDonut"
-                                     Width="64"
-                                     Height="64"
-                                     Foreground="#FFCBD5E1"
-                                     HorizontalAlignment="Center"/>
-                        <TextBlock Text="Pressione 'Iniciar Metrônomos' para começar a análise"
-                                   FontSize="16"
-                                   Foreground="#FF64748B"
-                                   TextAlignment="Center"
-                                   Margin="0,20"/>
+                        <md:PackIcon
+                            Width="64"
+                            Height="64"
+                            HorizontalAlignment="Center"
+                            Foreground="#FFCBD5E1"
+                            Kind="ChartDonut"
+                            />
+                        <TextBlock
+                            Margin="0,20"
+                            FontSize="16"
+                            Foreground="#FF64748B"
+                            Text="Pressione 'Iniciar Metrônomos' para começar a análise"
+                            TextAlignment="Center"
+                            />
                     </StackPanel>
                 </Border>
 
             </Grid>
         </Border>
 
-        <!-- Painel Direito - Informações e Status -->
-        <Border Grid.Column="2" Grid.Row="1"
-                Background="#FF34495E"
-                BorderBrush="#FF2C3E50"
-                BorderThickness="1,0,0,0">
+        <!--  Painel Direito - Informações e Status  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="2"
+            Background="#FF34495E"
+            BorderBrush="#FF2C3E50"
+            BorderThickness="1,0,0,0"
+            >
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="15">
 
-                    <!-- Status do Sistema -->
-                    <TextBlock Text="📊 STATUS DO SISTEMA"
-                               Foreground="White"
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Margin="0,0,0,15"/>
+                    <!--  Status do Sistema  -->
+                    <TextBlock
+                        Margin="0,0,0,15"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="📊 STATUS DO SISTEMA"
+                        />
 
-                    <Border Background="#FF2C3E50"
-                            CornerRadius="5"
-                            Padding="10"
-                            Margin="0,0,0,15">
+                    <Border
+                        Margin="0,0,0,15"
+                        Padding="10"
+                        Background="#FF2C3E50"
+                        CornerRadius="5"
+                        >
                         <StackPanel>
-                            <TextBlock Text="Engine:"
-                                       Foreground="#FF95A5A6"
-                                       FontSize="10"/>
-                            <TextBlock Text="{Binding StatusEngine}"
-                                       Foreground="White"
-                                       FontSize="12"
-                                       TextWrapping="Wrap"/>
+                            <TextBlock
+                                FontSize="10"
+                                Foreground="#FF95A5A6"
+                                Text="Engine:"
+                                />
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="White"
+                                Text="{Binding StatusEngine}"
+                                TextWrapping="Wrap"
+                                />
 
-                            <TextBlock Text="Confiança:"
-                                       Foreground="#FF95A5A6"
-                                       FontSize="10"
-                                       Margin="0,10,0,0"/>
-                            <TextBlock Text="{Binding ConfiancaAtual, StringFormat='P1'}"
-                                       Foreground="#FF27AE60"
-                                       FontSize="16"
-                                       FontWeight="Bold"/>
+                            <TextBlock
+                                Margin="0,10,0,0"
+                                FontSize="10"
+                                Foreground="#FF95A5A6"
+                                Text="Confiança:"
+                                />
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Foreground="#FF27AE60"
+                                Text="{Binding ConfiancaAtual, StringFormat='P1'}"
+                                />
 
-                            <TextBlock Text="Processando:"
-                                       Foreground="#FF95A5A6"
-                                       FontSize="10"
-                                       Margin="0,10,0,0"/>
-                            <TextBlock Text="{Binding IsProcessing}"
-                                       Foreground="White"
-                                       FontSize="12"/>
+                            <TextBlock
+                                Margin="0,10,0,0"
+                                FontSize="10"
+                                Foreground="#FF95A5A6"
+                                Text="Processando:"
+                                />
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="White"
+                                Text="{Binding IsProcessing}"
+                                />
                         </StackPanel>
                     </Border>
 
-                    <!-- Relatório Geral -->
-                    <TextBlock Text="📋 RELATÓRIO"
-                               Foreground="White"
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Margin="0,20,0,15"/>
+                    <!--  Relatório Geral  -->
+                    <TextBlock
+                        Margin="0,20,0,15"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="📋 RELATÓRIO"
+                        />
 
-                    <Border Background="#FF2C3E50"
-                            CornerRadius="5"
-                            Padding="10"
-                            MaxHeight="300">
+                    <Border
+                        MaxHeight="300"
+                        Padding="10"
+                        Background="#FF2C3E50"
+                        CornerRadius="5"
+                        >
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <TextBlock Text="{Binding RelatorioGeral}"
-                                       Foreground="#FFBDC3C7"
-                                       FontSize="10"
-                                       FontFamily="Consolas"
-                                       TextWrapping="Wrap"/>
+                            <TextBlock
+                                FontFamily="Consolas"
+                                FontSize="10"
+                                Foreground="#FFBDC3C7"
+                                Text="{Binding RelatorioGeral}"
+                                TextWrapping="Wrap"
+                                />
                         </ScrollViewer>
                     </Border>
 
@@ -566,28 +738,41 @@
             </ScrollViewer>
         </Border>
 
-        <!-- Barra de Status -->
-        <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2"
-                Style="{StaticResource StatusBar}">
+        <!--  Barra de Status  -->
+        <Border
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Style="{StaticResource StatusBar}"
+            >
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0"
-                           Text="{Binding StatusCompleto}"
-                           Foreground="#FFBDC3C7"
-                           FontSize="10"
-                           VerticalAlignment="Center"/>
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Foreground="#FFBDC3C7"
+                    Text="{Binding StatusCompleto}"
+                    />
 
-                <TextBlock Grid.Column="1"
-                           Text="{Binding VersaoSistema}"
-                           Foreground="#FF7F8C8D"
-                           FontSize="10"
-                           VerticalAlignment="Center"/>
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Foreground="#FF7F8C8D"
+                    Text="{Binding VersaoSistema}"
+                    />
             </Grid>
         </Border>
+
+        <!--#endregion-->
+
+
+
 
     </Grid>
 </Window>
