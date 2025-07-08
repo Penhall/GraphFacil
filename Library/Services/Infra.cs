@@ -241,6 +241,9 @@ namespace LotoLibrary.Services
 
         private static void PreencheSorteios(List<Lotofacil> concursos)
         {
+
+            arLoto.Clear();
+
             foreach (var o in concursos)
             {
                 List<int> l = new List<int>();
