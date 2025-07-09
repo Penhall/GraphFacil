@@ -15,23 +15,6 @@
     mc:Ignorable="d"
     >
 
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!--  Material Design Resources  -->
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
-
-                <!--  Phase 1 Resources  -->
-                <ResourceDictionary Source="Resources/Phase1Resources.xaml" />
-                <ResourceDictionary Source="Resources/Phase1Styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
-            <!--  Local Converters  -->
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        </ResourceDictionary>
-    </Window.Resources>
-
     <Grid>
         <!--  Background Gradient  -->
         <Grid.Background>
@@ -137,71 +120,47 @@
                         HorizontalAlignment="Center"
                         FontSize="14"
                         FontWeight="Bold"
-                        Foreground="{StaticResource PrimaryTextBrush}"
+                        Foreground="#FFECEFF4"
                         Text="🎯 AÇÕES PRINCIPAIS"
                         />
 
                     <!--  Botões Originais  -->
-                    <Button
-                        Margin="0,0,0,5"
-                        Command="{Binding PrimeiroCommand}"
-                        Style="{StaticResource ActionButton}"
-                        >
+                    <Button Command="{Binding PrimeiroCommand}" Style="{StaticResource ActionButton}">
                         <StackPanel Orientation="Horizontal">
                             <md:PackIcon Margin="0,0,8,0" Kind="Play" />
                             <TextBlock Text="PRIMEIRO" />
                         </StackPanel>
                     </Button>
 
-                    <Button
-                        Margin="0,0,0,5"
-                        Command="{Binding SegundoCommand}"
-                        Style="{StaticResource ActionButton}"
-                        >
+                    <Button Command="{Binding SegundoCommand}" Style="{StaticResource ActionButton}">
                         <StackPanel Orientation="Horizontal">
                             <md:PackIcon Margin="0,0,8,0" Kind="Settings" />
                             <TextBlock Text="SEGUNDO" />
                         </StackPanel>
                     </Button>
 
-                    <Button
-                        Margin="0,0,0,5"
-                        Command="{Binding TerceiroCommand}"
-                        Style="{StaticResource ActionButton}"
-                        >
+                    <Button Command="{Binding TerceiroCommand}" Style="{StaticResource ActionButton}">
                         <StackPanel Orientation="Horizontal">
                             <md:PackIcon Margin="0,0,8,0" Kind="Database" />
                             <TextBlock Text="TERCEIRO" />
                         </StackPanel>
                     </Button>
 
-                    <Button
-                        Margin="0,0,0,5"
-                        Command="{Binding QuartoCommand}"
-                        Style="{StaticResource ActionButton}"
-                        >
+                    <Button Command="{Binding QuartoCommand}" Style="{StaticResource ActionButton}">
                         <StackPanel Orientation="Horizontal">
                             <md:PackIcon Margin="0,0,8,0" Kind="School" />
                             <TextBlock Text="QUARTO" />
                         </StackPanel>
                     </Button>
 
-                    <Button
-                        Margin="0,0,0,5"
-                        Command="{Binding QuintoCommand}"
-                        Style="{StaticResource ActionButton}"
-                        >
+                    <Button Command="{Binding QuintoCommand}" Style="{StaticResource ActionButton}">
                         <StackPanel Orientation="Horizontal">
                             <md:PackIcon Margin="0,0,8,0" Kind="ViewDashboard" />
                             <TextBlock Text="QUINTO" />
                         </StackPanel>
                     </Button>
 
-                    <Button
-                        Margin="0,0,0,15"
-                        Command="{Binding SextoCommand}"
-                        Style="{StaticResource ActionButton}"
-                        >
+                    <Button Command="{Binding SextoCommand}" Style="{StaticResource ActionButton}">
                         <StackPanel Orientation="Horizontal">
                             <md:PackIcon Margin="0,0,8,0" Kind="Target" />
                             <TextBlock Text="SEXTO" />
@@ -209,132 +168,45 @@
                     </Button>
 
                     <!--  Separador  -->
-                    <Separator Margin="0,0,0,15" Background="{StaticResource BorderBrush}" />
+                    <Separator Margin="0,15,0,15" Background="{StaticResource BorderBrush}" />
 
-                    <!--  Título Fase 1  -->
+                    <!--  Novos Comandos  -->
                     <TextBlock
                         Margin="0,0,0,10"
                         HorizontalAlignment="Center"
                         FontSize="12"
                         FontWeight="Bold"
-                        Foreground="{StaticResource AccentTextBrush}"
-                        Text="🚀 FASE 1 - NOVO"
+                        Foreground="#FF88C0D0"
+                        Text="🚀 SISTEMA NOVO"
                         />
 
-                    <!--  Botões da Fase 1 em Grid 2x2  -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                    <Button Command="{Binding GerarPalpiteCommand}" Style="{StaticResource ActionButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Margin="0,0,8,0" Kind="AutoFix" />
+                            <TextBlock Text="GERAR PALPITE" />
+                        </StackPanel>
+                    </Button>
 
-                        <!--  Gerar Palpite Novo  -->
-                        <Button
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Margin="0,0,2,2"
-                            Background="{StaticResource PalpiteButtonBrush}"
-                            Command="{Binding GerarPalpiteNovoCommand}"
-                            Style="{StaticResource SidePanelButton}"
-                            >
-                            <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
-                                <md:PackIcon FontSize="16" Kind="AutoFix" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="9"
-                                    Text="Palpite"
-                                    />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="9"
-                                    Text="Novo"
-                                    />
-                            </StackPanel>
-                        </Button>
+                    <Button Command="{Binding ValidarEstrategiasCommand}" Style="{StaticResource ActionButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Margin="0,0,8,0" Kind="CheckCircle" />
+                            <TextBlock Text="VALIDAR" />
+                        </StackPanel>
+                    </Button>
 
-                        <!--  Diagnósticos  -->
-                        <Button
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="2,0,0,2"
-                            Background="{StaticResource DiagnosticButtonBrush}"
-                            Command="{Binding ExecutarDiagnosticosCommand}"
-                            Style="{StaticResource SidePanelButton}"
-                            >
-                            <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
-                                <md:PackIcon FontSize="16" Kind="BugCheck" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="9"
-                                    Text="Diagnós-"
-                                    />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="9"
-                                    Text="tico"
-                                    />
-                            </StackPanel>
-                        </Button>
-
-                        <!--  Validar Fase 1  -->
-                        <Button
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Margin="0,2,2,0"
-                            Background="{StaticResource ValidationButtonBrush}"
-                            Command="{Binding ValidarFase1Command}"
-                            Style="{StaticResource SidePanelButton}"
-                            >
-                            <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
-                                <md:PackIcon FontSize="16" Kind="CheckCircle" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="9"
-                                    Text="Validar"
-                                    />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="9"
-                                    Text="F1"
-                                    />
-                            </StackPanel>
-                        </Button>
-
-                        <!--  Comparar Performance  -->
-                        <Button
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="2,2,0,0"
-                            Background="{StaticResource ComparisonButtonBrush}"
-                            Command="{Binding CompararPerformanceCommand}"
-                            Style="{StaticResource SidePanelButton}"
-                            >
-                            <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
-                                <md:PackIcon FontSize="16" Kind="Compare" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="9"
-                                    Text="Compa-"
-                                    />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="9"
-                                    Text="rar"
-                                    />
-                            </StackPanel>
-                        </Button>
-                    </Grid>
+                    <Button Command="{Binding IniciarSincronizacaoCommand}" Style="{StaticResource ActionButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Margin="0,0,8,0" Kind="Sync" />
+                            <TextBlock Text="SINCRONIZAR" />
+                        </StackPanel>
+                    </Button>
 
                 </StackPanel>
             </ScrollViewer>
         </Border>
 
         <!--  ==================================  -->
-        <!--  PAINEL CENTRAL SUPERIOR - STATUS PREDICTION ENGINE  -->
+        <!--  PAINEL CENTRAL SUPERIOR - STATUS  -->
         <!--  ==================================  -->
         <Border
             Grid.Row="1"
@@ -352,11 +224,11 @@
                     HorizontalAlignment="Center"
                     FontSize="16"
                     FontWeight="Bold"
-                    Foreground="{StaticResource PrimaryTextBrush}"
-                    Text="🚀 PREDICTION ENGINE - FASE 1"
+                    Foreground="#FFECEFF4"
+                    Text="🚀 STATUS DO SISTEMA"
                     />
 
-                <!--  Status do Engine  -->
+                <!--  Status Engine  -->
                 <Grid Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -367,23 +239,23 @@
                         Grid.Column="0"
                         VerticalAlignment="Center"
                         FontWeight="SemiBold"
-                        Foreground="{StaticResource SecondaryTextBrush}"
+                        Foreground="#FFD8DEE9"
                         Text="Status:"
                         />
 
                     <TextBlock
                         Grid.Column="1"
                         Margin="10,0,0,0"
-                        FontFamily="{StaticResource MonospaceFontFamily}"
+                        FontFamily="Courier New"
                         FontSize="11"
-                        Foreground="{Binding IsPredictionEngineInitialized, Converter={StaticResource BoolToColorConverter}}"
-                        Text="{Binding PredictionEngineStatus}"
+                        Foreground="#FF88C0D0"
+                        Text="{Binding StatusEngine}"
                         TextWrapping="Wrap"
                         />
                 </Grid>
 
-                <!--  Última Predição  -->
-                <Grid Margin="0,0,0,10">
+                <!--  Último Palpite  -->
+                <Grid Margin="0,0,0,10" Visibility="{Binding UltimoPalpite, Converter={StaticResource StringToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -393,24 +265,24 @@
                         Grid.Column="0"
                         VerticalAlignment="Top"
                         FontWeight="SemiBold"
-                        Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="Última:"
+                        Foreground="#FFD8DEE9"
+                        Text="Palpite:"
                         />
 
                     <TextBlock
                         Grid.Column="1"
-                        MaxHeight="50"
                         Margin="10,0,0,0"
-                        FontFamily="{StaticResource MonospaceFontFamily}"
-                        FontSize="10"
-                        Foreground="{StaticResource AccentTextBrush}"
-                        Text="{Binding LastPredictionResult}"
+                        FontFamily="Courier New"
+                        FontSize="12"
+                        FontWeight="Bold"
+                        Foreground="#FFA3BE8C"
+                        Text="{Binding UltimoPalpite}"
                         TextWrapping="Wrap"
                         />
                 </Grid>
 
-                <!--  Status de Validação  -->
-                <Grid Margin="0,0,0,10" Visibility="{Binding IsValidationRunning, Converter={StaticResource BoolToVisibilityConverter}}">
+                <!--  Confiança  -->
+                <Grid Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -420,18 +292,45 @@
                         Grid.Column="0"
                         VerticalAlignment="Center"
                         FontWeight="SemiBold"
-                        Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="Validação:"
+                        Foreground="#FFD8DEE9"
+                        Text="Confiança:"
+                        />
+
+                    <ProgressBar
+                        Grid.Column="1"
+                        Height="15"
+                        Margin="10,0,0,0"
+                        Background="{StaticResource AccentBackgroundBrush}"
+                        Foreground="#FFA3BE8C"
+                        Maximum="1.0"
+                        Minimum="0.0"
+                        Value="{Binding ConfiancaAtual}"
+                        />
+                </Grid>
+
+                <!--  Concurso Alvo  -->
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        FontWeight="SemiBold"
+                        Foreground="#FFD8DEE9"
+                        Text="Concurso:"
                         />
 
                     <TextBlock
                         Grid.Column="1"
                         Margin="10,0,0,0"
-                        FontFamily="{StaticResource MonospaceFontFamily}"
-                        FontSize="10"
-                        Foreground="{StaticResource WarningBrush}"
-                        Text="{Binding Phase1ValidationStatus}"
-                        TextWrapping="Wrap"
+                        FontFamily="Courier New"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="#FFEBCB8B"
+                        Text="{Binding ConcursoAlvo}"
                         />
                 </Grid>
 
@@ -439,7 +338,7 @@
         </Border>
 
         <!--  ==================================  -->
-        <!--  PAINEL CENTRAL INFERIOR - MÉTRICAS FASE 1  -->
+        <!--  PAINEL CENTRAL INFERIOR - MÉTRICAS  -->
         <!--  ==================================  -->
         <Border
             Grid.Row="2"
@@ -451,103 +350,32 @@
             CornerRadius="8"
             >
 
-            <StackPanel Margin="15">
-                <TextBlock
-                    Margin="0,0,0,15"
-                    HorizontalAlignment="Center"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Foreground="{StaticResource PrimaryTextBrush}"
-                    Text="📊 MÉTRICAS - FASE 1"
-                    />
-
-                <!--  Grid de Métricas  -->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <!--  Arquitetura  -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="15">
                     <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="0,0,0,5"
-                        FontWeight="SemiBold"
-                        Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="Arquitetura:"
-                        />
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Margin="0,0,0,5"
-                        FontSize="11"
-                        Foreground="{StaticResource SuccessBrush}"
-                        Text="✅ Refatorada"
+                        Margin="0,0,0,15"
+                        HorizontalAlignment="Center"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="#FFECEFF4"
+                        Text="📊 RELATÓRIO GERAL"
                         />
 
-                    <!--  Interfaces  -->
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Margin="0,0,0,5"
-                        FontWeight="SemiBold"
-                        Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="Interfaces:"
-                        />
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Margin="0,0,0,5"
-                        FontSize="11"
-                        Foreground="{StaticResource SuccessBrush}"
-                        Text="✅ Implementadas"
+                    <TextBox
+                        Height="150"
+                        Background="{StaticResource PrimaryBackgroundBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        FontFamily="Courier New"
+                        FontSize="10"
+                        Foreground="#FFECEFF4"
+                        IsReadOnly="True"
+                        Text="{Binding RelatorioGeral}"
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto"
                         />
 
-                    <!--  Bug Fix  -->
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        Margin="0,0,0,5"
-                        FontWeight="SemiBold"
-                        Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="Bug Dezenas 1-9:"
-                        />
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        Margin="0,0,0,5"
-                        FontSize="11"
-                        Foreground="{StaticResource WarningBrush}"
-                        Text="🎯 Em análise"
-                        />
-
-                    <!--  Engine Status  -->
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="0"
-                        Margin="0,0,0,5"
-                        FontWeight="SemiBold"
-                        Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="PredictionEngine:"
-                        />
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        Margin="0,0,0,5"
-                        FontSize="11"
-                        Foreground="{Binding IsPredictionEngineInitialized, Converter={StaticResource BoolToColorConverter}}"
-                        Text="{Binding IsPredictionEngineInitialized, Converter={StaticResource BoolToYesNoConverter}}"
-                        />
-
-                </Grid>
-            </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
         </Border>
 
         <!--  ==================================  -->
@@ -573,107 +401,139 @@
                         HorizontalAlignment="Center"
                         FontSize="14"
                         FontWeight="Bold"
-                        Foreground="{StaticResource PrimaryTextBrush}"
-                        Text="⚙️ AÇÕES AUXILIARES"
+                        Foreground="#FFECEFF4"
+                        Text="⚙️ CONTROLES"
                         />
 
-                    <!--  Botões Auxiliares  -->
-                    <Button Command="{Binding DezCommand}" Style="{StaticResource SidePanelButton}">
+                    <!--  Campo de texto para concurso  -->
+                    <TextBox
+                        Margin="0,0,0,15"
+                        Foreground="#FFECEFF4"
+                        Style="{StaticResource Phase1TextBox}"
+                        Text="{Binding TextoConcurso, UpdateSourceTrigger=PropertyChanged}"
+                        />
+
+                    <!--  Botões de Controle  -->
+                    <Button Command="{Binding SalvarResultadosCommand}" Style="{StaticResource SidePanelButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric10BoxOutline" />
-                            <TextBlock Text="DEZ" />
+                            <md:PackIcon Margin="0,0,5,0" Kind="ContentSave" />
+                            <TextBlock Text="SALVAR" />
                         </StackPanel>
                     </Button>
 
-                    <Button Command="{Binding OnzeCommand}" Style="{StaticResource SidePanelButton}">
+                    <Button Command="{Binding TerminarProgramaCommand}" Style="{StaticResource SidePanelButton}">
                         <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="ChartBox" />
-                            <TextBlock Text="BASEADO" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding DozeCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric1BoxOutline" />
-                            <TextBlock Text="DOZE" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding TrezeCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric2BoxOutline" />
-                            <TextBlock Text="TREZE" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding QuatorzeCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric3BoxOutline" />
-                            <TextBlock Text="QUATORZE" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding QuinzeCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric4BoxOutline" />
-                            <TextBlock Text="QUINZE" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding DezesseisCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric5BoxOutline" />
-                            <TextBlock Text="DEZESSEIS" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding DezesseteCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric6BoxOutline" />
-                            <TextBlock Text="DEZESSETE" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding DezoitoCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric7BoxOutline" />
-                            <TextBlock Text="DEZOITO" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding DezenoveCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="Numeric8BoxOutline" />
-                            <TextBlock Text="DEZENOVE" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button Command="{Binding VinteCommand}" Style="{StaticResource SidePanelButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Margin="0,0,5,0" Kind="ChartLineStacked" />
-                            <TextBlock Text="VINTE" />
+                            <md:PackIcon Margin="0,0,5,0" Kind="ExitToApp" />
+                            <TextBlock Text="SAIR" />
                         </StackPanel>
                     </Button>
 
                     <!--  Separador  -->
-                    <Separator Margin="0,20,0,10" Background="{StaticResource BorderBrush}" />
+                    <Separator Margin="0,15,0,15" Background="{StaticResource BorderBrush}" />
 
-                    <!--  Campo de texto para concurso  -->
-                    <TextBox
-                        x:Name="txtConcurso"
-                        Margin="0,10"
-                        md:HintAssist.Hint="Número do concurso"
-                        Foreground="{StaticResource PrimaryTextBrush}"
-                        Style="{StaticResource Phase1TextBox}"
-                        Text="{Binding TextoConcurso, UpdateSourceTrigger=PropertyChanged}"
+                    <!--  Toggle Visualizações  -->
+                    <CheckBox
+                        Margin="0,5"
+                        Content="Mostrar Metrônomos"
+                        Foreground="#FFECEFF4"
+                        IsChecked="{Binding MostrarMetronomos}"
                         />
+
+                    <CheckBox
+                        Margin="0,5"
+                        Content="Mostrar Osciladores"
+                        Foreground="#FFECEFF4"
+                        IsChecked="{Binding MostrarOsciladores}"
+                        />
+
+                    <!--  Info do Sistema  -->
+                    <Separator Margin="0,15,0,15" Background="{StaticResource BorderBrush}" />
+
+                    <TextBlock
+                        FontSize="10"
+                        Foreground="#FFD8DEE9"
+                        Text="{Binding VersaoSistema}"
+                        TextWrapping="Wrap"
+                        />
+
+                    <TextBlock
+                        FontSize="10"
+                        Foreground="#FFD8DEE9"
+                        TextWrapping="Wrap"
+                        >
+                        <Run Text="Concursos carregados: " />
+                        <Run FontWeight="Bold" Text="{Binding TotalConcursos, Mode=OneWay}" />
+                    </TextBlock>
 
                 </StackPanel>
             </ScrollViewer>
         </Border>
 
         <!--  ==================================  -->
-        <!--  ÁREA CENTRAL PARA OSCILADORES (QUANDO VISÍVEL)  -->
+        <!--  ÁREA PARA METRÔNOMOS (QUANDO VISÍVEL)  -->
+        <!--  ==================================  -->
+        <Border
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Margin="5,10,5,10"
+            Background="White"
+            CornerRadius="10"
+            Visibility="{Binding MostrarMetronomos, Converter={StaticResource BoolToVisibilityConverter}}"
+            >
+
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Metronomos}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Margin="4"
+                                Background="LightBlue"
+                                BorderBrush="DarkBlue"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Cursor="Hand"
+                                >
+                                <Border.InputBindings>
+                                    <MouseBinding
+                                        Command="{Binding DataContext.SelecionarMetronomoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}"
+                                        MouseAction="LeftClick"
+                                        />
+                                </Border.InputBindings>
+                                <StackPanel Margin="8" Orientation="Vertical">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="14"
+                                        FontWeight="Bold"
+                                        Text="{Binding Numero, StringFormat=D2}"
+                                        />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="10"
+                                        Text="{Binding ProbabilidadeAtual, StringFormat=P1}"
+                                        />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="9"
+                                        Text="{Binding TipoMetronomo}"
+                                        />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!--  ==================================  -->
+        <!--  ÁREA PARA OSCILADORES (QUANDO VISÍVEL)  -->
         <!--  ==================================  -->
         <Border
             Grid.Row="1"
@@ -695,11 +555,64 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <local:DezenaOscilanteControl Margin="4" />
+                            <Border
+                                Margin="4"
+                                Background="LightGreen"
+                                BorderBrush="DarkGreen"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                >
+                                <StackPanel Margin="8" Orientation="Vertical">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="14"
+                                        FontWeight="Bold"
+                                        Text="{Binding Numero, StringFormat=D2}"
+                                        />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="10"
+                                        Text="{Binding Probabilidade, StringFormat=P1}"
+                                        />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="9"
+                                        Text="{Binding EstaSincronizada}"
+                                        />
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
+        </Border>
+
+        <!--  ==================================  -->
+        <!--  OVERLAY DE PROCESSAMENTO  -->
+        <!--  ==================================  -->
+        <Border
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Grid.ColumnSpan="3"
+            Background="#80000000"
+            Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVisibilityConverter}}"
+            >
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <md:PackIcon
+                    Width="50"
+                    Height="50"
+                    Foreground="White"
+                    Kind="Loading"
+                    />
+                <TextBlock
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Processando..."
+                    />
+            </StackPanel>
         </Border>
 
     </Grid>

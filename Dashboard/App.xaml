@@ -25,7 +25,9 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.BlueGrey.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.LightBlue.xaml" />
 
-
+                <!--  Custom Application Resources  -->
+                <ResourceDictionary Source="Resources/Phase1Resources.xaml" />
+                <ResourceDictionary Source="Resources/Phase1Styles.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
 

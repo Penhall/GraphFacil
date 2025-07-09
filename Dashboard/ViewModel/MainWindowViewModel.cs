@@ -89,6 +89,10 @@ namespace Dashboard.ViewModel
                     _engine = new OscillatorEngine(_historico);
                 }
 
+                if (string.IsNullOrEmpty(StatusEngine))
+                    StatusEngine = "Sistema inicializando...";
+
+
                 // Inicialização assíncrona
                 _ = InicializarAsync();
 
