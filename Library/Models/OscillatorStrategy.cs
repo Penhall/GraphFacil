@@ -13,7 +13,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Aplica estratégia de tendência de curto prazo
         /// </summary>
-        public static void AplicarTendenciaCurtoPrazo(List<LotoLibrary.Services.DezenaOscilante> osciladores, List<Lance> historico)
+        public static void AplicarTendenciaCurtoPrazo(List<DezenaOscilante> osciladores, List<Lance> historico)
         {
             if (!historico.Any() || !osciladores.Any()) return;
 
@@ -51,7 +51,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Aplica estratégia de números quentes e frios
         /// </summary>
-        public static void AplicarQuentesFrios(List<LotoLibrary.Services.DezenaOscilante> osciladores, List<Lance> historico)
+        public static void AplicarQuentesFrios(List<DezenaOscilante> osciladores, List<Lance> historico)
         {
             if (!historico.Any() || !osciladores.Any()) return;
 
@@ -106,7 +106,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Aplica estratégia de padrões de grupos
         /// </summary>
-        public static void AplicarPadroesGrupos(List<LotoLibrary.Services.DezenaOscilante> osciladores, List<int[]> gruposFrequentes)
+        public static void AplicarPadroesGrupos(List<DezenaOscilante> osciladores, List<int[]> gruposFrequentes)
         {
             if (!gruposFrequentes.Any() || !osciladores.Any()) return;
 
@@ -147,7 +147,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Aplica estratégia baseada em ciclos históricos
         /// </summary>
-        public static void AplicarCiclos(List<LotoLibrary.Services.DezenaOscilante> osciladores, Dictionary<int, int> ciclosMedios)
+        public static void AplicarCiclos(List<DezenaOscilante> osciladores, Dictionary<int, int> ciclosMedios)
         {
             if (!ciclosMedios.Any() || !osciladores.Any()) return;
 
@@ -180,7 +180,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Gera palpite para validação baseado nos osciladores
         /// </summary>
-        public static List<int> GerarPalpiteValidacao(List<LotoLibrary.Services.DezenaOscilante> osciladores, List<Lance> dadosValidacao)
+        public static List<int> GerarPalpiteValidacao(List<DezenaOscilante> osciladores, List<Lance> dadosValidacao)
         {
             if (!osciladores.Any()) return GerarPalpiteAleatorio();
 
@@ -247,7 +247,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Gera palpite para próximo concurso
         /// </summary>
-        public static List<int> GerarPalpiteProximoConcurso(List<LotoLibrary.Services.DezenaOscilante> osciladores)
+        public static List<int> GerarPalpiteProximoConcurso(List<DezenaOscilante> osciladores)
         {
             return GerarPalpiteValidacao(osciladores, new List<Lance>());
         }
@@ -255,7 +255,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Atualiza probabilidades de todos os osciladores
         /// </summary>
-        private static void AtualizarProbabilidades(List<LotoLibrary.Services.DezenaOscilante> osciladores)
+        private static void AtualizarProbabilidades(List<DezenaOscilante> osciladores)
         {
             foreach (var osc in osciladores)
             {
@@ -285,7 +285,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Calcula score geral de um oscilador
         /// </summary>
-        private static double CalcularScoreGeral(LotoLibrary.Services.DezenaOscilante osc)
+        private static double CalcularScoreGeral(DezenaOscilante osc)
         {
             var scoreProb = osc.Probabilidade * 0.4;
             var scoreForca = osc.ForcaSincronizacao * 0.3;
@@ -311,7 +311,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Aplica sincronização mútua entre osciladores
         /// </summary>
-        public static void AplicarSincronizacaoMutua(List<LotoLibrary.Services.DezenaOscilante> osciladores, double intensidade = 0.1)
+        public static void AplicarSincronizacaoMutua(List<DezenaOscilante> osciladores, double intensidade = 0.1)
         {
             if (!osciladores.Any()) return;
 
@@ -358,7 +358,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Verifica se dois osciladores estão sincronizados
         /// </summary>
-        public static bool EstaoSincronizados(LotoLibrary.Services.DezenaOscilante osc1, LotoLibrary.Services.DezenaOscilante osc2, double tolerancia = 30.0)
+        public static bool EstaoSincronizados(DezenaOscilante osc1, DezenaOscilante osc2, double tolerancia = 30.0)
         {
             if (osc1 == null || osc2 == null) return false;
 
@@ -371,7 +371,7 @@ namespace LotoLibrary.Models
         /// <summary>
         /// Encontra grupos de osciladores sincronizados
         /// </summary>
-        public static List<List<int>> EncontrarGruposSincronizados(List<LotoLibrary.Services.DezenaOscilante> osciladores, double tolerancia = 30.0)
+        public static List<List<int>> EncontrarGruposSincronizados(List<DezenaOscilante> osciladores, double tolerancia = 30.0)
         {
             var grupos = new List<List<int>>();
 

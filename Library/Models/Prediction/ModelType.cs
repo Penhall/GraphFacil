@@ -4,13 +4,14 @@ namespace LotoLibrary.Models.Prediction
     // Enums
     public enum ModelType
     {
-        // Modelos Existentes
+        // Modelos Individuais
         Metronomo,
-        Oscillator,
         MLNet,
+        Oscillator,
 
         // Modelos Anti-Frequencistas
         AntiFrequency,
+        AntiFrequencySimple,
         StatisticalDebt,
         Saturation,
         PendularOscillator,
@@ -22,7 +23,12 @@ namespace LotoLibrary.Models.Prediction
 
         // Ensemble e Meta
         Ensemble,
+        BasicEnsemble,
+        WeightedEnsemble,
+        StackedEnsemble,
         MetaLearning,
+        AdaptiveWeights,
+        RegimeDetection,
 
         // Especiais
         Random,

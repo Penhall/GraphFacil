@@ -5,7 +5,6 @@ using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.Individual;
-using LotoLibrary.PredictionModels.AntiFrequency;
 using LotoLibrary.Services;
 using System;
 using System.Collections.Concurrent;
@@ -289,7 +288,7 @@ namespace LotoLibrary.Engines
                 }
 
                 // Criar ensemble usando factory
-                var modelTypes = availableModels.Select(m => m.ModelType).Cast<ModelType>().ToList();
+                var modelTypes = availableModels.Select(m => ModelType.Metronomo).ToList(); // Temporário
                 _ensembleModel = _modelFactory.CreateEnsemble(modelTypes, modelWeights);
 
                 if (_ensembleModel != null)
@@ -483,63 +482,30 @@ namespace LotoLibrary.Engines
             return type switch
             {
                 ModelType.Metronomo => new MetronomoModel(),
-                ModelType.AntiFrequencySimple => new AntiFrequencySimpleModel(),
                 _ => throw new NotSupportedException($"Tipo de modelo {type} não suportado ainda")
             };
         }
 
         public IEnsembleModel CreateEnsemble(List<ModelType> modelTypes, Dictionary<string, double> weights = null)
         {
+            // Implementação temporária - será criada na Fase 3
             throw new NotImplementedException("EnsembleModel será implementado na Fase 3");
         }
 
         public List<ModelType> GetAvailableModelTypes()
         {
-            return new List<ModelType> { 
-                ModelType.Metronomo,
-                ModelType.AntiFrequencySimple
-            };
+            return new List<ModelType> { ModelType.Metronomo };
         }
 
         public ModelInfo GetModelInfo(ModelType type)
         {
-            if (type == ModelType.Metronomo)
+            return new ModelInfo
             {
-                return new ModelInfo
-                {
-                    Type = ModelType.Metronomo,
-                    Name = "Metronomo Model",
-                    Description = "Modelo original baseado em oscilação e sincronização de dezenas",
-                    Category = ModelCategory.Individual,
-                    DefaultParameters = new Dictionary<string, object>(),
-                    RequiredDataSize = 50,
-                    EstimatedAccuracy = 0.605,
-                    IsConfigurable = false,
-                    Status = ModelStatus.Available
-                };
-            }
-            else if (type == ModelType.AntiFrequencySimple)
-            {
-                return new ModelInfo
-                {
-                    Type = ModelType.AntiFrequencySimple,
-                    Name = "Anti-Frequency Simple",
-                    Description = "Modelo que prioriza dezenas com menor frequência histórica",
-                    Category = ModelCategory.AntiFrequency,
-                    DefaultParameters = new Dictionary<string, object>
-                    {
-                        { "JanelaHistorica", 100 },
-                        { "FatorDecaimento", 0.1 },
-                        { "Epsilon", 0.001 },
-                        { "PesoTemporal", 0.8 }
-                    },
-                    RequiredDataSize = 20,
-                    EstimatedAccuracy = 0.63,
-                    IsConfigurable = true,
-                    Status = ModelStatus.Available
-                };
-            }
-            return null;
+                Type = type,
+                Name = type.ToString(),
+                Description = "Modelo temporário",
+                DefaultParameters = new Dictionary<string, object>()
+            };
         }
     }
 

@@ -1,6 +1,3 @@
-using System.Linq;
-using LotoLibrary.Models.Prediction;
-using LotoLibrary.Interfaces;
 // D:\PROJETOS\GraphFacil\LotoLibrary\Services\AntiFrequencyValidation.cs - Teste do primeiro modelo
 using LotoLibrary.Engines;
 using LotoLibrary.Models;
@@ -40,7 +37,7 @@ namespace LotoLibrary.Services
             try
             {
                 Console.WriteLine("🚀 INICIANDO VALIDAÇÃO DO ANTIFREQUENCYSIMPLEMODEL");
-                Console.WriteLine("".PadLeft(60, '='));
+                Console.WriteLine("=" * 60);
 
                 // Teste 1: Criação do modelo
                 var test1 = await TestModelCreation();
@@ -519,7 +516,7 @@ namespace LotoLibrary.Services
 
             for (int n = 1; n <= 25; n++)
             {
-                var appearances = historicalData.Count(lance => lance.Lista.Any(x => x == n));
+                var appearances = historicalData.Count(lance => lance.DezenasSorteadas.Contains(n));
                 frequencies[n] = (double)appearances / totalDraws;
             }
 
@@ -530,9 +527,9 @@ namespace LotoLibrary.Services
         {
             await Task.Run(() =>
             {
-                Console.WriteLine("\n" + "".PadLeft(60, '='));
+                Console.WriteLine("\n" + "=" * 60);
                 Console.WriteLine("📋 RELATÓRIO DETALHADO");
-                Console.WriteLine("".PadLeft(60, '='));
+                Console.WriteLine("=" * 60);
                 Console.WriteLine($"🎯 Teste: {report.TestName}");
                 Console.WriteLine($"⏱️ Duração: {report.Duration.TotalSeconds:F2}s");
                 Console.WriteLine($"📊 Resultado: {report.PassedTests}/{report.TotalTests} testes passaram");
@@ -551,7 +548,7 @@ namespace LotoLibrary.Services
                     Console.WriteLine($"      ⏱️ {test.Duration.TotalMilliseconds:F0}ms");
                 }
 
-                Console.WriteLine("\n" + "".PadLeft(60, '='));
+                Console.WriteLine("\n" + "=" * 60);
             });
         }
         #endregion

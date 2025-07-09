@@ -282,7 +282,7 @@ namespace LotoLibrary.Services
                         .Sum(d => Math.Sin((d.Fase - dezena.Fase) * Math.PI / 180) * d.ForcaSincronizacao * 0.1);
 
                     dezena.AplicarInfluencia(influencia);
-                    // dezena.AtualizarFase() - método removido;
+                    dezena.AtualizarFase();
                 }
             }
         }

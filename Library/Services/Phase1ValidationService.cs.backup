@@ -1,4 +1,3 @@
-using LotoLibrary.Utilities;
 // CORREÇÃO: Removido using LotoLibrary.Utilities para evitar conflito de namespace com TestResult
 // D:\PROJETOS\GraphFacil\Library\Services\Phase1ValidationService.cs - Serviço de validação da Fase 1
 using LotoLibrary.Engines;
@@ -88,7 +87,7 @@ namespace LotoLibrary.Services
 
                 if (dados == null || !dados.Any())
                 {
-                    return new TestResultXtrasXtras
+                    return new TestResultXtras
                     {
                         Success = false,
                         Message = "Nenhum dado histórico carregado",
@@ -100,7 +99,7 @@ namespace LotoLibrary.Services
                 var ultimoConcurso = dados.LastOrDefault()?.Id ?? 0;
                 var primeiroConcurso = dados.FirstOrDefault()?.Id ?? 0;
 
-                return new TestResultXtrasXtras
+                return new TestResultXtras
                 {
                     Success = true,
                     Message = $"Dados carregados com sucesso: {totalSorteios} sorteios",
@@ -157,7 +156,7 @@ namespace LotoLibrary.Services
 
                 bool success = criterio1 && criterio2 && criterio3;
 
-                return new TestResultXtrasXtras
+                return new TestResultXtras
                 {
                     Success = success,
                     Message = success ? "Bug das dezenas 1-9 corrigido" : "Bug das dezenas 1-9 ainda presente",
@@ -224,7 +223,7 @@ namespace LotoLibrary.Services
                     issues.Add($"Erro ao criar MetronomoModel: {ex.Message}");
                 }
 
-                return new TestResultXtrasXtras
+                return new TestResultXtras
                 {
                     Success = !issues.Any(),
                     Message = issues.Any() ? "Problemas na implementação de interfaces" : "Interfaces implementadas corretamente",
@@ -303,7 +302,7 @@ namespace LotoLibrary.Services
                 // Teste de explicação (IExplainableModel)
                 var explanation = model.ExplainPrediction(prediction);
 
-                return new TestResultXtrasXtras
+                return new TestResultXtras
                 {
                     Success = true,
                     Message = "MetronomoModel funcionando corretamente",
@@ -373,7 +372,7 @@ namespace LotoLibrary.Services
                 // Teste de diagnósticos
                 await engine.RunDiagnosticsAsync();
 
-                return new TestResultXtrasXtras
+                return new TestResultXtras
                 {
                     Success = true,
                     Message = "PredictionEngine funcionando corretamente",
@@ -433,7 +432,7 @@ namespace LotoLibrary.Services
 
                 bool performanceOk = avgTime < 2000 && maxTime < 5000;
 
-                return new TestResultXtrasXtras
+                return new TestResultXtras
                 {
                     Success = performanceOk,
                     Message = performanceOk ? "Performance adequada" : "Performance abaixo do esperado",

@@ -1,14 +1,15 @@
-// Dashboard/ViewModels/MainWindowViewModel.cs - REFATORADO: Orquestrador principal LIMPO
+// D:\PROJETOS\GraphFacil\Dashboard\ViewModels\MainWindowViewModel.cs - Versão corrigida
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
 using Dashboard.ViewModels.Services;
 using Dashboard.ViewModels.Specialized;
 using LotoLibrary.Models;
+using LotoLibrary.Engines;
+using LotoLibrary.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Dashboard.ViewModels
 {
@@ -124,334 +125,92 @@ namespace Dashboard.ViewModels
             catch (Exception ex)
             {
                 LogError(ex);
-                DezenasOscilantes = new ObservableCollection<DezenaOscilante>();
+                SetStatus($"Erro ao inicializar osciladores: {ex.Message}");
             }
         }
         #endregion
 
-        #region Orchestration Commands - DELEGAM para ViewModels especializados
-        /// <summary>
-        /// Comando principal para gerar palpite - DELEGA para PredictionModels
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanExecuteMainOperations))]
-        private async Task GerarPalpitePrincipal()
+        #region Legacy Commands - MANTIDOS PARA COMPATIBILIDADE
+        [RelayCommand]
+        private async Task Primeiro()
         {
             try
             {
-                // Atualizar concurso alvo nos ViewModels especializados
-                PredictionModels.TargetConcurso = TextoConcurso;
-
-                // Delegar para o ViewModel especializado
-                await PredictionModels.GeneratePrediction();
-
-                UpdateApplicationStatus();
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erro na geração de palpite: {ex.Message}", true);
-                UINotificationService.Instance.ShowError(ex.Message, "Erro");
-            }
-        }
-
-        /// <summary>
-        /// Comando principal para validação - DELEGA para Validation
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanExecuteMainOperations))]
-        private async Task ExecutarValidacaoPrincipal()
-        {
-            try
-            {
-                await Validation.RunFullValidation();
-                UpdateApplicationStatus();
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erro na validação: {ex.Message}", true);
-                UINotificationService.Instance.ShowError(ex.Message, "Erro");
-            }
-        }
-
-        /// <summary>
-        /// Comando principal para comparação - DELEGA para Comparison
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanExecuteMainOperations))]
-        private async Task ExecutarComparacaoPrincipal()
-        {
-            try
-            {
-                // Configurar modelos para comparação automaticamente
-                Comparison.SelectedModelsForComparison.Clear();
-                foreach (var modelType in Comparison.AvailableModelsForComparison)
-                {
-                    Comparison.SelectedModelsForComparison.Add(modelType);
-                    if (Comparison.SelectedModelsForComparison.Count >= 3) break; // Limitar para não sobrecarregar
-                }
-
-                Comparison.TargetConcursoForComparison = TextoConcurso;
-                await Comparison.CompareSelectedModels();
-
-                UpdateApplicationStatus();
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erro na comparação: {ex.Message}", true);
-                UINotificationService.Instance.ShowError(ex.Message, "Erro");
-            }
-        }
-        #endregion
-
-        #region Legacy Commands - MANTIDOS para compatibilidade
-        [RelayCommand]
-        private void Primeiro()
-        {
-            ExecuteLegacyStudy(1, "Estudo1");
-        }
-
-        [RelayCommand]
-        private void Segundo()
-        {
-            ExecuteLegacyStudy(2, "Estudo2");
-        }
-
-        [RelayCommand]
-        private void Terceiro()
-        {
-            ExecuteLegacyStudy(3, "Estudo3");
-        }
-
-        [RelayCommand]
-        private void Quarto()
-        {
-            ExecuteLegacyStudy(4, "Estudo4");
-        }
-
-        [RelayCommand]
-        private void Quinto()
-        {
-            ExecuteLegacyStudy(5, "Estudo5");
-        }
-
-        [RelayCommand]
-        private void Sexto()
-        {
-            ExecuteLegacyStudy(6, "Estudo6");
-        }
-
-        [RelayCommand]
-        private void Setimo()
-        {
-            ExecuteLegacyStudy(7, "Estudo7");
-        }
-
-        [RelayCommand]
-        private void Oitavo()
-        {
-            ExecuteLegacyStudy(8, "Estudo8");
-        }
-
-        [RelayCommand]
-        private void Nono()
-        {
-            ExecuteLegacyStudy(9, "Estudo9");
-        }
-
-        [RelayCommand]
-        private void Dez()
-        {
-            ExecuteLegacyStudy(10, "Estudo10");
-        }
-        #endregion
-
-        #region Oscillator Commands - MANTIDOS para compatibilidade
-        [RelayCommand]
-        private void IniciarSincronizacao()
-        {
-            try
-            {
-                MostrarOsciladores = true;
-                SetStatus("Sincronização de osciladores iniciada");
-
-                // Lógica de sincronização se necessário
-                // _oscillatorEngine.IniciarSincronizacao();
-
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erro na sincronização: {ex.Message}", true);
-                LogError(ex);
-            }
-        }
-
-        [RelayCommand]
-        private void PararSincronizacao()
-        {
-            try
-            {
-                MostrarOsciladores = false;
-                SetStatus("Sincronização parada");
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erro ao parar sincronização: {ex.Message}", true);
-                LogError(ex);
-            }
-        }
-        #endregion
-
-        #region Can Execute Methods
-        private bool CanExecuteMainOperations()
-        {
-            return CanExecute() && IsSystemReady;
-        }
-        #endregion
-
-        #region Helper Methods
-        /// <summary>
-        /// Executa estudos legacy mantendo compatibilidade
-        /// </summary>
-        private void ExecuteLegacyStudy(int studyNumber, string studyName)
-        {
-            try
-            {
-                SetStatus($"Executando {studyName}...");
-
                 int alvo = Convert.ToInt32(TextoConcurso);
-
-                // Usar reflection para chamar método correto do Estudos
-                var estudosType = typeof(Estudos);
-                var metodo = estudosType.GetMethod($"Estudo{studyNumber}");
-
-                if (metodo != null)
-                {
-                    var resultado = (Lances)metodo.Invoke(null, new object[] { alvo });
-                    var nomeArquivo = Infra.NomeSaida($"Lista{studyName}", alvo);
-
-                    Infra.SalvaSaidaW(resultado, nomeArquivo);
-
-                    SetStatus($"✅ {studyName} executado: {nomeArquivo}");
-                    UINotificationService.Instance.ShowSuccess($"{studyName} salvo em: {nomeArquivo}");
-                }
-                else
-                {
-                    SetStatus($"❌ Método {studyName} não encontrado", true);
-                }
+                var resultado = Estudos.Estudo1(alvo);
+                Infra.SalvaSaidaW(resultado, Infra.NomeSaida("ListaEstudo1", alvo));
+                SetStatus($"Estudo 1 concluído para concurso {alvo}");
             }
             catch (Exception ex)
             {
-                SetStatus($"❌ Erro no {studyName}: {ex.Message}", true);
-                UINotificationService.Instance.ShowError(ex.Message, $"Erro - {studyName}");
                 LogError(ex);
+                SetStatus($"Erro no Estudo 1: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Atualiza status da aplicação baseado nos ViewModels especializados
-        /// </summary>
-        private void UpdateApplicationStatus()
+        [RelayCommand]
+        private async Task Segundo()
         {
             try
             {
-                var errors = 0;
-                var warnings = 0;
-
-                // Verificar status dos ViewModels especializados
-                if (PredictionModels.HasError) errors++;
-                if (Validation.HasError) errors++;
-                if (Comparison.HasError) errors++;
-                if (Configuration.HasError) errors++;
-
-                // Determinar status geral
-                if (errors > 0)
-                {
-                    ApplicationStatus = $"⚠️ {errors} componente(s) com erro";
-                }
-                else if (!PredictionModels.IsPredictionEngineReady)
-                {
-                    ApplicationStatus = "🔄 Inicializando sistema de predição...";
-                }
-                else
-                {
-                    ApplicationStatus = "✅ Todos os sistemas funcionando";
-                }
+                int alvo = Convert.ToInt32(TextoConcurso);
+                var resultado = Estudos.Estudo2(alvo);
+                Infra.SalvaSaidaW(resultado, Infra.NomeSaida("ListaEstudo2", alvo));
+                SetStatus($"Estudo 2 concluído para concurso {alvo}");
             }
             catch (Exception ex)
             {
-                ApplicationStatus = "❌ Erro na atualização de status";
                 LogError(ex);
+                SetStatus($"Erro no Estudo 2: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Termina programa (compatibilidade)
-        /// </summary>
-        private void TerminarPrograma()
+        [RelayCommand]
+        private async Task Terceiro()
         {
             try
             {
-                // Cleanup dos ViewModels especializados
-                PredictionModels?.Cleanup();
-                Validation?.Cleanup();
-                Comparison?.Cleanup();
-                Configuration?.Cleanup();
-
-                // Fechar aplicação
-                Application.Current.Shutdown();
+                int alvo = Convert.ToInt32(TextoConcurso);
+                var resultado = Estudos.Estudo3(alvo);
+                Infra.SalvaSaidaW(resultado, Infra.NomeSaida("ListaEstudo3", alvo));
+                SetStatus($"Estudo 3 concluído para concurso {alvo}");
             }
             catch (Exception ex)
             {
                 LogError(ex);
-                Application.Current.Shutdown();
+                SetStatus($"Erro no Estudo 3: {ex.Message}");
             }
+        }
+
+        [RelayCommand]
+        private void ToggleOsciladores()
+        {
+            MostrarOsciladores = !MostrarOsciladores;
+            SetStatus($"Osciladores {(MostrarOsciladores ? "exibidos" : "ocultados")}");
         }
         #endregion
 
-        #region Property Change Handlers
-        /// <summary>
-        /// Quando concurso muda, atualiza ViewModels especializados
-        /// </summary>
-        partial void OnTextoConcursoChanged(string value)
+        #region Overrides
+        public override async Task Cleanup()
         {
-            try
-            {
-                // Validar se é número válido
-                if (int.TryParse(value, out var concurso) && concurso > 0)
-                {
-                    // Propagar para ViewModels especializados
-                    PredictionModels.TargetConcurso = value;
-                    Comparison.TargetConcursoForComparison = value;
+            if (PredictionModels != null) await PredictionModels.Cleanup();
+            if (Validation != null) await Validation.Cleanup();
+            if (Comparison != null) await Comparison.Cleanup();
+            if (Configuration != null) await Configuration.Cleanup();
 
-                    SetStatus($"Concurso alvo: {concurso}");
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-            }
+            DezenasOscilantes?.Clear();
+
+            await base.Cleanup();
         }
         #endregion
 
-        #region Cleanup
-        public override void Cleanup()
+        #region Private Helper Methods
+        private void LogError(Exception ex)
         {
-            try
-            {
-                base.Cleanup();
-
-                // Cleanup dos ViewModels especializados
-                PredictionModels?.Cleanup();
-                Validation?.Cleanup();
-                Comparison?.Cleanup();
-                Configuration?.Cleanup();
-
-                // Cleanup da factory
-                _viewModelFactory?.ClearCache();
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-            }
+            // Implementar logging apropriado
+            Console.WriteLine($"ERRO: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"ERRO: {ex.Message}");
         }
         #endregion
     }
 }
-

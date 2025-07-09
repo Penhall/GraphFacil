@@ -1,175 +1,137 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using LotoLibrary.Models;
+using System.Collections.Generic;
+using System;
+// D:\PROJETOS\GraphFacil\Library\Models\DezenaOscilante.cs - Classe para oscilação de dezenas
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 
-namespace LotoLibrary.Services
+namespace LotoLibrary.Models
 {
+    /// <summary>
+    /// Representa uma dezena com propriedades de oscilação
+    /// </summary>
     public partial class DezenaOscilante : ObservableObject
     {
         [ObservableProperty]
         private int _numero;
 
         [ObservableProperty]
-        private double _fase;
+        private double _fase; // 0° a 360°
 
         [ObservableProperty]
         private double _frequencia;
 
         [ObservableProperty]
-        private bool _estaSincronizada;
-
-        [ObservableProperty]
-        private int _ultimoAtraso;
+        private bool _foiSorteada;
 
         [ObservableProperty]
         private double _forcaSincronizacao;
 
         [ObservableProperty]
+        private int _ultimoAtraso;
+
+        [ObservableProperty]
         private double _probabilidade;
 
         [ObservableProperty]
-        private double _amplitude = 1.0;
+        private double _amplitude;
 
         [ObservableProperty]
-        private DateTime _ultimoSorteio;
+        private bool _estaSincronizada;
 
-        [ObservableProperty]
-        private int _frequenciaHistorica;
-
-        /// <summary>
-        /// Atualiza os dados da dezena com base em um Lance (sorteio)
-        /// </summary>
-        public void AtualizarComLance(Lance lance)
+        public DezenaOscilante()
         {
-            if (lance?.Lista?.Contains(Numero) == true)
+            Numero = 0;
+            Fase = 0.0;
+            Frequencia = 1.0;
+            FoiSorteada = false;
+            ForcaSincronizacao = 0.5;
+            UltimoAtraso = 0;
+            Probabilidade = 0.0;
+            Amplitude = 1.0;
+            EstaSincronizada = false;
+        }
+
+        public DezenaOscilante(int numero)
+        {
+            Numero = numero;
+            Fase = new Random().Next(0, 360);
+            Frequencia = 1.0;
+            FoiSorteada = false;
+            ForcaSincronizacao = 0.5;
+            UltimoAtraso = 0;
+            Probabilidade = 0.0;
+            Amplitude = 1.0;
+            EstaSincronizada = false;
+        }
+
+        public void AplicarInfluencia(double influencia)
+        {
+            // A influência ajusta a fase do oscilador
+            Fase += influencia;
+            Fase = (Fase % 360 + 360) % 360; // Normaliza a fase para 0-360
+        }
+    }
+        #region Métodos de Oscilação
+        /// <summary>
+        /// Atualiza a fase da dezena baseado na frequência e influências externas
+        /// </summary>
+        public void AtualizarFase()
+        {
+            // Incrementar fase baseado na frequência
+            Fase += Frequencia;
+            
+            // Normalizar fase entre 0 e 360
+            Fase = Fase % 360;
+            if (Fase < 0) Fase += 360;
+            
+            // Calcular nova probabilidade baseada na fase
+            Probabilidade = (Math.Sin(Fase * Math.PI / 180) + 1) / 2;
+        }
+        
+        /// <summary>
+        /// Atualiza a fase com influência de outras dezenas (acoplamento)
+        /// </summary>
+        public void AtualizarFase(List<DezenaOscilante> outrasDezenas, double fatorAcoplamento = 0.1)
+        {
+            if (outrasDezenas == null) 
             {
-                UltimoSorteio = DateTime.Now;
-                UltimoAtraso = 0;
-
-                // Aumenta a força de sincronização quando sorteada
-                ForcaSincronizacao = Math.Min(1.0, ForcaSincronizacao + 0.1);
-
-                // Reinicia a fase quando sorteada
-                Fase = 0;
+                AtualizarFase();
+                return;
             }
-            else
+            
+            double influenciaExterna = 0;
+            foreach (var outra in outrasDezenas)
             {
-                UltimoAtraso++;
-
-                // Diminui gradualmente a força de sincronização
-                ForcaSincronizacao = Math.Max(0.1, ForcaSincronizacao - 0.02);
+                if (outra.Numero != this.Numero)
+                {
+                    influenciaExterna += Math.Sin((outra.Fase - this.Fase) * Math.PI / 180);
+                }
             }
-
-            // Atualiza probabilidade baseada em múltiplos fatores
-            AtualizarProbabilidade();
+            
+            // Atualizar fase com influência externa
+            Fase += Frequencia + (fatorAcoplamento * influenciaExterna);
+            
+            // Normalizar fase
+            Fase = Fase % 360;
+            if (Fase < 0) Fase += 360;
+            
+            // Atualizar probabilidade
+            Probabilidade = (Math.Sin(Fase * Math.PI / 180) + 1) / 2;
         }
-
+        #endregion
+        
+        #region Métodos Helper
         /// <summary>
-        /// Calcula a probabilidade da dezena ser sorteada baseada em diversos fatores
+        /// Reinicia a dezena com valores aleatórios
         /// </summary>
-        private void AtualizarProbabilidade()
-        {
-            // Fator baseado na fase (onda senoidal)
-            double fatorFase = (Math.Sin(Fase * Math.PI / 180) + 1) / 2; // 0-1
-
-            // Fator baseado no atraso (números atrasados têm mais chance)
-            double fatorAtraso = Math.Min(1.0, UltimoAtraso / 20.0);
-
-            // Fator baseado na força de sincronização
-            double fatorSincronizacao = ForcaSincronizacao;
-
-            // Fator baseado na frequência histórica
-            double fatorFrequencia = Math.Min(1.0, FrequenciaHistorica / 100.0);
-
-            // Combina todos os fatores com pesos
-            Probabilidade = (fatorFase * 0.3) +
-                           (fatorAtraso * 0.25) +
-                           (fatorSincronizacao * 0.25) +
-                           (fatorFrequencia * 0.2);
-
-            // Normaliza para 0-1
-            Probabilidade = Math.Max(0, Math.Min(1, Probabilidade));
-        }
-
-        /// <summary>
-        /// Atualiza a fase do oscilador
-        /// </summary>
-        public void AtualizarFase(double deltaTime = 1.0)
-        {
-            Fase += Frequencia * deltaTime;
-            Fase = (Fase % 360 + 360) % 360; // Normaliza para 0-360
-
-            AtualizarProbabilidade();
-        }
-
-        /// <summary>
-        /// Aplica influência de outras dezenas (sincronização)
-        /// </summary>
-        public void AplicarInfluencia(double influenciaExterna)
-        {
-            // Ajusta a frequência baseada na influência externa
-            double ajusteFrequencia = influenciaExterna * 0.1;
-            Frequencia = Math.Max(0.1, Math.Min(3.0, Frequencia + ajusteFrequencia));
-
-            // Determina se está sincronizada baseado na influência
-            EstaSincronizada = Math.Abs(influenciaExterna) > 0.3;
-
-            // Ajusta a força de sincronização
-            if (EstaSincronizada)
-            {
-                ForcaSincronizacao = Math.Min(1.0, ForcaSincronizacao + 0.05);
-            }
-        }
-
-        /// <summary>
-        /// Reseta o oscilador para valores iniciais
-        /// </summary>
-        public void Reset()
+        public void Reiniciar()
         {
             var random = new Random();
             Fase = random.Next(0, 360);
-            Frequencia = 1.0 + (random.NextDouble() - 0.5) * 0.4; // 0.8 - 1.2
-            ForcaSincronizacao = 0.5;
-            EstaSincronizada = false;
-            Probabilidade = 0.5;
-            Amplitude = 1.0;
+            Frequencia = 1.0;
+            FoiSorteada = false;
+            UltimoAtraso = 0;
+            Probabilidade = 0.0;
         }
-
-        /// <summary>
-        /// Calcula o valor atual da onda baseado na fase
-        /// </summary>
-        public double ValorAtual => Amplitude * Math.Sin(Fase * Math.PI / 180);
-
-        /// <summary>
-        /// Indica se a dezena está em uma fase "quente" (alta probabilidade)
-        /// </summary>
-        public bool EstaQuente => Probabilidade > 0.7;
-
-        /// <summary>
-        /// Indica se a dezena está em uma fase "fria" (baixa probabilidade)
-        /// </summary>
-        public bool EstaFria => Probabilidade < 0.3;
-
-        /// <summary>
-        /// Calcula a distância de fase entre esta dezena e outra
-        /// </summary>
-        public double DistanciaFase(DezenaOscilante outra)
-        {
-            double diff = Math.Abs(Fase - outra.Fase);
-            return Math.Min(diff, 360 - diff); // Menor distância circular
-        }
-
-        /// <summary>
-        /// Verifica se está sincronizada com outra dezena (fases próximas)
-        /// </summary>
-        public bool EstaSincronizadaCom(DezenaOscilante outra, double tolerancia = 30)
-        {
-            return DistanciaFase(outra) <= tolerancia;
-        }
-
-        public override string ToString()
-        {
-            return $"Dezena {Numero}: Fase={Fase:F1}°, Prob={Probabilidade:F2}, Sync={EstaSincronizada}";
-        }
-    }
+        #endregion
 }
