@@ -1,7 +1,8 @@
 // D:\PROJETOS\GraphFacil\Library\Services\Phase1ValidationService.cs - Serviço de validação da Fase 1
 using LotoLibrary.Engines;
-using LotoLibrary.Models;
 using LotoLibrary.PredictionModels.Individual;
+using LotoLibrary.Suporte;
+using LotoLibrary.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -66,7 +67,7 @@ namespace LotoLibrary.Services
                 report.TotalExecutionTime = stopwatch.Elapsed;
                 report.FatalError = ex.Message;
                 report.OverallSuccess = false;
-                
+
                 Console.WriteLine($"❌ ERRO FATAL: {ex.Message}");
                 return report;
             }
@@ -82,10 +83,10 @@ namespace LotoLibrary.Services
 
                 // Tentar carregar dados usando método seguro
                 var dados = Infra.CarregarConcursosSeguro();
-                
+
                 if (dados == null || !dados.Any())
                 {
-                    return new TestResult
+                    return new TestResultXtras
                     {
                         Success = false,
                         Message = "Nenhum dado histórico carregado",
@@ -97,7 +98,7 @@ namespace LotoLibrary.Services
                 var ultimoConcurso = dados.LastOrDefault()?.Id ?? 0;
                 var primeiroConcurso = dados.FirstOrDefault()?.Id ?? 0;
 
-                return new TestResult
+                return new TestResultXtras
                 {
                     Success = true,
                     Message = $"Dados carregados com sucesso: {totalSorteios} sorteios",
@@ -129,7 +130,7 @@ namespace LotoLibrary.Services
 
                 // Gerar múltiplos palpites para análise
                 var testPredictions = new List<List<int>>();
-                
+
                 // Usar método de teste do DiagnosticService
                 var diagnosticReport = DiagnosticService.TestarAlgoritmoAtual(50);
 
@@ -154,7 +155,7 @@ namespace LotoLibrary.Services
 
                 bool success = criterio1 && criterio2 && criterio3;
 
-                return new TestResult
+                return new TestResultXtras
                 {
                     Success = success,
                     Message = success ? "Bug das dezenas 1-9 corrigido" : "Bug das dezenas 1-9 ainda presente",
@@ -221,7 +222,7 @@ namespace LotoLibrary.Services
                     issues.Add($"Erro ao criar MetronomoModel: {ex.Message}");
                 }
 
-                return new TestResult
+                return new TestResultXtras
                 {
                     Success = !issues.Any(),
                     Message = issues.Any() ? "Problemas na implementação de interfaces" : "Interfaces implementadas corretamente",
@@ -261,7 +262,7 @@ namespace LotoLibrary.Services
                 }
 
                 var model = new MetronomoModel();
-                
+
                 // Teste de inicialização
                 var initResult = await model.InitializeAsync(dados);
                 if (!initResult)
@@ -287,7 +288,7 @@ namespace LotoLibrary.Services
                 // Teste de predição
                 var nextConcurso = (dados.LastOrDefault()?.Id ?? 3000) + 1;
                 var prediction = await model.PredictAsync(nextConcurso);
-                
+
                 if (prediction == null || !prediction.PredictedNumbers.Any())
                 {
                     return new TestResult
@@ -299,8 +300,8 @@ namespace LotoLibrary.Services
 
                 // Teste de explicação (IExplainableModel)
                 var explanation = model.ExplainPrediction(prediction);
-                
-                return new TestResult
+
+                return new TestResultXtras
                 {
                     Success = true,
                     Message = "MetronomoModel funcionando corretamente",
@@ -342,7 +343,7 @@ namespace LotoLibrary.Services
                 }
 
                 var engine = new PredictionEngine();
-                
+
                 // Teste de inicialização
                 var initResult = await engine.InitializeAsync(dados);
                 if (!initResult)
@@ -357,7 +358,7 @@ namespace LotoLibrary.Services
                 // Teste de geração de predição
                 var nextConcurso = (dados.LastOrDefault()?.Id ?? 3000) + 1;
                 var prediction = await engine.GeneratePredictionAsync(nextConcurso);
-                
+
                 if (prediction == null || !prediction.PredictedNumbers.Any())
                 {
                     return new TestResult
@@ -370,7 +371,7 @@ namespace LotoLibrary.Services
                 // Teste de diagnósticos
                 await engine.RunDiagnosticsAsync();
 
-                return new TestResult
+                return new TestResultXtras
                 {
                     Success = true,
                     Message = "PredictionEngine funcionando corretamente",
@@ -403,7 +404,7 @@ namespace LotoLibrary.Services
 
                 var dados = Infra.CarregarConcursosSeguro();
                 var engine = new PredictionEngine();
-                
+
                 await engine.InitializeAsync(dados);
 
                 // Medir tempo de múltiplas predições
@@ -430,7 +431,7 @@ namespace LotoLibrary.Services
 
                 bool performanceOk = avgTime < 2000 && maxTime < 5000;
 
-                return new TestResult
+                return new TestResultXtras
                 {
                     Success = performanceOk,
                     Message = performanceOk ? "Performance adequada" : "Performance abaixo do esperado",
@@ -497,7 +498,7 @@ namespace LotoLibrary.Services
         public string GenerateReport()
         {
             var report = "=== RELATÓRIO DE VALIDAÇÃO - FASE 1 ===\n\n";
-            
+
             report += $"Tempo Total de Execução: {TotalExecutionTime.TotalSeconds:F2}s\n";
             report += $"Status Geral: {(OverallSuccess ? "✅ PASSOU" : "❌ FALHOU")}\n\n";
 
@@ -527,7 +528,7 @@ namespace LotoLibrary.Services
             var status = result.Success ? "✅ PASSOU" : "❌ FALHOU";
             var text = $"{testName}: {status}\n";
             text += $"  Mensagem: {result.Message}\n";
-            
+
             if (!string.IsNullOrEmpty(result.Details))
             {
                 text += $"  Detalhes: {result.Details}\n";
@@ -544,14 +545,6 @@ namespace LotoLibrary.Services
 
             return text + "\n";
         }
-    }
-
-    public class TestResult
-    {
-        public bool Success { get; set; }
-        public string Message { get; set; }
-        public string Details { get; set; }
-        public Dictionary<string, object> Metrics { get; set; } = new Dictionary<string, object>();
     }
 
     #endregion

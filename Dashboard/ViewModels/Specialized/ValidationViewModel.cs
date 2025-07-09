@@ -5,6 +5,8 @@ using Dashboard.ViewModels.Base;
 using Dashboard.ViewModels.Services;
 using LotoLibrary.Models;
 using LotoLibrary.Services;
+using LotoLibrary.Suporte;
+using LotoLibrary.Utilities;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -24,7 +26,7 @@ namespace Dashboard.ViewModels.Specialized
 
         #region Observable Properties
         [ObservableProperty]
-        private ObservableCollection<TestResult> _validationResults;
+        private ObservableCollection<LotoLibrary.Suporte.TestResult> _validationResults;
 
         [ObservableProperty]
         private string _lastValidationSummary = "";
@@ -49,7 +51,7 @@ namespace Dashboard.ViewModels.Specialized
         public ValidationViewModel(Lances historicalData) : base(historicalData)
         {
             _antiFrequencyValidation = new AntiFrequencyValidation();
-            ValidationResults = new ObservableCollection<TestResult>();
+            ValidationResults = new ObservableCollection<LotoLibrary.Suporte.TestResult>();
         }
         #endregion
 
@@ -165,7 +167,7 @@ namespace Dashboard.ViewModels.Specialized
             // Simular validação rápida
             await Task.Delay(1000); // Simular processamento
 
-            var testResult = new TestResult
+            var testResult = new LotoLibrary.Suporte.TestResult
             {
                 TestName = "Validação Rápida",
                 StartTime = DateTime.Now.AddSeconds(-1),

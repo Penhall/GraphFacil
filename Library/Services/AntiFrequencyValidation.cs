@@ -2,7 +2,7 @@
 using LotoLibrary.Engines;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
-using LotoLibrary.PredictionModels.AntiFrequency;
+using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +74,7 @@ namespace LotoLibrary.Services
                 report.OverallSuccess = report.PassedTests == report.TotalTests;
 
                 await GenerateDetailedReport(report);
-                
+
                 Console.WriteLine("\n✅ VALIDAÇÃO CONCLUÍDA");
                 Console.WriteLine($"📊 Resultado: {report.PassedTests}/{report.TotalTests} testes passaram");
                 Console.WriteLine($"⏱️ Tempo total: {report.Duration.TotalSeconds:F2}s");
@@ -104,10 +104,10 @@ namespace LotoLibrary.Services
             try
             {
                 Console.WriteLine("\n1️⃣ Testando criação do modelo...");
-                
+
                 // Testar criação via factory
                 var model = _modelFactory.CreateModel(ModelType.AntiFrequencySimple);
-                
+
                 if (model == null)
                 {
                     throw new Exception("Factory retornou null");
@@ -153,16 +153,16 @@ namespace LotoLibrary.Services
             try
             {
                 Console.WriteLine("\n2️⃣ Testando inicialização...");
-                
+
                 var model = _modelFactory.CreateModel(ModelType.AntiFrequencySimple);
-                
+
                 if (model.IsInitialized)
                 {
                     throw new Exception("Modelo deveria começar não inicializado");
                 }
 
                 var success = await model.InitializeAsync(historicalData);
-                
+
                 if (!success)
                 {
                     throw new Exception("Inicialização falhou");
@@ -207,10 +207,10 @@ namespace LotoLibrary.Services
             try
             {
                 Console.WriteLine("\n3️⃣ Testando treinamento...");
-                
+
                 var model = _modelFactory.CreateModel(ModelType.AntiFrequencySimple);
                 var success = await model.TrainAsync(historicalData);
-                
+
                 if (!success)
                 {
                     throw new Exception("Treinamento falhou");
@@ -250,13 +250,13 @@ namespace LotoLibrary.Services
             try
             {
                 Console.WriteLine("\n4️⃣ Testando geração de predições...");
-                
+
                 var model = _modelFactory.CreateModel(ModelType.AntiFrequencySimple);
                 await model.TrainAsync(historicalData);
-                
+
                 var targetConcurso = historicalData.Count + 1;
                 var prediction = await model.PredictAsync(targetConcurso);
-                
+
                 if (!prediction.Success)
                 {
                     throw new Exception($"Predição falhou: {prediction.ErrorMessage}");
@@ -278,7 +278,7 @@ namespace LotoLibrary.Services
                 var selectedFrequencies = prediction.PredictedNumbers.Select(n => numberFrequencies[n]).ToList();
                 var averageSelectedFreq = selectedFrequencies.Average();
                 var averageOverallFreq = numberFrequencies.Values.Average();
-                
+
                 if (averageSelectedFreq >= averageOverallFreq)
                 {
                     Console.WriteLine("   ⚠️ Aviso: Seleção não favorece dezenas menos frequentes");
@@ -315,14 +315,14 @@ namespace LotoLibrary.Services
             try
             {
                 Console.WriteLine("\n5️⃣ Testando validação histórica...");
-                
+
                 var model = _modelFactory.CreateModel(ModelType.AntiFrequencySimple);
                 await model.TrainAsync(historicalData);
-                
+
                 // Usar últimos 20 sorteios para validação
                 var validationData = new Lances(historicalData.Skip(historicalData.Count - 20).ToList());
                 var validationResult = await model.ValidateAsync(validationData);
-                
+
                 if (!validationResult.Success)
                 {
                     throw new Exception($"Validação falhou: {validationResult.ErrorMessage}");
@@ -335,7 +335,7 @@ namespace LotoLibrary.Services
 
                 // Critério de sucesso: accuracy >= 50% (melhor que aleatório)
                 var isAcceptable = validationResult.Accuracy >= 0.5;
-                
+
                 result.Success = true;
                 result.Message = $"✅ Validação concluída - Accuracy: {validationResult.Accuracy:P2}";
                 result.AdditionalData = new Dictionary<string, object>
@@ -345,7 +345,7 @@ namespace LotoLibrary.Services
                     ["SuccessfulPredictions"] = validationResult.SuccessfulPredictions,
                     ["IsAcceptable"] = isAcceptable
                 };
-                
+
                 Console.WriteLine("   ✅ Validação histórica concluída");
                 Console.WriteLine($"   📊 Accuracy: {validationResult.Accuracy:P2}");
                 Console.WriteLine($"   🎯 Testes: {validationResult.SuccessfulPredictions}/{validationResult.TotalTests}");
@@ -374,9 +374,9 @@ namespace LotoLibrary.Services
             try
             {
                 Console.WriteLine("\n6️⃣ Testando configuração de parâmetros...");
-                
+
                 var model = _modelFactory.CreateModel(ModelType.AntiFrequencySimple) as IConfigurableModel;
-                
+
                 if (model == null)
                 {
                     throw new Exception("Modelo não implementa IConfigurableModel");
@@ -447,20 +447,20 @@ namespace LotoLibrary.Services
             try
             {
                 Console.WriteLine("\n7️⃣ Testando comparação com MetronomoModel...");
-                
+
                 // Criar ambos os modelos
                 var antiFreqModel = _modelFactory.CreateModel(ModelType.AntiFrequencySimple);
                 var metronomoModel = _modelFactory.CreateModel(ModelType.Metronomo);
-                
+
                 // Treinar ambos
                 await antiFreqModel.TrainAsync(historicalData);
                 await metronomoModel.TrainAsync(historicalData);
-                
+
                 // Gerar predições
                 var targetConcurso = historicalData.Count + 1;
                 var antiFreqPrediction = await antiFreqModel.PredictAsync(targetConcurso);
                 var metronomoPrediction = await metronomoModel.PredictAsync(targetConcurso);
-                
+
                 if (!antiFreqPrediction.Success || !metronomoPrediction.Success)
                 {
                     throw new Exception("Falha na geração de predições");
@@ -469,14 +469,14 @@ namespace LotoLibrary.Services
                 // Calcular diversificação (números diferentes)
                 var commonNumbers = antiFreqPrediction.PredictedNumbers.Intersect(metronomoPrediction.PredictedNumbers).Count();
                 var diversificationRate = 1.0 - (double)commonNumbers / 15;
-                
+
                 // Verificar se o anti-frequency realmente favorece dezenas menos frequentes
                 var frequencies = CalculateNumberFrequencies(historicalData);
                 var antiFreqAvgFreq = antiFreqPrediction.PredictedNumbers.Average(n => frequencies[n]);
                 var metronomoAvgFreq = metronomoPrediction.PredictedNumbers.Average(n => frequencies[n]);
-                
+
                 var favorsLessFrequent = antiFreqAvgFreq < metronomoAvgFreq;
-                
+
                 result.Success = true;
                 result.Message = $"✅ Comparação concluída - Diversificação: {diversificationRate:P2}";
                 result.AdditionalData = new Dictionary<string, object>
@@ -487,7 +487,7 @@ namespace LotoLibrary.Services
                     ["FavorsLessFrequent"] = favorsLessFrequent,
                     ["CommonNumbers"] = commonNumbers
                 };
-                
+
                 Console.WriteLine("   ✅ Comparação concluída");
                 Console.WriteLine($"   🎯 Diversificação: {diversificationRate:P2}");
                 Console.WriteLine($"   📊 Anti-Freq freq. média: {antiFreqAvgFreq:P2}");
@@ -513,13 +513,13 @@ namespace LotoLibrary.Services
         {
             var frequencies = new Dictionary<int, double>();
             var totalDraws = historicalData.Count;
-            
+
             for (int n = 1; n <= 25; n++)
             {
                 var appearances = historicalData.Count(lance => lance.DezenasSorteadas.Contains(n));
                 frequencies[n] = (double)appearances / totalDraws;
             }
-            
+
             return frequencies;
         }
 
@@ -534,12 +534,12 @@ namespace LotoLibrary.Services
                 Console.WriteLine($"⏱️ Duração: {report.Duration.TotalSeconds:F2}s");
                 Console.WriteLine($"📊 Resultado: {report.PassedTests}/{report.TotalTests} testes passaram");
                 Console.WriteLine($"✅ Sucesso geral: {(report.OverallSuccess ? "SIM" : "NÃO")}");
-                
+
                 if (!string.IsNullOrEmpty(report.ErrorMessage))
                 {
                     Console.WriteLine($"❌ Erro: {report.ErrorMessage}");
                 }
-                
+
                 Console.WriteLine("\n📋 Detalhes por teste:");
                 foreach (var test in report.TestResults)
                 {
@@ -547,36 +547,11 @@ namespace LotoLibrary.Services
                     Console.WriteLine($"      📝 {test.Message}");
                     Console.WriteLine($"      ⏱️ {test.Duration.TotalMilliseconds:F0}ms");
                 }
-                
+
                 Console.WriteLine("\n" + "=" * 60);
             });
         }
         #endregion
     }
 
-    #region Supporting Classes
-    public class ValidationReport
-    {
-        public string TestName { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public TimeSpan Duration { get; set; }
-        public int TotalTests { get; set; }
-        public int PassedTests { get; set; }
-        public bool OverallSuccess { get; set; }
-        public string ErrorMessage { get; set; }
-        public List<TestResult> TestResults { get; set; } = new List<TestResult>();
-    }
-
-    public class TestResult
-    {
-        public string TestName { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public TimeSpan Duration { get; set; }
-        public bool Success { get; set; }
-        public string Message { get; set; }
-        public Dictionary<string, object> AdditionalData { get; set; } = new Dictionary<string, object>();
-    }
-    #endregion
 }
