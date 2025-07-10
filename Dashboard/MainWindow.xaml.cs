@@ -26,7 +26,10 @@ namespace Dashboard
             try
             {
                 // Carregar dados históricos
-                var historico = Infra.CarregarConcursos();
+                Infra.CarregarConcursos();
+
+
+                var historico = Infra.arLoto;
 
                 if (historico == null || historico.Count == 0)
                 {
