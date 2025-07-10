@@ -1,6 +1,0 @@
-﻿namespace LotoLibrary.Enums
-{
-
-
-
-}

@@ -6,10 +6,10 @@ using Dashboard.ViewModels.Services;
 using Dashboard.ViewModels.Specialized;
 using LotoLibrary.Models;
 using LotoLibrary.Engines;
-using LotoLibrary.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using LotoLibrary.Utilities;
 
 namespace Dashboard.ViewModels
 {

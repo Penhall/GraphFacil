@@ -1,4 +1,6 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\PerformanceMetric.cs - Modelos de dados
+using LotoLibrary.Enums;
+
 namespace LotoLibrary.Models.Prediction
 {
     public class PerformanceMetric

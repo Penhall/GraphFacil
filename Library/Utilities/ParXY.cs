@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LotoLibrary.Models;
+namespace LotoLibrary.Utilities;
 
 public class ParXY
 {

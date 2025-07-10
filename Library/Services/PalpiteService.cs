@@ -2,6 +2,7 @@
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.NeuralNetwork;
+using LotoLibrary.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

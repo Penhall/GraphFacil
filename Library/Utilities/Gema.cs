@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LotoLibrary.Models;
+using System;
 using System.Collections.Generic;
 
 
-namespace LotoLibrary.Models
+namespace LotoLibrary.Utilities
 {
     public class Gema : IComparable
     {
@@ -23,7 +24,7 @@ namespace LotoLibrary.Models
         public void Pontos()
         {
             int m = 0;
-            if (this.Grupo.Count > 0)
+            if (Grupo.Count > 0)
             {
 
                 List<int> S = new();
@@ -45,7 +46,7 @@ namespace LotoLibrary.Models
 
             }
 
-            this.N = m;
+            N = m;
         }
 
 

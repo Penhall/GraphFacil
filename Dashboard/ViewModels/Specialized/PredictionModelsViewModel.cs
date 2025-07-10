@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
 using Dashboard.ViewModels.Services;
+using LotoLibrary.Enums;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;

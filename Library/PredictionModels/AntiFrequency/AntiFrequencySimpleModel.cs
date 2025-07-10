@@ -1,8 +1,8 @@
-using LotoLibrary.Models.Prediction;
-using LotoLibrary.Interfaces;
-// D:\PROJETOS\GraphFacil\LotoLibrary\PredictionModels\AntiFrequency\AntiFrequencySimpleModel.cs
+// D:\PROJETOS\GraphFacil\Library\PredictionModels\AntiFrequency\AntiFrequencySimpleModel.cs
+// IMPLEMENTAÇÃO COMPLETA E CORRIGIDA - AntiFrequencySimpleModel
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
+using LotoLibrary.Models.Base;
 using LotoLibrary.Models.Prediction;
 using System;
 using System.Collections.Generic;
@@ -12,415 +12,516 @@ using System.Threading.Tasks;
 namespace LotoLibrary.PredictionModels.AntiFrequency
 {
     /// <summary>
-    /// Modelo Anti-Frequencista Simples
-    /// Implementa estratégia de inversão direta do frequencista
+    /// Modelo Anti-Frequência Simples - IMPLEMENTAÇÃO COMPLETA
     /// Prioriza dezenas com menor frequência histórica
+    /// Herda de PredictionModelBase para implementação completa da IPredictionModel
     /// </summary>
-    public class AntiFrequencySimpleModel : IPredictionModel, IConfigurableModel
+    public class AntiFrequencySimpleModel : PredictionModelBase, IConfigurableModel
     {
-        #region Properties
-        public string ModelName => "Anti-Frequency Simple";
-        public string ModelType => "AntiFrequency";
-        public bool IsInitialized { get; private set; }
-        public double Confidence { get; private set; }
-        public DateTime LastTrainingTime { get; private set; }
-        public int TrainingDataSize { get; private set; }
-        
-        public Dictionary<string, object> Parameters { get; set; }
+        #region IPredictionModel Properties Implementation
+        public override string ModelName => "Anti-Frequency Simple Model";
+        public override string ModelType => "AntiFrequency";
         #endregion
 
-        #region Events
-        public event EventHandler<string> OnStatusChanged;
-        public event EventHandler<double> OnConfidenceChanged;
+        #region IConfigurableModel Properties
+        public Dictionary<string, object> CurrentParameters { get; private set; }
+        public Dictionary<string, object> DefaultParameters { get; private set; }
         #endregion
 
         #region Private Fields
-        private Lances _historicalData;
-        private Dictionary<int, double> _frequencyScores;
+        private Dictionary<int, int> _numberFrequencies;
         private Dictionary<int, double> _antiFrequencyScores;
-        private int _janelaHistorica;
-        private double _fatorDecaimento;
-        private double _epsilon;
-        private double _pesoTemporal;
+        private Dictionary<string, string> _parameterDescriptions;
+        private Dictionary<string, List<object>> _allowedValues;
         #endregion
 
         #region Constructor
         public AntiFrequencySimpleModel()
         {
-            Parameters = GetDefaultParameters();
-            LoadParametersFromConfig();
-            IsInitialized = false;
-            Confidence = 0.0;
+            InitializeParameters();
+            ResetToDefaults();
         }
         #endregion
 
-        #region IPredictionModel Implementation
-        public async Task<bool> InitializeAsync(Lances historicalData)
+        #region PredictionModelBase Implementation
+        protected override async Task<bool> DoInitializeAsync(Lances historicalData)
         {
             try
             {
-                OnStatusChanged?.Invoke(this, "Inicializando modelo Anti-Frequency Simple...");
-                
+                UpdateStatus("Inicializando modelo Anti-Frequency...");
+
                 if (historicalData == null || historicalData.Count == 0)
                 {
-                    OnStatusChanged?.Invoke(this, "❌ Dados históricos inválidos");
+                    UpdateStatus("Erro: Dados históricos inválidos");
                     return false;
                 }
 
-                _historicalData = historicalData;
-                TrainingDataSize = historicalData.Count;
-                
-                // Calcular frequências históricas
-                await CalculateFrequencyScoresAsync();
-                
-                // Calcular scores anti-frequencistas
-                await CalculateAntiFrequencyScoresAsync();
-                
-                IsInitialized = true;
-                LastTrainingTime = DateTime.Now;
-                
-                OnStatusChanged?.Invoke(this, "✅ Modelo inicializado com sucesso");
+                var minimumDataSize = GetParameter<int>("MinimumDataSize");
+                if (historicalData.Count < minimumDataSize)
+                {
+                    UpdateStatus($"Erro: Dados insuficientes. Mínimo: {minimumDataSize}, Atual: {historicalData.Count}");
+                    return false;
+                }
+
+                // Inicializar estruturas de dados
+                _numberFrequencies = new Dictionary<int, int>();
+                _antiFrequencyScores = new Dictionary<int, double>();
+
+                // Inicializar contadores para todas as dezenas (1-25)
+                for (int i = 1; i <= 25; i++)
+                {
+                    _numberFrequencies[i] = 0;
+                }
+
+                UpdateStatus("Modelo Anti-Frequency inicializado com sucesso");
                 return true;
             }
             catch (Exception ex)
             {
-                OnStatusChanged?.Invoke(this, $"❌ Erro na inicialização: {ex.Message}");
+                UpdateStatus($"Erro na inicialização: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<bool> TrainAsync(Lances trainingData)
+        protected override async Task<bool> DoTrainAsync(Lances trainingData)
         {
             try
             {
-                OnStatusChanged?.Invoke(this, "Treinando modelo Anti-Frequency Simple...");
-                
-                // Para este modelo simples, treinamento = inicialização
-                var result = await InitializeAsync(trainingData);
-                
-                if (result)
+                UpdateStatus("Iniciando treinamento do modelo Anti-Frequency...");
+
+                if (trainingData == null || trainingData.Count == 0)
                 {
-                    // Calcular confiança baseada na estabilidade dos scores
-                    await CalculateConfidenceAsync();
-                    OnConfidenceChanged?.Invoke(this, Confidence);
+                    UpdateStatus("Erro: Dados de treino inválidos");
+                    return false;
                 }
-                
-                return result;
+
+                // Resetar contadores
+                for (int i = 1; i <= 25; i++)
+                {
+                    _numberFrequencies[i] = 0;
+                }
+
+                // Calcular frequências considerando janela histórica
+                await CalculateFrequencies(trainingData);
+
+                // Calcular scores anti-frequência
+                await CalculateAntiFrequencyScores();
+
+                // Calcular confiança baseada na distribuição
+                var confidence = CalculateModelConfidence();
+                UpdateConfidence(confidence);
+
+                UpdateStatus($"Treinamento concluído. Dados processados: {trainingData.Count}");
+                return true;
             }
             catch (Exception ex)
             {
-                OnStatusChanged?.Invoke(this, $"❌ Erro no treinamento: {ex.Message}");
+                UpdateStatus($"Erro no treinamento: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<PredictionResult> PredictAsync(int targetConcurso)
+        protected override async Task<PredictionResult> DoPredictAsync(int targetConcurso)
         {
+            var startTime = DateTime.Now;
+
             try
             {
-                if (!IsInitialized)
+                UpdateStatus($"Gerando predição para concurso {targetConcurso}...");
+
+                // Selecionar as 15 dezenas com menores frequências
+                var selectedNumbers = SelectAntiFrequencyNumbers();
+
+                if (selectedNumbers.Count != 15)
                 {
-                    OnStatusChanged?.Invoke(this, "❌ Modelo não foi inicializado");
-                    return new PredictionResult
-                    {
-                        Success = false,
-                        ErrorMessage = "Modelo não inicializado"
-                    };
+                    var errorMsg = $"Erro na seleção: {selectedNumbers.Count} dezenas selecionadas em vez de 15";
+                    UpdateStatus(errorMsg);
+                    return PredictionResult.CreateError(ModelName, errorMsg);
                 }
 
-                OnStatusChanged?.Invoke(this, "Gerando predição anti-frequencista...");
+                // Calcular confiança da predição
+                var confidence = CalculatePredictionConfidence(selectedNumbers);
 
-                // Aplicar peso temporal aos scores
-                var weightedScores = await ApplyTemporalWeightAsync();
+                // Gerar explicação
+                var explanation = GenerateExplanation(selectedNumbers);
+
+                var result = PredictionResult.CreateSuccess(ModelName, selectedNumbers, confidence, explanation);
                 
-                // Ordenar por score anti-frequencista (maiores = menos frequentes)
-                var rankedNumbers = weightedScores
-                    .OrderByDescending(kvp => kvp.Value)
-                    .Select(kvp => kvp.Key)
-                    .Take(15)
-                    .ToList();
+                // Adicionar metadados
+                result.TargetConcurso = targetConcurso;
+                result.ProcessingTime = DateTime.Now - startTime;
+                result.ModelVersion = "2.0";
+                result.AddMetadata("TrainingDataSize", TrainingDataSize);
+                result.AddMetadata("LastTrainingTime", LastTrainingTime);
+                result.AddMetadata("JanelaHistorica", GetParameter<int>("JanelaHistorica"));
 
-                var result = new PredictionResult
+                // Adicionar probabilidades individuais
+                foreach (var number in selectedNumbers)
                 {
-                    Success = true,
-                    ModelName = ModelName,
-                    TargetConcurso = targetConcurso,
-                    PredictedNumbers = rankedNumbers,
-                    Confidence = Confidence,
-                    GeneratedAt = DateTime.Now,
-                    Explanation = await GenerateExplanationAsync(rankedNumbers, weightedScores)
-                };
+                    result.NumberProbabilities[number] = _antiFrequencyScores.GetValueOrDefault(number, 0.0);
+                }
 
-                OnStatusChanged?.Invoke(this, "✅ Predição gerada com sucesso");
+                UpdateStatus($"Predição gerada com sucesso. Confiança: {confidence:P2}");
                 return result;
             }
             catch (Exception ex)
             {
-                OnStatusChanged?.Invoke(this, $"❌ Erro na predição: {ex.Message}");
-                return new PredictionResult
-                {
-                    Success = false,
-                    ErrorMessage = ex.Message
-                };
+                var errorMsg = $"Erro na predição: {ex.Message}";
+                UpdateStatus(errorMsg);
+                return PredictionResult.CreateError(ModelName, errorMsg);
             }
         }
 
-        public async Task<ValidationResult> ValidateAsync(Lances validationData)
+        protected override async Task<ValidationResult> DoValidateAsync(Lances validationData)
         {
             try
             {
-                OnStatusChanged?.Invoke(this, "Validando modelo...");
-                
-                var validationResult = new ValidationResult
-                {
-                    ModelName = ModelName,
-                    TestStartTime = DateTime.Now,
-                    TotalTests = 0,
-                    SuccessfulPredictions = 0,
-                    Accuracy = 0.0,
-                    DetailedResults = new List<ValidationDetail>()
-                };
+                UpdateStatus("Iniciando validação do modelo...");
 
-                // Validação com últimos 50 sorteios
-                var testCount = Math.Min(50, validationData.Count - 1);
-                var trainingSize = validationData.Count - testCount;
-
-                for (int i = 0; i < testCount; i++)
+                if (validationData == null || validationData.Count == 0)
                 {
-                    var trainingData = new Lances(validationData.Take(trainingSize + i).ToList());
-                    var testLance = validationData[trainingSize + i];
+                    var errorMsg = "Dados de validação vazios";
+                    UpdateStatus(errorMsg);
+                    return ValidationResult.CreateError(ModelName, errorMsg);
+                }
+
+                var validationResult = new ValidationResult(ModelName);
+                var maxTests = Math.Min(validationData.Count, GetParameter<int>("MaxTestCount"));
+
+                for (int i = 0; i < maxTests; i++)
+                {
+                    var lance = validationData[i];
+                    var predictionStart = DateTime.Now;
                     
-                    // Treinar com dados até o ponto atual
-                    await TrainAsync(trainingData);
-                    
-                    // Gerar predição
-                    var prediction = await PredictAsync(testLance.Concurso);
-                    
+                    var prediction = await DoPredictAsync(lance.Id);
+                    var predictionTime = DateTime.Now - predictionStart;
+
                     if (prediction.Success)
                     {
-                        var hits = prediction.PredictedNumbers.Intersect(testLance.DezenasSorteadas).Count();
-                        var isSuccess = hits >= 11; // Critério de sucesso: 11+ acertos
-                        
-                        validationResult.TotalTests++;
-                        if (isSuccess) validationResult.SuccessfulPredictions++;
-                        
-                        validationResult.DetailedResults.Add(new ValidationDetail
-                        {
-                            Concurso = testLance.Concurso,
-                            PredictedNumbers = prediction.PredictedNumbers,
-                            ActualNumbers = testLance.DezenasSorteadas.ToList(),
-                            Hits = hits,
-                            Success = isSuccess,
-                            Confidence = prediction.Confidence
-                        });
+                        var detail = ValidationDetail.FromLance(lance, prediction.PredictedNumbers, prediction.Confidence, predictionTime);
+                        validationResult.AddDetailedResult(detail);
+                    }
+
+                    // Atualizar status periodicamente
+                    if (i % 10 == 0)
+                    {
+                        UpdateStatus($"Validação: {i + 1}/{maxTests} testes processados");
                     }
                 }
 
-                validationResult.Accuracy = validationResult.TotalTests > 0 ? 
-                    (double)validationResult.SuccessfulPredictions / validationResult.TotalTests : 0.0;
+                validationResult.FinishValidation();
                 
-                validationResult.TestEndTime = DateTime.Now;
+                var accuracyMsg = $"Validação concluída. Precisão: {validationResult.AccuracyPercentage:F2}%";
+                UpdateStatus(accuracyMsg);
                 
-                OnStatusChanged?.Invoke(this, $"✅ Validação concluída: {validationResult.Accuracy:P2}");
                 return validationResult;
             }
             catch (Exception ex)
             {
-                OnStatusChanged?.Invoke(this, $"❌ Erro na validação: {ex.Message}");
-                return new ValidationResult
-                {
-                    ModelName = ModelName,
-                    Success = false,
-                    ErrorMessage = ex.Message
-                };
+                var errorMsg = $"Erro na validação: {ex.Message}";
+                UpdateStatus(errorMsg);
+                return ValidationResult.CreateError(ModelName, errorMsg);
             }
         }
 
-        public void Reset()
+        protected override void DoReset()
         {
-            IsInitialized = false;
-            Confidence = 0.0;
-            _frequencyScores?.Clear();
+            _numberFrequencies?.Clear();
             _antiFrequencyScores?.Clear();
-            _historicalData = null;
-            OnStatusChanged?.Invoke(this, "Modelo resetado");
+            ResetToDefaults();
+            UpdateStatus("Modelo resetado para configurações padrão");
         }
         #endregion
 
         #region IConfigurableModel Implementation
-        public void UpdateParameters(Dictionary<string, object> newParameters)
+        public void UpdateParameters(Dictionary<string, object> parameters)
         {
-            if (newParameters == null) return;
-            
-            foreach (var param in newParameters)
+            if (parameters == null) return;
+
+            foreach (var param in parameters)
             {
-                if (Parameters.ContainsKey(param.Key))
+                if (DefaultParameters.ContainsKey(param.Key))
                 {
-                    Parameters[param.Key] = param.Value;
+                    CurrentParameters[param.Key] = param.Value;
+                }
+                else
+                {
+                    throw new ArgumentException($"Parâmetro '{param.Key}' não é válido para este modelo");
                 }
             }
-            
-            LoadParametersFromConfig();
-            OnStatusChanged?.Invoke(this, "Parâmetros atualizados");
-        }
 
-        public Dictionary<string, object> GetDefaultParameters()
-        {
-            return new Dictionary<string, object>
-            {
-                { "JanelaHistorica", 100 },
-                { "FatorDecaimento", 0.1 },
-                { "Epsilon", 0.001 },
-                { "PesoTemporal", 0.8 }
-            };
+            UpdateStatus("Parâmetros atualizados");
         }
 
         public bool ValidateParameters(Dictionary<string, object> parameters)
         {
             if (parameters == null) return false;
-            
-            try
+
+            foreach (var param in parameters)
             {
-                var janela = Convert.ToInt32(parameters["JanelaHistorica"]);
-                var fator = Convert.ToDouble(parameters["FatorDecaimento"]);
-                var epsilon = Convert.ToDouble(parameters["Epsilon"]);
-                var peso = Convert.ToDouble(parameters["PesoTemporal"]);
-                
-                return janela > 0 && janela <= 1000 &&
-                       fator > 0 && fator <= 1 &&
-                       epsilon > 0 && epsilon <= 0.1 &&
-                       peso > 0 && peso <= 1;
+                // Verificar se o parâmetro existe
+                if (!DefaultParameters.ContainsKey(param.Key))
+                {
+                    return false;
+                }
+
+                // Verificar valores permitidos se definidos
+                if (_allowedValues.ContainsKey(param.Key))
+                {
+                    var allowedValues = _allowedValues[param.Key];
+                    if (allowedValues != null && !allowedValues.Contains(param.Value))
+                    {
+                        return false;
+                    }
+                }
+
+                // Validação específica por parâmetro
+                if (!ValidateSpecificParameter(param.Key, param.Value))
+                {
+                    return false;
+                }
             }
-            catch
-            {
-                return false;
-            }
+
+            return true;
+        }
+
+        public string GetParameterDescription(string parameterName)
+        {
+            return _parameterDescriptions.TryGetValue(parameterName, out var description) 
+                ? description 
+                : $"Parâmetro {parameterName}";
+        }
+
+        public List<object> GetAllowedValues(string parameterName)
+        {
+            return _allowedValues.TryGetValue(parameterName, out var values) 
+                ? new List<object>(values) 
+                : null;
+        }
+
+        public void ResetToDefaults()
+        {
+            CurrentParameters = new Dictionary<string, object>(DefaultParameters);
         }
         #endregion
 
         #region Private Methods
-        private void LoadParametersFromConfig()
+        private void InitializeParameters()
         {
-            _janelaHistorica = Convert.ToInt32(Parameters["JanelaHistorica"]);
-            _fatorDecaimento = Convert.ToDouble(Parameters["FatorDecaimento"]);
-            _epsilon = Convert.ToDouble(Parameters["Epsilon"]);
-            _pesoTemporal = Convert.ToDouble(Parameters["PesoTemporal"]);
+            DefaultParameters = new Dictionary<string, object>
+            {
+                { "JanelaHistorica", 100 },
+                { "FatorDecaimento", 0.1 },
+                { "Epsilon", 0.001 },
+                { "PesoTemporal", 0.8 },
+                { "MinimumDataSize", 20 },
+                { "MaxTestCount", 100 }
+            };
+
+            _parameterDescriptions = new Dictionary<string, string>
+            {
+                { "JanelaHistorica", "Número de sorteios recentes a considerar na análise de frequência" },
+                { "FatorDecaimento", "Fator de decaimento temporal para ponderar frequências antigas" },
+                { "Epsilon", "Valor mínimo para evitar divisão por zero nos cálculos" },
+                { "PesoTemporal", "Peso da componente temporal na pontuação final" },
+                { "MinimumDataSize", "Tamanho mínimo dos dados de treino necessários" },
+                { "MaxTestCount", "Número máximo de testes na validação" }
+            };
+
+            _allowedValues = new Dictionary<string, List<object>>();
         }
 
-        private async Task CalculateFrequencyScoresAsync()
+        private bool ValidateSpecificParameter(string parameterName, object value)
         {
-            await Task.Run(() =>
+            switch (parameterName)
             {
-                _frequencyScores = new Dictionary<int, double>();
-                
-                // Usar apenas últimos N sorteios se especificado
-                var dataToUse = _janelaHistorica > 0 && _janelaHistorica < _historicalData.Count
-                    ? _historicalData.Skip(_historicalData.Count - _janelaHistorica).ToList()
-                    : _historicalData.ToList();
-                
-                var totalSorteios = dataToUse.Count;
-                
-                for (int dezena = 1; dezena <= 25; dezena++)
-                {
-                    var aparicoes = dataToUse.Count(lance => lance.Lista.Contains(dezena));
-                    _frequencyScores[dezena] = (double)aparicoes / totalSorteios;
-                }
-            });
-        }
-
-        private async Task CalculateAntiFrequencyScoresAsync()
-        {
-            await Task.Run(() =>
-            {
-                _antiFrequencyScores = new Dictionary<int, double>();
-                
-                // Inverter frequências: menos frequente = score maior
-                var maxFreq = _frequencyScores.Values.Max();
-                var minFreq = _frequencyScores.Values.Min();
-                
-                for (int dezena = 1; dezena <= 25; dezena++)
-                {
-                    var freq = _frequencyScores[dezena];
+                case "JanelaHistorica":
+                    return value is int janela && janela > 0 && janela <= 1000;
                     
-                    // Fórmula anti-frequencista: score = 1 / (freq + epsilon)
-                    // Normalizar para evitar valores extremos
-                    var normalizedFreq = (freq - minFreq) / (maxFreq - minFreq + _epsilon);
-                    _antiFrequencyScores[dezena] = 1.0 / (normalizedFreq + _epsilon);
-                }
-            });
-        }
-
-        private async Task<Dictionary<int, double>> ApplyTemporalWeightAsync()
-        {
-            return await Task.Run(() =>
-            {
-                var weightedScores = new Dictionary<int, double>();
-                
-                // Calcular peso temporal baseado na última aparição
-                var recentData = _historicalData.Skip(Math.Max(0, _historicalData.Count - 20)).ToList();
-                
-                for (int dezena = 1; dezena <= 25; dezena++)
-                {
-                    var baseScore = _antiFrequencyScores[dezena];
-                    var daysSinceLastAppearance = GetDaysSinceLastAppearance(dezena, recentData);
-                    var temporalBonus = Math.Pow(_pesoTemporal, daysSinceLastAppearance);
+                case "FatorDecaimento":
+                    return value is double fator && fator >= 0.0 && fator <= 1.0;
                     
-                    weightedScores[dezena] = baseScore * (1 + temporalBonus);
-                }
-                
-                return weightedScores;
-            });
+                case "Epsilon":
+                    return value is double eps && eps > 0.0 && eps <= 0.1;
+                    
+                case "PesoTemporal":
+                    return value is double peso && peso >= 0.0 && peso <= 1.0;
+                    
+                case "MinimumDataSize":
+                    return value is int size && size > 0 && size <= 500;
+                    
+                case "MaxTestCount":
+                    return value is int count && count > 0 && count <= 1000;
+                    
+                default:
+                    return true;
+            }
         }
 
-        private int GetDaysSinceLastAppearance(int dezena, List<Lance> recentData)
+        private T GetParameter<T>(string name)
         {
-            for (int i = recentData.Count - 1; i >= 0; i--)
+            if (CurrentParameters.TryGetValue(name, out var value) && value is T)
             {
-                if (recentData[i].DezenasSorteadas.Contains(dezena))
+                return (T)value;
+            }
+            
+            if (DefaultParameters.TryGetValue(name, out var defaultValue) && defaultValue is T)
+            {
+                return (T)defaultValue;
+            }
+            
+            return default(T);
+        }
+
+        private async Task CalculateFrequencies(Lances trainingData)
+        {
+            var janelaHistorica = GetParameter<int>("JanelaHistorica");
+            var dataToAnalyze = trainingData.TakeLast(janelaHistorica).ToList();
+
+            foreach (var lance in dataToAnalyze)
+            {
+                foreach (var numero in lance.Lista)
                 {
-                    return recentData.Count - 1 - i;
+                    _numberFrequencies[numero]++;
                 }
             }
-            return recentData.Count; // Não apareceu nos dados recentes
         }
 
-        private async Task CalculateConfidenceAsync()
+        private async Task CalculateAntiFrequencyScores()
         {
-            await Task.Run(() =>
+            var epsilon = GetParameter<double>("Epsilon");
+            var pesoTemporal = GetParameter<double>("PesoTemporal");
+            
+            // Encontrar frequência máxima para normalização
+            var maxFreq = _numberFrequencies.Values.Max();
+            
+            for (int numero = 1; numero <= 25; numero++)
             {
-                // Confiança baseada na estabilidade dos scores
-                var scores = _antiFrequencyScores.Values.ToList();
-                var mean = scores.Average();
-                var variance = scores.Average(x => Math.Pow(x - mean, 2));
-                var standardDeviation = Math.Sqrt(variance);
+                var freq = _numberFrequencies[numero];
+                var normalizedFreq = maxFreq > 0 ? (double)freq / maxFreq : 0.0;
                 
-                // Confiança inversamente proporcional ao desvio padrão
-                var normalizedStdDev = standardDeviation / mean;
-                Confidence = Math.Max(0.1, Math.Min(0.9, 1.0 - normalizedStdDev));
-            });
+                // Score anti-frequência: quanto menor a frequência, maior o score
+                var antiFreqScore = 1.0 - normalizedFreq;
+                
+                // Aplicar peso temporal e epsilon
+                _antiFrequencyScores[numero] = (antiFreqScore * pesoTemporal) + epsilon;
+            }
         }
 
-        private async Task<string> GenerateExplanationAsync(List<int> selectedNumbers, Dictionary<int, double> scores)
+        private List<int> SelectAntiFrequencyNumbers()
         {
-            return await Task.Run(() =>
+            // Ordenar por score anti-frequência (maior score = menor frequência)
+            var sortedNumbers = _antiFrequencyScores
+                .OrderByDescending(kv => kv.Value)
+                .ThenBy(kv => kv.Key) // Desempate por número menor
+                .Take(15)
+                .Select(kv => kv.Key)
+                .OrderBy(n => n)
+                .ToList();
+
+            return sortedNumbers;
+        }
+
+        private double CalculateModelConfidence()
+        {
+            if (_antiFrequencyScores == null || _antiFrequencyScores.Count == 0)
+                return 0.0;
+
+            // Confiança baseada na variância dos scores
+            var scores = _antiFrequencyScores.Values.ToList();
+            var avgScore = scores.Average();
+            var variance = scores.Select(s => Math.Pow(s - avgScore, 2)).Average();
+            
+            // Converter variância em confiança (menor variância = maior confiança)
+            var confidence = Math.Max(0.1, Math.Min(0.9, 1.0 - Math.Sqrt(variance)));
+            
+            return confidence;
+        }
+
+        private double CalculatePredictionConfidence(List<int> selectedNumbers)
+        {
+            if (selectedNumbers == null || selectedNumbers.Count == 0)
+                return 0.0;
+
+            // Confiança baseada na consistência dos scores das dezenas selecionadas
+            var scores = selectedNumbers.Select(n => _antiFrequencyScores.GetValueOrDefault(n, 0.0)).ToList();
+            var avgScore = scores.Average();
+            var variance = scores.Select(s => Math.Pow(s - avgScore, 2)).Average();
+            
+            // Converter variância em confiança
+            var confidence = Math.Max(0.1, Math.Min(0.9, 1.0 - Math.Sqrt(variance) * 2));
+            
+            return confidence;
+        }
+
+        private string GenerateExplanation(List<int> selectedNumbers)
+        {
+            var janelaHistorica = GetParameter<int>("JanelaHistorica");
+            var explanation = $"Selecionadas as 15 dezenas com menores frequências nos últimos {janelaHistorica} sorteios. ";
+            
+            if (selectedNumbers.Any())
             {
-                var explanation = $"Modelo Anti-Frequencista Simple - Seleção baseada em baixa frequência histórica\n\n";
-                explanation += $"Parâmetros utilizados:\n";
-                explanation += $"• Janela histórica: {_janelaHistorica} sorteios\n";
-                explanation += $"• Fator decaimento: {_fatorDecaimento:F3}\n";
-                explanation += $"• Peso temporal: {_pesoTemporal:F3}\n\n";
+                var minFreq = selectedNumbers.Min(n => _numberFrequencies.GetValueOrDefault(n, 0));
+                var maxFreq = selectedNumbers.Max(n => _numberFrequencies.GetValueOrDefault(n, 0));
                 
-                explanation += "Dezenas selecionadas (score anti-frequencista):\n";
-                foreach (var dezena in selectedNumbers.Take(5))
-                {
-                    var freq = _frequencyScores[dezena];
-                    var score = scores[dezena];
-                    explanation += $"• {dezena:D2}: freq={freq:P2}, score={score:F3}\n";
-                }
-                
-                explanation += "\nRacional: Dezenas menos frequentes têm maior probabilidade de serem sorteadas (regressão à média)";
-                return explanation;
-            });
+                explanation += $"Frequências das selecionadas: {minFreq} a {maxFreq} aparições.";
+            }
+            
+            return explanation;
+        }
+        #endregion
+
+        #region Public Methods
+        /// <summary>
+        /// Obtém estatísticas detalhadas do modelo
+        /// </summary>
+        public Dictionary<string, object> GetModelStatistics()
+        {
+            var stats = new Dictionary<string, object>
+            {
+                { "ModelName", ModelName },
+                { "ModelType", ModelType },
+                { "IsInitialized", IsInitialized },
+                { "Confidence", Confidence },
+                { "TrainingDataSize", TrainingDataSize },
+                { "LastTrainingTime", LastTrainingTime }
+            };
+
+            if (_numberFrequencies != null && _numberFrequencies.Any())
+            {
+                stats.Add("MinFrequency", _numberFrequencies.Values.Min());
+                stats.Add("MaxFrequency", _numberFrequencies.Values.Max());
+                stats.Add("AvgFrequency", _numberFrequencies.Values.Average());
+            }
+
+            if (_antiFrequencyScores != null && _antiFrequencyScores.Any())
+            {
+                stats.Add("MinAntiScore", _antiFrequencyScores.Values.Min());
+                stats.Add("MaxAntiScore", _antiFrequencyScores.Values.Max());
+                stats.Add("AvgAntiScore", _antiFrequencyScores.Values.Average());
+            }
+
+            return stats;
+        }
+
+        /// <summary>
+        /// Obtém a distribuição de frequências atual
+        /// </summary>
+        public Dictionary<int, int> GetFrequencyDistribution()
+        {
+            return _numberFrequencies != null 
+                ? new Dictionary<int, int>(_numberFrequencies) 
+                : new Dictionary<int, int>();
+        }
+
+        /// <summary>
+        /// Obtém os scores anti-frequência atuais
+        /// </summary>
+        public Dictionary<int, double> GetAntiFrequencyScores()
+        {
+            return _antiFrequencyScores != null 
+                ? new Dictionary<int, double>(_antiFrequencyScores) 
+                : new Dictionary<int, double>();
         }
         #endregion
     }

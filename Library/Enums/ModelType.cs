@@ -1,5 +1,5 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\ModelType.cs - Modelos de dados
-namespace LotoLibrary.Models.Prediction
+namespace LotoLibrary.Enums
 {
     // Enums
     public enum ModelType

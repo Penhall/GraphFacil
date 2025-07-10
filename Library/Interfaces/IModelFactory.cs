@@ -1,4 +1,5 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\IModelFactory.cs - Interface principal
+using LotoLibrary.Enums;
 using LotoLibrary.Models.Prediction;
 using System.Collections.Generic;
 

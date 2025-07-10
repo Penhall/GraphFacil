@@ -1,15 +1,14 @@
 using System.Linq;
-using LotoLibrary.Models.Prediction;
 using LotoLibrary.Interfaces;
 // D:\PROJETOS\GraphFacil\LotoLibrary\Services\AntiFrequencyValidation.cs - Teste do primeiro modelo
 using LotoLibrary.Engines;
 using LotoLibrary.Models;
-using LotoLibrary.Models.Prediction;
 using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LotoLibrary.Enums;
 
 namespace LotoLibrary.Services
 {

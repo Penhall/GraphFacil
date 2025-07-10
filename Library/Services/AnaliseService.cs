@@ -3,6 +3,7 @@ using LotoLibrary.Infrastructure.Logging;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.NeuralNetwork;
+using LotoLibrary.Utilities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,5 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\ModelInfo.cs - Modelos de dados
+using LotoLibrary.Enums;
 using System;
 using System.Collections.Generic;
 

@@ -1,5 +1,6 @@
 // D:\PROJETOS\GraphFacil\Library\Services\DiagnosticService.cs - Novo arquivo para diagnosticar o bug
 using LotoLibrary.Models;
+using LotoLibrary.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

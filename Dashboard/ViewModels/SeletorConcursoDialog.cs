@@ -1,7 +1,7 @@
 ﻿// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\SeletorConcursoDialog.cs
 using System.Windows;
 
-namespace Dashboard.ViewModel
+namespace Dashboard.ViewModels
 {
     /// <summary>
     /// Dialog para seleção de concurso (mantido do código original)

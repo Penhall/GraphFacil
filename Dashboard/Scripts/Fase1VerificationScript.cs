@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using Dashboard.Utilities;
-using Dashboard.ViewModel;
+using Dashboard.ViewModels;
 
 namespace Dashboard.Scripts
 {

@@ -1,4 +1,5 @@
 // D:\PROJETOS\GraphFacil\Library\Engines\ModelFactory.cs - Implementação corrigida da interface
+using LotoLibrary.Enums;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.AntiFrequency;

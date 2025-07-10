@@ -1,5 +1,4 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Utilities\SystemInfo.cs
-using LotoLibrary.Services;
 using System;
 using System.Diagnostics;
 using System.IO;

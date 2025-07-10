@@ -1,6 +1,6 @@
 // Dashboard/MainWindow.xaml.cs - Code-behind SIMPLIFICADO
 using Dashboard.ViewModels;
-using LotoLibrary.Services;
+using LotoLibrary.Utilities;
 using System;
 using System.Windows;
 using System.Windows.Input;

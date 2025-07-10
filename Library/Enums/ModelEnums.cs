@@ -1,5 +1,5 @@
 // D:\PROJETOS\GraphFacil\Library\Models\Prediction\ModelEnums.cs - Enums de suporte para modelos
-namespace LotoLibrary.Models.Prediction
+namespace LotoLibrary.Enums
 {
     public enum ModelCategory
     {

@@ -1,12 +1,12 @@
 ﻿using Microsoft.ML;
 using LotoLibrary.Models;
-using LotoLibrary.Services;
 using LotoLibrary.Interfaces;
 using System.Collections.Generic;
 using System;
 using System.Globalization;
 using System.Threading;
 using LotoLibrary.Infrastructure;
+using LotoLibrary.Utilities;
 
 namespace LotoLibrary.NeuralNetwork.Models;
 

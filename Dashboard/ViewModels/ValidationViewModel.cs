@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LotoLibrary.Engines;
 using LotoLibrary.Models;
 using LotoLibrary.Services;
+using LotoLibrary.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

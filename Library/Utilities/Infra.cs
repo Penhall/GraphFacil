@@ -1,5 +1,6 @@
 ﻿using LotoLibrary.Constantes;
 using LotoLibrary.Models;
+using LotoLibrary.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 
-namespace LotoLibrary.Services
+namespace LotoLibrary.Utilities
 {
 
     public partial class Infra
@@ -62,7 +63,7 @@ namespace LotoLibrary.Services
                 if (!(o == null))
                 {
 
-                    string y = Regex.Replace(o, @"\r|\n", String.Empty);
+                    string y = Regex.Replace(o, @"\r|\n", string.Empty);
                     string[] p = y.Split("\t");
 
                     List<int> l = new();
@@ -361,7 +362,7 @@ namespace LotoLibrary.Services
 
         public static Lance DevolveOposto(Lance U)
         {
-            if ((U.Lista.Count > 0))
+            if (U.Lista.Count > 0)
             {
                 List<int> l = Constante.ListaG.Except(U.Lista).ToList();
 

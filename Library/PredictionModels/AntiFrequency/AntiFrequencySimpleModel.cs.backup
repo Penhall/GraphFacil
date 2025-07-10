@@ -1,3 +1,5 @@
+using LotoLibrary.Models.Prediction;
+using LotoLibrary.Interfaces;
 // D:\PROJETOS\GraphFacil\LotoLibrary\PredictionModels\AntiFrequency\AntiFrequencySimpleModel.cs
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
@@ -320,7 +322,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency
                 
                 for (int dezena = 1; dezena <= 25; dezena++)
                 {
-                    var aparicoes = dataToUse.Count(lance => lance.DezenasSorteadas.Contains(dezena));
+                    var aparicoes = dataToUse.Count(lance => lance.Lista.Contains(dezena));
                     _frequencyScores[dezena] = (double)aparicoes / totalSorteios;
                 }
             });

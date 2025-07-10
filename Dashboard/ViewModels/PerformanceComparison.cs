@@ -1,5 +1,5 @@
 ﻿// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\PerformanceComparison.cs
-namespace Dashboard.ViewModel
+namespace Dashboard.ViewModels
 {
     public partial class MainWindowViewModel
     {
