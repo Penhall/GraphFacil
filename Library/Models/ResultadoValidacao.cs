@@ -1,5 +1,6 @@
-using System;
+// D:\PROJETOS\GraphFacil\Library\Models\ResultadoValidacao.cs
 using System.Collections.Generic;
+using System;
 
 namespace LotoLibrary.Models
 {

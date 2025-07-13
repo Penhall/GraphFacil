@@ -1,15 +1,15 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\IPredictionModel.cs - Interface principal
-using LotoLibrary.Models;
-using LotoLibrary.Models.Prediction;
-using System;
 using System.Threading.Tasks;
+using System;
+using LotoLibrary.Models.Prediction;
+using LotoLibrary.Models;
 
 namespace LotoLibrary.Interfaces
 {
     /// <summary>
     /// Interface base para todos os modelos de predição
     /// </summary>
-    public interface IPredictionModel
+    public interface IPredictionModel : IDisposable
     {
         #region Properties
         string ModelName { get; }
@@ -34,5 +34,3 @@ namespace LotoLibrary.Interfaces
         #endregion
     }
 }
-
-

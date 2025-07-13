@@ -1,7 +1,7 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\IEnsembleOptimizer.cs - Interface para modelos de meta-aprendizado
-using LotoLibrary.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LotoLibrary.Enums;
 
 namespace LotoLibrary.Interfaces
 {

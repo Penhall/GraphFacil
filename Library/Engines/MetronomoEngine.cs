@@ -1,12 +1,12 @@
 // D:\PROJETOS\GraphFacil\Library\Services\MetronomoEngine.cs
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LotoLibrary.Enums;
 using LotoLibrary.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LotoLibrary.Services
 {

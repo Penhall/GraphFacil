@@ -1,8 +1,9 @@
-﻿using System;
+// D:\PROJETOS\GraphFacil\Library\Interfaces\IRepository.cs
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
+﻿using System;
 namespace LotoLibrary.Interfaces
 {
     public interface IRepository<T>

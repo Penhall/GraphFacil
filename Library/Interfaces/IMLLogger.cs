@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+// D:\PROJETOS\GraphFacil\Library\Interfaces\IMLLogger.cs
 using System;
 
+﻿using System.Collections.Generic;
 namespace LotoLibrary.Interfaces;
 
 public interface IMLLogger

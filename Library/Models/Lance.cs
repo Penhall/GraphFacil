@@ -1,7 +1,8 @@
-﻿using System;
+// D:\PROJETOS\GraphFacil\Library\Models\Lance.cs
 using System.Collections.Generic;
 using System.Linq;
 
+﻿using System;
 namespace LotoLibrary.Models;
 
 public class Lance

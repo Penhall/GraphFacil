@@ -1,11 +1,12 @@
-// LotoLibrary/Services/MetronomoIndividual.cs
+// D:\PROJETOS\GraphFacil\Library\Models\MetronomoIndividual.cs
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LotoLibrary.Enums;
 using LotoLibrary.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
+// LotoLibrary/Services/MetronomoIndividual.cs
 namespace LotoLibrary.Services
 {
     /// <summary>

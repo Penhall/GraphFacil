@@ -1,34 +1,34 @@
-﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\PredictionModels.cs - Modelos de dados
-namespace LotoLibrary.Enums
+// D:\PROJETOS\GraphFacil\Library\Enums\PerformanceGrade.cs
+﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\PerformanceGrade.cs - Modelos de dados
+namespace LotoLibrary.Enums;
+
+/// <summary>
+/// Grades de desempenho
+/// </summary>
+public enum PerformanceGrade
 {
     /// <summary>
-    /// Grades de desempenho
+    /// Excelente (90%+)
     /// </summary>
-    public enum PerformanceGrade
-    {
-        /// <summary>
-        /// Excelente (90%+)
-        /// </summary>
-        A,
+    A,
 
-        /// <summary>
-        /// Bom (70-89%)
-        /// </summary>
-        B,
+    /// <summary>
+    /// Bom (70-89%)
+    /// </summary>
+    B,
 
-        /// <summary>
-        /// Regular (50-69%)
-        /// </summary>
-        C,
+    /// <summary>
+    /// Regular (50-69%)
+    /// </summary>
+    C,
 
-        /// <summary>
-        /// Ruim (30-49%)
-        /// </summary>
-        D,
+    /// <summary>
+    /// Ruim (30-49%)
+    /// </summary>
+    D,
 
-        /// <summary>
-        /// Muito ruim (<30%)
-        /// </summary>
-        F
-    }
+    /// <summary>
+    /// Muito ruim (<30%)
+    /// </summary>
+    F
 }

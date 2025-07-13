@@ -1,9 +1,9 @@
 // D:\PROJETOS\GraphFacil\Library\Engines\OscillatorEngine.cs - Correção da classe
-using LotoLibrary.Models;
-using LotoLibrary.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using LotoLibrary.Models;
+using LotoLibrary.Services;
 
 namespace LotoLibrary.Engines
 {

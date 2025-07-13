@@ -1,11 +1,12 @@
-﻿
-
-using LotoLibrary.Models;
-using Newtonsoft.Json;
-using System;
+// D:\PROJETOS\GraphFacil\Library\Services\LotofacilUpdater.cs
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System;
+using LotoLibrary.Models;
+using Newtonsoft.Json;
+
+﻿
 
 namespace LotoLibrary.Services;
 

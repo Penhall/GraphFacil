@@ -16,4 +16,3 @@ public class AdaptiveWeightSystem
     public async Task UpdateWeights(ConcursoResult result) { }
 }
 
-#endregion

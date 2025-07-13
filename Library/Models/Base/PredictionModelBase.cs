@@ -1,12 +1,13 @@
-﻿// D:\PROJETOS\GraphFacil\Library\Models\Base\PredictionModelBase.cs - Classe base
-using LotoLibrary.Interfaces;
-using LotoLibrary.Models.Prediction;
-using System;
+// D:\PROJETOS\GraphFacil\Library\Models\Base\PredictionModelBase.cs
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
+using LotoLibrary.Interfaces;
+using LotoLibrary.Models.Prediction;
 
+﻿// D:\PROJETOS\GraphFacil\Library\Models\Base\PredictionModelBase.cs - Classe base
 namespace LotoLibrary.Models.Base;
 
 /// <summary>
@@ -168,6 +169,12 @@ public abstract class PredictionModelBase : IPredictionModel
         DoReset();
 
         OnStatusChanged?.Invoke(this, "Modelo resetado");
+    }
+
+    public void Dispose()
+    {
+        // Implementação vazia, pois não há recursos não gerenciados para liberar.
+        // Isso satisfaz a interface IDisposable.
     }
     #endregion
 

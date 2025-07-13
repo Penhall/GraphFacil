@@ -1,7 +1,7 @@
 // D:\PROJETOS\GraphFacil\Library\Models\DezenaOscilante.cs - Classe para oscilação de dezenas
-using CommunityToolkit.Mvvm.ComponentModel;
-using System;
 using System.Collections.Generic;
+using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace LotoLibrary.Models;
 

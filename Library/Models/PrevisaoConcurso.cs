@@ -1,8 +1,9 @@
-// LotoLibrary/Services/PrevisaoConcurso.cs
-
-// LotoLibrary/Services/PrevisaoConcurso.cs
+// D:\PROJETOS\GraphFacil\Library\Models\PrevisaoConcurso.cs
 using LotoLibrary.Enums;
 
+// LotoLibrary/Services/PrevisaoConcurso.cs
+
+// LotoLibrary/Services/PrevisaoConcurso.cs
 namespace LotoLibrary.Models
 {
     public class PrevisaoConcurso

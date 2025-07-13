@@ -1,19 +1,20 @@
 // D:\PROJETOS\GraphFacil\Library\Engines\ModelFactory.cs - Implementação corrigida da interface
+using System.Collections.Generic;
+using System.Linq;
+using System;
 using LotoLibrary.Enums;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models.Prediction;
+using LotoLibrary.PredictionModels.AntiFrequency.Simple;
 using LotoLibrary.PredictionModels.AntiFrequency;
 using LotoLibrary.PredictionModels.Individual;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LotoLibrary.Engines
 {
     /// <summary>
     /// Factory corrigida para criação de modelos de predição
     /// </summary>
-    public class ModelFactory : IModelFactory
+    public partial class ModelFactory : IModelFactory
     {
         #region Private Fields
         private readonly Dictionary<ModelType, Func<IPredictionModel>> _modelCreators;
@@ -25,7 +26,7 @@ namespace LotoLibrary.Engines
         {
             _modelCreators = new Dictionary<ModelType, Func<IPredictionModel>>();
             _modelInfos = new Dictionary<ModelType, ModelInfo>();
-            
+
             RegisterBuiltInModels();
         }
         #endregion
@@ -41,7 +42,7 @@ namespace LotoLibrary.Engines
                 }
 
                 var model = _modelCreators[type]();
-                
+
                 if (model is IConfigurableModel configurableModel && parameters != null)
                 {
                     if (configurableModel.ValidateParameters(parameters))
@@ -67,7 +68,7 @@ namespace LotoLibrary.Engines
             try
             {
                 var models = new List<IPredictionModel>();
-                
+
                 foreach (var modelType in modelTypes)
                 {
                     models.Add(CreateModel(modelType));

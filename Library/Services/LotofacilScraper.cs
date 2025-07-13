@@ -1,10 +1,11 @@
-﻿
-
-using LotoLibrary.Models;
-using Newtonsoft.Json;
-using System;
+// D:\PROJETOS\GraphFacil\Library\Services\LotofacilScraper.cs
 using System.Collections.Generic;
 using System.Net.Http;
+using System;
+using LotoLibrary.Models;
+using Newtonsoft.Json;
+
+﻿
 
 namespace LotoLibrary.Services;
 

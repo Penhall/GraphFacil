@@ -1,12 +1,21 @@
-// D:\PROJETOS\GraphFacil\Library\PredictionModels\Ensemble\StrategyRecommendation.cs - Primeiro modelo da Fase 3: Meta-Learning
+using System;
+
 namespace LotoLibrary.Suporte;
 
 public class StrategyRecommendation
 {
-    public string Name { get; set; }
-    public string BestModel { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string BestModel { get; set; } = string.Empty;
     public double Confidence { get; set; }
-    public string Rationale { get; set; }
-}
+    public string Rationale { get; set; } = string.Empty;
 
-#endregion
+    public StrategyRecommendation() { }
+
+    public StrategyRecommendation(string name, string bestModel, double confidence, string rationale)
+    {
+        Name = name;
+        BestModel = bestModel;
+        Confidence = confidence;
+        Rationale = rationale;
+    }
+}

@@ -1,13 +1,14 @@
-﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\ModelComparison.cs - Modelos de dados
-using LotoLibrary.Enums;
+// D:\PROJETOS\GraphFacil\Library\Models\Prediction\ModelComparison.cs
 using System;
+using LotoLibrary.Enums;
 
+﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\ModelComparison.cs - Modelos de dados
 namespace LotoLibrary.Models.Prediction
 {
    /// <summary>
 /// Comparação entre modelos
 /// </summary>
-public class ModelComparison
+public partial class ModelComparison
 {
     /// <summary>
     /// Nome do modelo

@@ -1,15 +1,14 @@
-﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\ComparisonReport.cs - Modelos de dados
 using System;
 using System.Collections.Generic;
 
-namespace LotoLibrary.Models.Prediction
+namespace LotoLibrary.Models.Prediction;
+
+public class ComparisonReport
 {
-    public class ComparisonReport
-    {
-        public DateTime ComparisonTime { get; set; }
-        public List<ModelComparison> ModelComparisons { get; set; } = new List<ModelComparison>();
-        public string BestModelName { get; set; }
-        public string RecommendedStrategy { get; set; }
-        public Dictionary<string, object> Statistics { get; set; } = new Dictionary<string, object>();
-    }
+    public string BestModelName { get; set; } = string.Empty;
+    public Dictionary<string, PerformanceReport> ModelReports { get; set; } = new();
+    public Dictionary<string, double> RankingScores { get; set; } = new();
+    public string ComparisonCriteria { get; set; } = "Accuracy";
+    public List<string> Insights { get; set; } = new();
+    public DateTime ComparedAt { get; set; } = DateTime.Now;
 }

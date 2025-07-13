@@ -1,15 +1,12 @@
-﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\PerformanceMetric.cs - Modelos de dados
-using LotoLibrary.Enums;
+using System;
 
-namespace LotoLibrary.Models.Prediction
+namespace LotoLibrary.Models.Prediction;
+
+public class PerformanceMetric
 {
-    public class PerformanceMetric
-    {
-        public string Name { get; set; }
-        public double Value { get; set; }
-        public string Unit { get; set; }
-        public string Description { get; set; }
-        public MetricType Type { get; set; }
-        public bool IsGoodHigh { get; set; } // True se valor alto for bom
-    }
+    public string Name { get; set; } = string.Empty;
+    public double Value { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string Category { get; set; } = "General";
+    public DateTime MeasuredAt { get; set; } = DateTime.Now;
 }

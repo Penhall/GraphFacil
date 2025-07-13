@@ -1,3 +1,4 @@
+// D:\PROJETOS\GraphFacil\Library\Models\PercentualInput.cs
 ﻿using Microsoft.ML.Data;
 
 namespace LotoLibrary.Models;

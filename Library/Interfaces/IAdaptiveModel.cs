@@ -1,13 +1,14 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\IAdaptiveModel.cs - Interface para modelos de meta-aprendizado
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LotoLibrary.Suporte;
 
 namespace LotoLibrary.Interfaces;
-{
-    /// <summary>
-    /// Interface para modelos que se adaptam automaticamente a novos dados
-    /// </summary>
-    public interface IAdaptiveModel
+
+/// <summary>
+/// Interface para modelos que se adaptam automaticamente a novos dados
+/// </summary>
+public interface IAdaptiveModel
 {
     /// <summary>
     /// Adapta o modelo a novos dados/resultados

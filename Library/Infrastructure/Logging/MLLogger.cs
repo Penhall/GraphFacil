@@ -1,9 +1,10 @@
-﻿using LotoLibrary.Interfaces;
-using Microsoft.Extensions.Logging;
-using System;
+// D:\PROJETOS\GraphFacil\Library\Infrastructure\Logging\MLLogger.cs
 using System.Collections.Generic;
 using System.IO;
+using System;
+using Microsoft.Extensions.Logging;
 
+﻿using LotoLibrary.Interfaces;
 namespace LotoLibrary.Infrastructure.Logging;
 
 public class MLLogger : IMLLogger

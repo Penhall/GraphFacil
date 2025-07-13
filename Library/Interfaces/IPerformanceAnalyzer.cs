@@ -1,8 +1,8 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\IPerformanceAnalyzer.cs - Interface principal
-using LotoLibrary.Models.Prediction;
-using LotoLibrary.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LotoLibrary.Models.Prediction;
+using LotoLibrary.Models;
 
 namespace LotoLibrary.Interfaces
 {

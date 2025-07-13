@@ -1,8 +1,7 @@
-// D:\PROJETOS\GraphFacil\Library\Services\TestResult.cs - Serviço de validação da Fase 1
+// D:\PROJETOS\GraphFacil\Library\Services\TestResult2.cs - Serviço de validação da Fase 1
 using System.Collections.Generic;
-
-using System;
 using System.Linq;
+using System;
 
 namespace LotoLibrary.Utilities
 {
@@ -23,7 +22,7 @@ namespace LotoLibrary.Utilities
     }
 
     /// <summary>
-    /// Extensão do TestResult com detalhes adicionais e métricas
+    /// Extensão do TestResult2 com detalhes adicionais e métricas
     /// </summary>
     public class TestResultXtras : TestResult
     {

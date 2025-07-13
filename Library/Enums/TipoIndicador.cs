@@ -1,3 +1,4 @@
+// D:\PROJETOS\GraphFacil\Library\Enums\TipoIndicador.cs
 ﻿namespace LotoLibrary.Enums;
 
 public enum TipoIndicador

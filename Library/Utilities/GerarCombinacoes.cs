@@ -1,6 +1,7 @@
-using LotoLibrary.Models;
-using System;
+// D:\PROJETOS\GraphFacil\Library\Utilities\GerarCombinacoes.cs
 using System.Collections.Generic;
+using System;
+using LotoLibrary.Models;
 
 namespace LotoLibrary.Utilities
 {

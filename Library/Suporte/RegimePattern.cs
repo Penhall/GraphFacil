@@ -12,4 +12,3 @@ public class RegimePattern
     public double CurrentConfidence { get; set; }
 }
 
-#endregion

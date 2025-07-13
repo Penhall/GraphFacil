@@ -1,9 +1,10 @@
-﻿// D:\PROJETOS\GraphFacil\Library\Utilities\SystemInfo.cs
-using System;
+// D:\PROJETOS\GraphFacil\Library\Utilities\SystemInfo.cs
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System;
 
+﻿// D:\PROJETOS\GraphFacil\Library\Utilities\SystemInfo.cs
 namespace LotoLibrary.Utilities
 {
     /// <summary>

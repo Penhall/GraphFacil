@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 
 namespace LotoLibrary.Suporte;
-#region Supporting Classes
 
-public class ModelPerformanceProfile
+public partial class ModelPerformanceProfile
 {
     public string ModelName { get; set; }
     public double HistoricalAccuracy { get; set; }
@@ -20,4 +19,3 @@ public class ModelPerformanceProfile
     }
 }
 
-#endregion

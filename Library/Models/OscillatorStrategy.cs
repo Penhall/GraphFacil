@@ -1,8 +1,9 @@
-﻿// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\OscillatorStrategy.cs
-using System;
+// D:\PROJETOS\GraphFacil\Library\Models\OscillatorStrategy.cs
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
+﻿// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\OscillatorStrategy.cs
 namespace LotoLibrary.Models
 {
     /// <summary>

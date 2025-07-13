@@ -1,8 +1,9 @@
-﻿using LotoLibrary.Models;
-using System;
+// D:\PROJETOS\GraphFacil\Library\Infrastructure\Validation\DataValidator.cs
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
+﻿using LotoLibrary.Models;
 namespace LotoLibrary.Infrastructure.Validation;
 
 public static class DataValidator

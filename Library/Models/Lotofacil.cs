@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+// D:\PROJETOS\GraphFacil\Library\Models\Lotofacil.cs
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+﻿using LotoLibrary.Suporte;
 namespace LotoLibrary.Models;
 
 public class Lotofacil

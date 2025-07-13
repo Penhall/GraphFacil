@@ -1,13 +1,13 @@
-﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\PredictionModels.cs - Modelos de dados
-namespace LotoLibrary.Enums
+// D:\PROJETOS\GraphFacil\Library\Enums\MetricType.cs
+﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\MetricType.cs - Modelos de dados
+namespace LotoLibrary.Enums;
+
+public enum MetricType
 {
-    public enum MetricType
-    {
-        Accuracy,
-        Precision,
-        Recall,
-        Performance,
-        Stability,
-        Speed
-    }
+    Accuracy,
+    Precision,
+    Recall,
+    Performance,
+    Stability,
+    Speed
 }

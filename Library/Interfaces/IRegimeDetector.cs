@@ -1,7 +1,7 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\IRegimeDetector.cs - Interface para modelos de meta-aprendizado
-using LotoLibrary.Suporte;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LotoLibrary.Suporte;
 
 namespace LotoLibrary.Interfaces;
 

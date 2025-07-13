@@ -1,8 +1,8 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\IEnsembleModel.cs - Interface principal
-using LotoLibrary.Models;
-using LotoLibrary.Models.Prediction;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LotoLibrary.Models.Prediction;
+using LotoLibrary.Models;
 
 namespace LotoLibrary.Interfaces
 {

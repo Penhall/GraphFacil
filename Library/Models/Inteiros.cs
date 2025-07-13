@@ -1,3 +1,4 @@
+// D:\PROJETOS\GraphFacil\Library\Models\Inteiros.cs
 using System.Collections.Generic;
 
 namespace LotoLibrary.Models

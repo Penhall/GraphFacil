@@ -1,8 +1,8 @@
 // D:\PROJETOS\GraphFacil\Library\Models\Prediction\ConfigurableModelBase.cs - Implementação base para modelos configuráveis
-using LotoLibrary.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using LotoLibrary.Interfaces;
 
 namespace LotoLibrary.Models.Prediction
 {

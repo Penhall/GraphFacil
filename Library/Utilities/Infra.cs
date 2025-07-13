@@ -1,16 +1,17 @@
-﻿using LotoLibrary.Constantes;
-using LotoLibrary.Models;
-using LotoLibrary.Services;
-using Newtonsoft.Json;
-using System;
+// D:\PROJETOS\GraphFacil\Library\Utilities\Infra.cs
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Text;
 using System.Threading.Tasks;
+using System;
+using LotoLibrary.Models;
+using LotoLibrary.Services;
+using Newtonsoft.Json;
 
+﻿using LotoLibrary.Constantes;
 
 namespace LotoLibrary.Utilities
 {

@@ -1,7 +1,8 @@
-using LotoLibrary.Models;
-using System;
+// D:\PROJETOS\GraphFacil\Library\Extensions\LanceExtensions.cs
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using LotoLibrary.Models;
 
 namespace LotoLibrary.Extensions;
 

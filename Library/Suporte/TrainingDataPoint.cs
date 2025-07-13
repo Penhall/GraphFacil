@@ -9,4 +9,3 @@ public class TrainingDataPoint
     public Dictionary<string, double> ActualPerformances { get; set; }
 }
 
-#endregion

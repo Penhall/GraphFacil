@@ -1,6 +1,7 @@
-﻿using Microsoft.ML;
+// D:\PROJETOS\GraphFacil\Library\Interfaces\IMLModelRepository.cs
 using System.Collections.Generic;
 
+﻿using Microsoft.ML;
 namespace LotoLibrary.Interfaces;
 
 public interface IMLModelRepository

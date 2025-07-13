@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+// D:\PROJETOS\GraphFacil\Library\Constantes\Constante.cs
 using System.Linq;
 
+﻿using System.Collections.Generic;
 namespace LotoLibrary.Constantes
 {
     public class Constante

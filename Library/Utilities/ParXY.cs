@@ -1,3 +1,4 @@
+// D:\PROJETOS\GraphFacil\Library\Utilities\ParXY.cs
 ﻿using System.Collections.Generic;
 
 namespace LotoLibrary.Utilities;

@@ -1,7 +1,8 @@
-﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\EnsembleMetrics.cs - Modelos de dados
-using System;
+// D:\PROJETOS\GraphFacil\Library\Models\Prediction\EnsembleMetrics.cs
 using System.Collections.Generic;
+using System;
 
+﻿// D:\PROJETOS\GraphFacil\Library\Models\Prediction\EnsembleMetrics.cs - Modelos de dados
 namespace LotoLibrary.Models.Prediction
 {
     public class EnsembleMetrics
