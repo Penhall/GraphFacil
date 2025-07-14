@@ -1,8 +1,8 @@
 // D:\PROJETOS\GraphFacil\Library\Utilities\Estudos.cs
+using LotoLibrary.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using LotoLibrary.Models;
 
 namespace LotoLibrary.Utilities;
 
@@ -201,7 +201,7 @@ public static class Estudos
 
         return arGeral;
     }
-    public static Lances Estudo3(Lances arLotoTreino)
+    public static Lances Estudo3(int alvo)
     {
         Lances ars1 = new Lances();
         Lances anteriores = new Lances();

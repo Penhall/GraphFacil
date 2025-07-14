@@ -6,17 +6,32 @@ using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using ServiceInfra = LotoLibrary.Services.Infra;
+using ServiceInfra = LotoLibrary.Utilities.Infra;
 
 namespace Dashboard.ViewModels.Specialized
 {
+    public class PredictionModel
+    {
+        public string ModelName { get; set; }
+        public string Description { get; set; }
+        public DateTime LastUpdated { get; set; }
+        public double Accuracy { get; set; }
+    }
+
     public partial class PredictionModelsViewModel : ModelOperationBase
     {
+        #region Private Fields
+        private readonly Lances _historico;
+        private readonly List<IPredictionModel> _availableModels = new();
         private readonly ServiceInfra _infraService;
         private readonly UINotificationService _notificationService;
-        private readonly List<IPredictionModel> _availableModels = new();
+        #endregion
+
+        #region Observable Properties
+        [ObservableProperty]
+        private ObservableCollection<PredictionModel> _models = new();
 
         [ObservableProperty]
         private IPredictionModel? _selectedModel;
@@ -25,10 +40,13 @@ namespace Dashboard.ViewModels.Specialized
         private bool _isLoading;
 
         public IReadOnlyList<IPredictionModel> AvailableModels => _availableModels;
+        public Lances Historico => _historico;
+        #endregion
 
         public PredictionModelsViewModel(Lances historico, UINotificationService notificationService)
             : base(historico)
         {
+            _historico = historico;
             _infraService = new ServiceInfra();
             _notificationService = notificationService;
         }
@@ -46,7 +64,7 @@ namespace Dashboard.ViewModels.Specialized
 
                 _availableModels.Clear();
                 // Adicionar modelos disponíveis aqui
-                
+
                 _notificationService.ShowSuccess("Modelos carregados com sucesso!");
             }
             catch (Exception ex)
@@ -71,10 +89,10 @@ namespace Dashboard.ViewModels.Specialized
             try
             {
                 IsLoading = true;
-                _notificationService.ShowInfo($"Executando previsão com {SelectedModel.Name}...");
+                _notificationService.ShowInfo($"Executando previsão com {SelectedModel.ModelName}...");
 
                 var result = await SelectedModel.ValidateAsync(Historico);
-                
+
                 _notificationService.ShowSuccess($"Previsão concluída: {result}");
             }
             catch (Exception ex)

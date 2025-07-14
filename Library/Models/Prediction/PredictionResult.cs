@@ -20,6 +20,10 @@ public class PredictionResult
     public string GenerationMethod { get => Strategy; set => Strategy = value; }
     public int TargetConcurso { get => Concurso; set => Concurso = value; }
     public Dictionary<string, object> Metadata { get; set; } = new();
+    public Dictionary<string, object> ModelParameters { 
+        get => Metadata;
+        set => Metadata = value;
+    }
     public DateTime PredictionTime { get; set; }
     public TimeSpan ProcessingTime { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using Dashboard.ViewModels;
+using Dashboard.ViewModels.Services;
 using LotoLibrary.Models;
 using System.Windows;
 
@@ -11,8 +12,13 @@ namespace Dashboard.Views
         public ValidationWindow(Lances historico)
         {
             InitializeComponent();
-            ViewModel = new ValidationViewModel(historico, new UINotificationService());
+            ViewModel = new ValidationViewModel(historico, UINotificationService.Instance);
             DataContext = ViewModel;
+        }
+
+        private void FecharWindow(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }

@@ -1,4 +1,4 @@
-// D:\PROJETOS\GraphFacil\Library\Enums\AntiFrequencyStatus.cs - Enums específicos para modelos anti-frequencistas
+// D:\PROJETOS\GraphFacil\Library\Enums\AntiFrequencyStatus.cs
 namespace LotoLibrary.Enums;
 
 /// <summary>
@@ -56,4 +56,3 @@ public enum AntiFrequencyStatus
     /// </summary>
     Error
 }
-

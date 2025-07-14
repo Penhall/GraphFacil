@@ -1,9 +1,11 @@
+using Dashboard.Services;
 using LotoLibrary.Engines;
-using LotoLibrary.Interfaces;
 using LotoLibrary.Enums;
+using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Dashboard.ViewModels.Base
@@ -117,7 +119,7 @@ namespace Dashboard.ViewModels.Base
         /// </summary>
         protected virtual int GetNextConcurso()
         {
-            return _historicalData?.Max(l => l.Concurso) + 1 ?? 1;
+            return _historicalData?.Max(l => l.Id) + 1 ?? 1;
         }
 
         /// <summary>

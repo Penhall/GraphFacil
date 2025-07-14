@@ -3,13 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
 using Dashboard.ViewModels.Services;
 using Dashboard.ViewModels.Specialized;
-using LotoLibrary.Models;
 using LotoLibrary.Engines;
+using LotoLibrary.Models;
+using LotoLibrary.Utilities;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using LotoLibrary.Utilities;
-using ServiceInfra = LotoLibrary.Services.Infra;
+using ServiceInfra = LotoLibrary.Utilities.Infra;
+
 
 namespace Dashboard.ViewModels
 {
@@ -118,7 +119,7 @@ namespace Dashboard.ViewModels
             {
                 int alvo = Convert.ToInt32(TextoConcurso);
                 var resultado = Estudos.Estudo1(alvo);
-                _infraService.SalvaSaidaW(resultado, _infraService.NomeSaida("ListaEstudo1", alvo));
+                ServiceInfra.SalvaSaidaW(resultado, ServiceInfra.NomeSaida("ListaEstudo1", alvo));
                 SetStatus($"Estudo 1 concluído para concurso {alvo}");
             }
             catch (Exception ex)
@@ -135,7 +136,7 @@ namespace Dashboard.ViewModels
             {
                 int alvo = Convert.ToInt32(TextoConcurso);
                 var resultado = Estudos.Estudo2(alvo);
-                _infraService.SalvaSaidaW(resultado, _infraService.NomeSaida("ListaEstudo2", alvo));
+                ServiceInfra.SalvaSaidaW(resultado, ServiceInfra.NomeSaida("ListaEstudo2", alvo));
                 SetStatus($"Estudo 2 concluído para concurso {alvo}");
             }
             catch (Exception ex)
@@ -152,7 +153,7 @@ namespace Dashboard.ViewModels
             {
                 int alvo = Convert.ToInt32(TextoConcurso);
                 var resultado = Estudos.Estudo3(alvo);
-                _infraService.SalvaSaidaW(resultado, _infraService.NomeSaida("ListaEstudo3", alvo));
+                ServiceInfra.SalvaSaidaW(resultado, ServiceInfra.NomeSaida("ListaEstudo3", alvo));
                 SetStatus($"Estudo 3 concluído para concurso {alvo}");
             }
             catch (Exception ex)

@@ -42,9 +42,14 @@ namespace Dashboard.ViewModels.Specialized
         private TimeSpan _lastValidationDuration;
         #endregion
 
+        #region Private Fields
+        private readonly UINotificationService _notificationService;
+        #endregion
+
         #region Constructor
-        public ValidationViewModel(Lances historicalData) : base(historicalData)
+        public ValidationViewModel(Lances historicalData, UINotificationService notificationService) : base(historicalData)
         {
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             ValidationResults = new ObservableCollection<LotoLibrary.Suporte.TestResult>();
         }
         #endregion
@@ -124,22 +129,14 @@ namespace Dashboard.ViewModels.Specialized
         #region UI Notification Methods  
         public async Task ShowSuccessMessageAsync(string message)
         {
-            // Implementar notificação de sucesso
-            await Task.Run(() => 
-            {
-                // Simular notificação
-                Console.WriteLine($"✅ {message}");
-            });
+            _notificationService.ShowSuccess(message);
+            await Task.CompletedTask;
         }
 
         public async Task ShowErrorMessageAsync(string message)
         {
-            // Implementar notificação de erro
-            await Task.Run(() => 
-            {
-                // Simular notificação
-                Console.WriteLine($"❌ {message}");
-            });
+            _notificationService.ShowError(message);
+            await Task.CompletedTask;
         }
         #endregion
 

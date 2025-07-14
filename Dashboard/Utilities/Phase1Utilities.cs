@@ -1,4 +1,3 @@
-// D:\PROJETOS\GraphFacil\Dashboard\Utilities\Phase1Utilities.cs
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -56,6 +55,17 @@ namespace Dashboard.Utilities
             {
                 return Application.Current?.Dispatcher?.InvokeAsync(action).Task ?? Task.CompletedTask;
             }
+        }
+
+        /// <summary>
+        /// Formata números de previsão para exibição
+        /// </summary>
+        public static string FormatPredictionNumbers(int[] numbers)
+        {
+            if (numbers == null || numbers.Length == 0)
+                return string.Empty;
+
+            return string.Join(", ", numbers.OrderBy(n => n));
         }
 
         /// <summary>

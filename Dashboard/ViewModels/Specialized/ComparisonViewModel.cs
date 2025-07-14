@@ -6,6 +6,7 @@ using Dashboard.ViewModels.Services;
 using LotoLibrary.Enums;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
+using Dashboard.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -211,8 +212,8 @@ namespace Dashboard.ViewModels.Specialized
                 Model2Numbers = prediction2.PredictedNumbers.ToList(),
                 TargetConcurso = targetConcurso,
                 ComparisonTime = DateTime.Now,
-                Model1FormattedNumbers = FormatPredictionNumbers(prediction1.PredictedNumbers.ToArray()),
-                Model2FormattedNumbers = FormatPredictionNumbers(prediction2.PredictedNumbers.ToArray())
+                Model1FormattedNumbers = Phase1Utilities.FormatPredictionNumbers(prediction1.PredictedNumbers.ToArray()),
+                Model2FormattedNumbers = Phase1Utilities.FormatPredictionNumbers(prediction2.PredictedNumbers.ToArray())
             };
         }
 

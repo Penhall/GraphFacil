@@ -14,6 +14,7 @@ public class ViewModelFactory
 {
     #region Private Fields
     private readonly Lances _historicalData;
+    private readonly UINotificationService _notificationService;
     private readonly Dictionary<Type, object> _singletons = new Dictionary<Type, object>();
     #endregion
 
@@ -21,6 +22,7 @@ public class ViewModelFactory
     public ViewModelFactory(Lances historicalData)
     {
         _historicalData = historicalData ?? throw new ArgumentNullException(nameof(historicalData));
+        _notificationService = UINotificationService.Instance;
     }
     #endregion
 
@@ -31,7 +33,7 @@ public class ViewModelFactory
     public PredictionModelsViewModel CreatePredictionModelsViewModel()
     {
         return GetOrCreateSingleton<PredictionModelsViewModel>(() =>
-            new PredictionModelsViewModel(_historicalData));
+            new PredictionModelsViewModel(_historicalData, _notificationService));
     }
 
     /// <summary>
@@ -40,7 +42,7 @@ public class ViewModelFactory
     public ValidationViewModel CreateValidationViewModel()
     {
         return GetOrCreateSingleton<ValidationViewModel>(() =>
-            new ValidationViewModel(_historicalData));
+            new ValidationViewModel(_historicalData, _notificationService));
     }
 
     /// <summary>

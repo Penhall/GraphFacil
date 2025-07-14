@@ -1,11 +1,18 @@
-// D:\PROJETOS\GraphFacil\Library\Enums\AntiFrequencyStrategy.cs - Enums específicos para modelos anti-frequencistas
+// D:\PROJETOS\GraphFacil\Library\Enums\AntiFrequencyStrategy.cs
 namespace LotoLibrary.Enums;
 
 /// <summary>
 /// Estratégias de anti-frequência disponíveis
+/// VERSÃO COMPLETA com todos os valores necessários
 /// </summary>
 public enum AntiFrequencyStrategy
 {
+    /// <summary>
+    /// Estratégia simples - inversão básica da frequência
+    /// ADICIONADO para AntiFrequencySimpleModel
+    /// </summary>
+    Simple,
+
     /// <summary>
     /// Estratégia suave - inversão moderada da frequência
     /// Aplica correção leve para dezenas sub-representadas
@@ -43,9 +50,14 @@ public enum AntiFrequencyStrategy
     Saturation,
 
     /// <summary>
+    /// Estratégia de saturação estatística - ADICIONADO para corrigir CS0117
+    /// Análise avançada de saturação com métricas estatísticas
+    /// </summary>
+    StatisticalSaturation,
+
+    /// <summary>
     /// Estratégia pendular - oscilação entre extremos
     /// Alterna entre diferentes abordagens de forma cíclica
     /// </summary>
     Pendular
 }
-

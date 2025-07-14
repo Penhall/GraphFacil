@@ -4,13 +4,10 @@ using Dashboard.ViewModels.Base;
 using Dashboard.ViewModels.Services;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
-using LotoLibrary.Models.Prediction;
-using LotoLibrary.Models.Validation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using ServiceInfra = LotoLibrary.Services.Infra;
+using ServiceInfra = LotoLibrary.Utilities.Infra;
 
 namespace Dashboard.ViewModels
 {
@@ -49,13 +46,13 @@ namespace Dashboard.ViewModels
             try
             {
                 IsLoading = true;
-                _notificationService.ShowInfo($"Validando modelo {SelectedModel.Name}...");
+                _notificationService.ShowInfo($"Validando modelo {SelectedModel.ModelName}...");
 
                 var validationResult = await SelectedModel.ValidateAsync(_historico);
-                
+
                 if (validationResult.IsValid)
                 {
-                    _notificationService.ShowSuccess($"Modelo validado com sucesso! Acurácia: {validationResult.Metrics.Accuracy:P}");
+                    _notificationService.ShowSuccess($"Modelo validado com sucesso! Acurácia: {validationResult.Accuracy:P}");
                 }
                 else
                 {
@@ -83,9 +80,9 @@ namespace Dashboard.ViewModels
 
                 await Task.Delay(500); // Simular carregamento
                 _availableModels.Clear();
-                
+
                 // TODO: Carregar modelos reais aqui
-                
+
                 _notificationService.ShowSuccess($"{_availableModels.Count} modelos carregados");
             }
             catch (Exception ex)

@@ -26,7 +26,7 @@
             <!--  Converters  -->
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
-            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
 
             <!--  Estilos Globais  -->
             <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
