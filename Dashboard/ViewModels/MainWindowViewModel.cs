@@ -1,4 +1,3 @@
-// D:\PROJETOS\GraphFacil\Dashboard\ViewModels\MainWindowViewModel.cs - Versão corrigida
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
@@ -10,6 +9,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using LotoLibrary.Utilities;
+using ServiceInfra = LotoLibrary.Services.Infra;
 
 namespace Dashboard.ViewModels
 {
@@ -23,30 +23,14 @@ namespace Dashboard.ViewModels
         #region Private Fields
         private readonly Lances _historicalData;
         private readonly ViewModelFactory _viewModelFactory;
-
-        // Manter osciladores se ainda necessário (pode ser movido depois)
+        private readonly ServiceInfra _infraService;
         private readonly OscillatorEngine _oscillatorEngine;
         #endregion
 
         #region Specialized ViewModels - COMPOSIÇÃO
-        /// <summary>
-        /// ViewModel para TODOS os modelos de predição
-        /// </summary>
         public PredictionModelsViewModel PredictionModels { get; }
-
-        /// <summary>
-        /// ViewModel para TODAS as validações
-        /// </summary>
         public ValidationViewModel Validation { get; }
-
-        /// <summary>
-        /// ViewModel para TODAS as comparações
-        /// </summary>
         public ComparisonViewModel Comparison { get; }
-
-        /// <summary>
-        /// ViewModel para TODAS as configurações
-        /// </summary>
         public ConfigurationViewModel Configuration { get; }
         #endregion
 
@@ -60,7 +44,6 @@ namespace Dashboard.ViewModels
         [ObservableProperty]
         private bool _isSystemReady;
 
-        // Propriedades de osciladores (compatibilidade - podem ser removidas depois)
         [ObservableProperty]
         private ObservableCollection<DezenaOscilante> _dezenasOscilantes;
 
@@ -73,6 +56,7 @@ namespace Dashboard.ViewModels
         {
             _historicalData = historico ?? throw new ArgumentNullException(nameof(historico));
             _viewModelFactory = new ViewModelFactory(historico);
+            _infraService = new ServiceInfra();
 
             // Criar ViewModels especializados via factory
             PredictionModels = _viewModelFactory.CreatePredictionModelsViewModel();
@@ -80,11 +64,9 @@ namespace Dashboard.ViewModels
             Comparison = _viewModelFactory.CreateComparisonViewModel();
             Configuration = _viewModelFactory.CreateConfigurationViewModel();
 
-            // Manter osciladores por compatibilidade (opcional)
             _oscillatorEngine = new OscillatorEngine(historico);
             InitializeOscillators();
 
-            // Inicializar sistema
             _ = InitializeSystemAsync();
         }
         #endregion
@@ -96,7 +78,6 @@ namespace Dashboard.ViewModels
             {
                 SetStatus("Inicializando sistema...");
 
-                // Inicializar ViewModels especializados
                 var initTasks = new[]
                 {
                     PredictionModels.InitializeAsync(),
@@ -116,7 +97,6 @@ namespace Dashboard.ViewModels
 
         private void InitializeOscillators()
         {
-            // Manter funcionalidade de osciladores por compatibilidade
             try
             {
                 DezenasOscilantes = new ObservableCollection<DezenaOscilante>(_oscillatorEngine.InicializarOsciladores());
@@ -138,7 +118,7 @@ namespace Dashboard.ViewModels
             {
                 int alvo = Convert.ToInt32(TextoConcurso);
                 var resultado = Estudos.Estudo1(alvo);
-                Infra.SalvaSaidaW(resultado, Infra.NomeSaida("ListaEstudo1", alvo));
+                _infraService.SalvaSaidaW(resultado, _infraService.NomeSaida("ListaEstudo1", alvo));
                 SetStatus($"Estudo 1 concluído para concurso {alvo}");
             }
             catch (Exception ex)
@@ -155,7 +135,7 @@ namespace Dashboard.ViewModels
             {
                 int alvo = Convert.ToInt32(TextoConcurso);
                 var resultado = Estudos.Estudo2(alvo);
-                Infra.SalvaSaidaW(resultado, Infra.NomeSaida("ListaEstudo2", alvo));
+                _infraService.SalvaSaidaW(resultado, _infraService.NomeSaida("ListaEstudo2", alvo));
                 SetStatus($"Estudo 2 concluído para concurso {alvo}");
             }
             catch (Exception ex)
@@ -172,7 +152,7 @@ namespace Dashboard.ViewModels
             {
                 int alvo = Convert.ToInt32(TextoConcurso);
                 var resultado = Estudos.Estudo3(alvo);
-                Infra.SalvaSaidaW(resultado, Infra.NomeSaida("ListaEstudo3", alvo));
+                _infraService.SalvaSaidaW(resultado, _infraService.NomeSaida("ListaEstudo3", alvo));
                 SetStatus($"Estudo 3 concluído para concurso {alvo}");
             }
             catch (Exception ex)
@@ -207,7 +187,6 @@ namespace Dashboard.ViewModels
         #region Private Helper Methods
         private void LogError(Exception ex)
         {
-            // Implementar logging apropriado
             Console.WriteLine($"ERRO: {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"ERRO: {ex.Message}");
         }

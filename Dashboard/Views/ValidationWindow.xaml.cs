@@ -1,35 +1,18 @@
-﻿using Dashboard.ViewModel;
+﻿using Dashboard.ViewModels;
+using LotoLibrary.Models;
 using System.Windows;
 
 namespace Dashboard.Views
 {
-    /// <summary>
-    /// Lógica de interação para ValidationWindow.xaml
-    /// </summary>
     public partial class ValidationWindow : Window
     {
-        public ValidationWindow()
+        public ValidationViewModel ViewModel { get; }
+
+        public ValidationWindow(Lances historico)
         {
             InitializeComponent();
-
-            try
-            {
-                this.DataContext = new ValidationViewModel();
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Erro ao inicializar a validação: {ex.Message}",
-                "Erro de Inicialização",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-
-                this.Close();
-            }
-        }
-
-        private void FecharWindow(object sender, RoutedEventArgs e)
-        {
-            this.Close();
+            ViewModel = new ValidationViewModel(historico, new UINotificationService());
+            DataContext = ViewModel;
         }
     }
 }

@@ -54,6 +54,22 @@ namespace Dashboard.ViewModels.Base
             HasError = false;
             ErrorMessage = "";
         }
+
+        /// <summary>
+        /// Inicialização assíncrona do ViewModel
+        /// </summary>
+        public virtual async Task InitializeAsync()
+        {
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Limpeza de recursos do ViewModel
+        /// </summary>
+        public virtual async Task Cleanup()
+        {
+            await Task.CompletedTask;
+        }
         #endregion
     }
 }

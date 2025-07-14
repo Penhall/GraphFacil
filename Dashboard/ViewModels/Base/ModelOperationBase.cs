@@ -1,7 +1,8 @@
-// D:\PROJETOS\GraphFacil\Dashboard\ViewModels\Base\ModelOperationBase.cs - Correção dos métodos virtuais
 using LotoLibrary.Engines;
 using LotoLibrary.Interfaces;
+using LotoLibrary.Enums;
 using LotoLibrary.Models;
+using LotoLibrary.Models.Prediction;
 using System;
 using System.Threading.Tasks;
 
@@ -90,6 +91,42 @@ namespace Dashboard.ViewModels.Base
         protected ModelInfo GetModelInformation(ModelType modelType)
         {
             return _modelFactory.GetModelInfo(modelType);
+        }
+        #endregion
+
+        #region Common Methods
+        /// <summary>
+        /// Exibe mensagem de sucesso
+        /// </summary>
+        protected virtual async Task ShowSuccessMessageAsync(string message)
+        {
+            SetStatus(message);
+            await UINotificationService.Instance.ShowSuccessAsync(message);
+        }
+
+        /// <summary>
+        /// Verifica se operações podem ser executadas
+        /// </summary>
+        protected virtual bool CanExecute()
+        {
+            return _historicalData != null && _historicalData.Count > 0;
+        }
+
+        /// <summary>
+        /// Obtém o próximo concurso disponível
+        /// </summary>
+        protected virtual int GetNextConcurso()
+        {
+            return _historicalData?.Max(l => l.Concurso) + 1 ?? 1;
+        }
+
+        /// <summary>
+        /// Registra erro no log
+        /// </summary>
+        protected virtual void LogError(Exception ex)
+        {
+            Console.WriteLine($"ERRO: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"ERRO: {ex}");
         }
         #endregion
 

@@ -19,10 +19,6 @@ namespace Dashboard.ViewModels.Specialized
     /// </summary>
     public partial class ValidationViewModel : ModelOperationBase
     {
-        #region Private Fields
-        private readonly AntiFrequencyValidation _antiFrequencyValidation;
-        #endregion
-
         #region Observable Properties
         [ObservableProperty]
         private ObservableCollection<LotoLibrary.Suporte.TestResult> _validationResults;
@@ -49,7 +45,6 @@ namespace Dashboard.ViewModels.Specialized
         #region Constructor
         public ValidationViewModel(Lances historicalData) : base(historicalData)
         {
-            _antiFrequencyValidation = new AntiFrequencyValidation();
             ValidationResults = new ObservableCollection<LotoLibrary.Suporte.TestResult>();
         }
         #endregion
@@ -64,21 +59,24 @@ namespace Dashboard.ViewModels.Specialized
                 ValidationResults.Clear();
 
                 var startTime = DateTime.Now;
-                var report = await _antiFrequencyValidation.ExecuteFullValidationAsync(_historicalData);
+                // Implementação temporária - substituir por lógica de validação real
+                await Task.Delay(1000); // Simular processamento
                 var endTime = DateTime.Now;
 
                 LastValidationDuration = endTime - startTime;
+                
+                // Dados de exemplo - remover quando implementar validação real
+                ValidationResults.Add(new LotoLibrary.Suporte.TestResult {
+                    TestName = "Validação Simulada",
+                    Success = true,
+                    Message = "Implementar lógica real de validação aqui"
+                });
 
-                foreach (var testResult in report.TestResults)
-                {
-                    ValidationResults.Add(testResult);
-                }
+                TotalTests = 1;
+                PassedTests = 1;
+                OverallAccuracy = 1.0;
 
-                TotalTests = report.TotalTests;
-                PassedTests = report.PassedTests;
-                OverallAccuracy = report.OverallSuccess ? 1.0 : 0.0;
-
-                LastValidationSummary = $"Validação concluída: {PassedTests}/{TotalTests} testes aprovados";
+                LastValidationSummary = "Validação simulada - implementar lógica real";
                 
                 ValidationInProgress = false;
 

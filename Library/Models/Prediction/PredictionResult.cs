@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LotoLibrary.Models.Prediction;
 
@@ -21,6 +22,11 @@ public class PredictionResult
     public Dictionary<string, object> Metadata { get; set; } = new();
     public DateTime PredictionTime { get; set; }
     public TimeSpan ProcessingTime { get; set; }
+
+    // Novas propriedades
+    public bool Success { get; set; }
+    public string ErrorMessage { get; set; } = string.Empty;
+    public string Explanation { get; set; } = string.Empty;
     
     public PredictionResult()
     {
@@ -37,5 +43,17 @@ public class PredictionResult
         GeneratedAt = DateTime.Now;
         Timestamp = DateTime.Now;
         Metadata = new Dictionary<string, object>();
+        Success = true; // Default para sucesso
+    }
+}
+
+public static class PredictionResultExtensions
+{
+    public static string FormatPredictionNumbers(this PredictionResult result)
+    {
+        if (result?.Dezenas == null || !result.Dezenas.Any())
+            return string.Empty;
+
+        return string.Join(", ", result.Dezenas.OrderBy(d => d).Select(d => d.ToString("00")));
     }
 }
