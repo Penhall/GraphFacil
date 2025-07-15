@@ -2,11 +2,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
+using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
+using LotoLibrary.Services.Validation;
+using LotoLibrary.Services.Diagnostic;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-
 
 namespace Dashboard.ViewModels.Specialized
 {
@@ -35,10 +37,16 @@ namespace Dashboard.ViewModels.Specialized
         private int _validationProgress = 0;
         #endregion
 
+        #region Dependency Injection
+        private readonly IValidationService _validationService;
+        private readonly IModelFactory _modelFactory;
+        #endregion
+
         #region Constructor
-        public ValidationViewModel(Lances historicalData) : base(historicalData)
+        public ValidationViewModel(Lances historicalData, IValidationService validationService, IModelFactory modelFactory) : base(historicalData)
         {
-            ValidationResults = new ObservableCollection<ValidationResult>();
+            _validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
+            _modelFactory = modelFactory ?? throw new ArgumentNullException(nameof(modelFactory));
         }
         #endregion
 
@@ -105,32 +113,38 @@ namespace Dashboard.ViewModels.Specialized
         #region Private Methods
         private async Task RunValidationStepsAsync()
         {
-            var steps = new[]
+            // Instanciar e executar a suíte de validação real
+            var validationSuite = _validationService.GetValidationSuite();
+            int totalSteps = validationSuite.Count;
+            int currentStep = 0;
+
+            foreach (var testCase in validationSuite)
             {
-                "Validando estrutura de dados",
-                "Testando algoritmos de predição",
-                "Verificando integridade dos modelos",
-                "Calculando métricas de performance",
-                "Finalizando validação"
-            };
+                currentStep++;
+                CurrentValidationStep = testCase.Name;
+                ValidationProgress = (int)Math.Round((double)currentStep / totalSteps * 100);
 
-            for (int i = 0; i < steps.Length; i++)
-            {
-                CurrentValidationStep = steps[i];
-                ValidationProgress = (i + 1) * 20;
+                // Executar o teste real
+                var testResult = await testCase.ExecuteAsync(_historicalData);
 
-                await Task.Delay(800); // Simular processamento
-
-                // Adicionar resultado simulado
+                // Mapear o resultado do backend para o ViewModel da UI
                 var result = new ValidationResult
                 {
-                    TestName = steps[i],
-                    Status = Random.Shared.NextDouble() > 0.1 ? "✅ Passou" : "⚠️ Aviso",
-                    Accuracy = Random.Shared.NextDouble() * 100,
-                    Details = $"Teste executado em {DateTime.Now:HH:mm:ss}"
+                    TestName = testResult.TestName,
+                    Status = testResult.Success ? "✅ Passou" : "❌ Falhou",
+                    // A acurácia pode não se aplicar a todos os testes, ajuste conforme necessário
+                    Accuracy = testResult.Success ? 100 : 0, 
+                    Details = testResult.Details
                 };
 
                 ValidationResults.Add(result);
+
+                // Se um teste crítico falhar, podemos optar por parar
+                if (!testResult.Success && testCase.IsCritical)
+                {
+                    SetStatus($"Teste crítico '{testCase.Name}' falhou. Abortando.", true);
+                    break;
+                }
             }
         }
 

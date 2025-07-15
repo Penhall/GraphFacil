@@ -160,106 +160,106 @@ namespace Dashboard.ViewModels.Specialized
         #endregion
 
         #region Private Methods
-        /// <summary>
-        /// CORREÇÃO: Carrega modelos reais usando o ModelFactory
-        /// </summary>
-        private async Task LoadAvailableModelsAsync()
-        {
-            try
-            {
-                SetStatus("Carregando modelos disponíveis...");
-                await Task.Delay(500); // Simular tempo de carregamento
+       /// <summary>
+       /// CORREÇÃO: Carrega modelos reais usando o ModelFactory
+       /// </summary>
+       private async Task LoadAvailableModelsAsync()
+       {
+           try
+           {
+               SetStatus("Carregando modelos disponíveis...");
+               await Task.Delay(500); // Simular tempo de carregamento
 
-                AvailableModelInfos.Clear();
+               AvailableModelInfos.Clear();
 
-                // CORREÇÃO: Usar ModelFactory para obter tipos de modelos disponíveis
-                var availableTypes = _modelFactory.GetAvailableModelTypes();
+               // CORREÇÃO: Usar ModelFactory para obter tipos de modelos disponíveis
+               var availableTypes = _modelFactory.GetAvailableModelTypes();
 
-                foreach (var modelType in availableTypes)
-                {
-                    try
-                    {
-                        // Obter informações do modelo
-                        var modelInfo = _modelFactory.GetModelInfo(modelType);
-                        if (modelInfo != null)
-                        {
-                            AvailableModelInfos.Add(modelInfo);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        SetStatus($"Erro ao carregar modelo {modelType}: {ex.Message}", true);
-                        LogError(ex);
-                    }
-                }
+               foreach (var modelType in availableTypes)
+               {
+                   try
+                   {
+                       // Obter informações do modelo
+                       var modelInfo = _modelFactory.GetModelInfo(modelType);
+                       if (modelInfo != null)
+                       {
+                           AvailableModelInfos.Add(modelInfo);
+                       }
+                   }
+                   catch (Exception ex)
+                   {
+                       SetStatus($"Erro ao carregar modelo {modelType}: {ex.Message}", true);
+                       LogError(ex);
+                   }
+               }
 
-                TotalAvailableModels = AvailableModelInfos.Count;
+               TotalAvailableModels = AvailableModelInfos.Count;
 
-                // Selecionar primeiro modelo disponível automaticamente
-                if (AvailableModelInfos.Any())
-                {
-                    SelectedModelInfo = AvailableModelInfos.First();
-                    SelectedModelName = SelectedModelInfo.Name;
-                    IsModelLoaded = true;
-                }
+               // Selecionar primeiro modelo disponível automaticamente
+               if (AvailableModelInfos.Any())
+               {
+                   SelectedModelInfo = AvailableModelInfos.First();
+                   SelectedModelName = SelectedModelInfo.Name;
+                   IsModelLoaded = true;
+               }
 
-                SetStatus($"✅ {TotalAvailableModels} modelo(s) carregado(s) com sucesso");
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erro ao carregar modelos: {ex.Message}", true);
-                LogError(ex);
-                TotalAvailableModels = 0;
-            }
-        }
+               SetStatus($"✅ {TotalAvailableModels} modelo(s) carregado(s) com sucesso");
+           }
+           catch (Exception ex)
+           {
+               SetStatus($"Erro ao carregar modelos: {ex.Message}", true);
+               LogError(ex);
+               TotalAvailableModels = 0;
+           }
+       }
 
-        /// <summary>
-        /// Obtém modelos carregados no PredictionEngine
-        /// </summary>
-        private async Task LoadModelsFromEngine()
-        {
-            try
-            {
-                // Garantir que o PredictionEngine está inicializado
-                if (!_predictionEngine.IsInitialized)
-                {
-                    await _predictionEngine.InitializeAsync(_historicalData);
-                }
+       /// <summary>
+       /// Obtém modelos carregados no PredictionEngine
+       /// </summary>
+       private async Task LoadModelsFromEngine()
+       {
+           try
+           {
+               // Garantir que o PredictionEngine está inicializado
+               if (!_predictionEngine.IsInitialized)
+               {
+                   await _predictionEngine.InitializeAsync(_historicalData);
+               }
 
-                var engineModels = _predictionEngine.Models;
-                SetStatus($"PredictionEngine tem {engineModels.Count} modelo(s) registrado(s)");
+               var engineModels = _predictionEngine.Models;
+               SetStatus($"PredictionEngine tem {engineModels.Count} modelo(s) registrado(s)");
 
-                // Adicionar modelos do engine às informações disponíveis
-                foreach (var kvp in engineModels)
-                {
-                    var modelName = kvp.Key;
-                    var model = kvp.Value;
+               // Adicionar modelos do engine às informações disponíveis
+               foreach (var kvp in engineModels)
+               {
+                   var modelName = kvp.Key;
+                   var model = kvp.Value;
 
-                    var historyEntry = $"Modelo registrado: {modelName} ({model.ModelName})";
-                    if (PredictionHistory.Count < 10) // Limitar histórico
-                    {
-                        PredictionHistory.Add(historyEntry);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Erro ao acessar modelos do engine: {ex.Message}", true);
-                LogError(ex);
-            }
-        }
-        #endregion
+                   var historyEntry = $"Modelo registrado: {modelName} ({model.ModelName})";
+                   if (PredictionHistory.Count < 10) // Limitar histórico
+                   {
+                       PredictionHistory.Add(historyEntry);
+                   }
+               }
+           }
+           catch (Exception ex)
+           {
+               SetStatus($"Erro ao acessar modelos do engine: {ex.Message}", true);
+               LogError(ex);
+           }
+       }
+       #endregion
 
-        #region Partial Methods for Property Changes
-        partial void OnSelectedModelInfoChanged(ModelInfo? value)
-        {
-            if (value != null)
-            {
-                SelectedModelName = value.Name;
-                SelectedModelConfidence = value.EstimatedAccuracy * 100;
-                SetStatus($"Modelo selecionado: {value.Name}");
-            }
-        }
-        #endregion
-    }
+       #region Partial Methods for Property Changes
+       partial void OnSelectedModelInfoChanged(ModelInfo? value)
+       {
+           if (value != null)
+           {
+               SelectedModelName = value.Name;
+               SelectedModelConfidence = value.EstimatedAccuracy * 100;
+               SetStatus($"Modelo selecionado: {value.Name}");
+           }
+       }
+       #endregion
+   }
 }

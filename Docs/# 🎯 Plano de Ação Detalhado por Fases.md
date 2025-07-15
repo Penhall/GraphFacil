@@ -13,7 +13,7 @@ Este documento detalha o plano de implementação para corrigir as funcionalidad
 ### ✅ Tarefas da Fase 1
 
 1.  **Conectar Carregamento de Modelos:**
-    *   [ ] **Local:** `PredictionModelsViewModel.cs`
+    *   [x] **Local:** `PredictionModelsViewModel.cs`
     *   **Ação:** Refatorar o método `LoadAvailableModelsAsync`.
     *   **Detalhes:**
         *   Substituir `Task.Delay` e a lógica simulada por uma chamada real ao `_modelFactory.GetAvailableModelTypes()`.
@@ -21,14 +21,14 @@ Este documento detalha o plano de implementação para corrigir as funcionalidad
     *   **Validação:** Verificar se a `ComboBox` na UI é populada com a lista real de modelos (`MetronomoModel`, `StatisticalDebtModel`, `MetaLearningModel`, etc.).
 
 2.  **Implementar Instanciação de Modelo sob Demanda:**
-    *   [ ] **Local:** `PredictionModelsViewModel.cs`
+    *   [x] **Local:** `PredictionModelsViewModel.cs`
     *   **Ação:** Implementar a lógica que responde à seleção de um modelo na UI.
     *   **Detalhes:**
         *   Quando a propriedade `SelectedModelInfo` for alterada, utilizar `_modelFactory.CreateModel(SelectedModelInfo.ModelType)` para criar uma instância real do `IPredictionModel` selecionado.
         *   Armazenar a instância do modelo criado em um campo privado (ex: `_currentModelInstance`) para uso posterior.
 
 3.  **Implementar Execução de Predição Real:**
-    *   [ ] **Local:** `PredictionModelsViewModel.cs`
+    *   [x] **Local:** `PredictionModelsViewModel.cs`
     *   **Ação:** Refatorar o comando `QuickPredict` (ou similar).
     *   **Detalhes:**
         *   Remover completamente a lógica de `Task.Delay` e geração de números aleatórios.
@@ -47,7 +47,7 @@ Este documento detalha o plano de implementação para corrigir as funcionalidad
 ### ✅ Tarefas da Fase 2
 
 1.  **Conectar o Módulo de Validação:**
-    *   [ ] **Local:** `ValidationViewModel.cs`
+    *   [x] **Local:** `ValidationViewModel.cs`
     *   **Ação:** Refatorar os comandos `RunQuickValidation` e `RunFullValidation`.
     *   **Detalhes:**
         *   No lugar de `Task.Delay` e resultados aleatórios, invocar os serviços reais da `LotoLibrary`, como `Phase1ValidationService` e `DiagnosticService`.
@@ -55,7 +55,7 @@ Este documento detalha o plano de implementação para corrigir as funcionalidad
         *   Conectar o comando `ValidateAllModels` para iterar sobre os modelos carregados, executar o método `ValidateAsync()` de cada um e agregar os resultados na UI.
 
 2.  **Implementar o Módulo de Comparação de Modelos:**
-    *   [ ] **Local:** `ComparisonViewModel.cs`
+    *   [x] **Local:** `ComparisonViewModel.cs`
     *   **Ação:** Implementar a lógica do comando `CompareModelsCommand`.
     *   **Detalhes:**
         *   Utilizar o serviço `PerformanceComparer` da `LotoLibrary`.
@@ -64,7 +64,7 @@ Este documento detalha o plano de implementação para corrigir as funcionalidad
         *   Exibir os resultados da comparação em um formato claro na UI (ex: `DataGrid`).
 
 3.  **Desenvolver a Configuração Dinâmica de Modelos:**
-    *   [ ] **Local:** `ConfigurationViewModel.cs` e uma nova `View/Dialog`.
+    *   [x] **Local:** `ConfigurationViewModel.cs` e uma nova `View/Dialog`.
     *   **Ação:** Criar a funcionalidade de configuração de parâmetros.
     *   **Detalhes:**
         *   Quando um modelo é selecionado, verificar se ele implementa a interface `IConfigurableModel`.
@@ -83,21 +83,21 @@ Este documento detalha o plano de implementação para corrigir as funcionalidad
 ### ✅ Tarefas da Fase 3
 
 1.  **Revisão e Refinamento da Experiência do Usuário (UX):**
-    *   [ ] **Foco:** Resposta da UI e feedback ao usuário.
+    *   [x] **Foco:** Resposta da UI e feedback ao usuário.
     *   **Ação:** Revisar todas as operações agora conectadas ao backend.
     *   **Detalhes:**
         *   Garantir que os indicadores de carregamento (`IsProcessing`, barras de progresso) são exibidos corretamente durante as operações reais (que podem ser mais longas que as simulações).
         *   Assegurar que mensagens de status, sucesso e erro sejam claras, informativas e não-bloqueantes.
 
 2.  **Execução de Testes de Aceitação do Usuário (UAT):**
-    *   [ ] **Foco:** Validação funcional completa.
+    *   [x] **Foco:** Validação funcional completa.
     *   **Ação:** Seguir o `user_guide.md` como um script de teste.
     *   **Detalhes:**
         *   Executar manualmente todos os cenários descritos no guia do usuário, desde a geração de predições simples até a comparação de modelos.
         *   Validar que os resultados e comportamentos na UI correspondem ao esperado.
 
 3.  **Execução de Testes de Diagnóstico e Integridade:**
-    *   [ ] **Foco:** Saúde e estabilidade do sistema.
+    *   [x] **Foco:** Saúde e estabilidade do sistema.
     *   **Ação:** Utilizar o `DIAGNÓSTICO PARA DEFINIR AJUSTES FINOS NECESSÁRIOS.md` como guia.
     *   **Detalhes:**
         *   Executar todos os serviços de validação e diagnóstico na aplicação totalmente integrada para identificar possíveis regressões ou problemas de integração que não foram pegos nos testes unitários.

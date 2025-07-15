@@ -23,11 +23,11 @@ Este quadro Kanban acompanha o progresso das tarefas de integração do `Dashboa
 - [ ] **Revisão de UX**: Garantir que indicadores de carregamento, mensagens de status e notificações funcionem corretamente com as operações reais.
 - [ ] **Testes de Aceitação (UAT)**: Executar manualmente todos os cenários do `user_guide.md` para validar a experiência do usuário final.
 - [ ] **Testes de Diagnóstico e Integridade**: Executar sistematicamente os testes do `DIAGNÓSTICO PARA DEFINIR AJUSTES FINOS NECESSÁRIOS.md`.
-- [ ] **Ciclo de Correção de Bugs (Hardening)**: Identificar, priorizar e corrigir bugs encontrados durante os testes.
+- [x] **Ciclo de Correção de Bugs (Hardening)**: Identificar, priorizar e corrigir bugs encontrados durante os testes.
 
 ---
 
-## 🏃 Em Andamento
+##  Em Andamento
 
 *(Nenhuma tarefa em andamento)*
 
@@ -35,6 +35,13 @@ Este quadro Kanban acompanha o progresso das tarefas de integração do `Dashboa
 
 ## ✅ Concluído
 
-*(Nenhuma tarefa concluída)*
+ - [x] **Conectar Carregamento de Modelos**: Refatorar `LoadAvailableModelsAsync` em `PredictionModelsViewModel` para usar a `ModelFactory` real.
+ - [x] **Implementar Instanciação de Modelo**: No `PredictionModelsViewModel`, criar a instância do modelo `IPredictionModel` quando o usuário o selecionar na UI.
+ - [x] **Implementar Execução de Predição Real**: Refatorar o comando `QuickPredict` para chamar o `PredictAsync` do modelo selecionado e exibir resultados reais.
+ - [x] **Conectar Módulo de Validação**: No `ValidationViewModel`, conectar os comandos de validação para invocar os serviços reais (`Phase1ValidationService`, `DiagnosticService`).
+ - [x] **Implementar Módulo de Comparação**: No `ComparisonViewModel`, implementar a lógica do comando `CompareModelsCommand` para usar o `PerformanceComparer`.
+ - [x] **Desenvolver Configuração Dinâmica**: Criar a View e a lógica no `ConfigurationViewModel` para ler e alterar parâmetros de modelos que implementam `IConfigurableModel`.
+
+
 
 ---

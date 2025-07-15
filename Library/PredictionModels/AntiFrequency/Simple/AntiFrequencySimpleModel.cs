@@ -22,6 +22,12 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
         public override string Name => "Anti-Frequência Simples";
         public override AntiFrequencyStrategy Strategy => AntiFrequencyStrategy.Simple;
 
+         #region Properties
+        public override string ModelName => "AntiFrequencySimpleModel";
+        public override string ModelType => "AntiFrequency";
+        public override ModelType ModelTypeEnum => ModelType.AntiFrequencySimple;
+        #endregion
+
         // ===== CAMPOS ESPECÍFICOS =====
         private double _inversionFactor = 1.0;
 
