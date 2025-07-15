@@ -1,7 +1,8 @@
 // D:\PROJETOS\GraphFacil\Library\Enums\AntiFrequencyEnums.cs - Enums específicos para modelos anti-frequencistas
+using LotoLibrary.Services.Analysis;
 using System;
 
-namespace LotoLibrary.Services.Analysis
+namespace LotoLibrary.Suporte
 {
     public partial class ModelComparisonResult
     {

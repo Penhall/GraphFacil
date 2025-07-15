@@ -4,7 +4,7 @@ using System.Linq;
 using LotoLibrary.Models;
 using LotoLibrary.Enums;
 
-namespace LotoLibrary.Services.Auxiliar
+namespace LotoLibrary.Services
 {
     public static class DiagnosticService
     {

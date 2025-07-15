@@ -1,6 +1,7 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Interfaces\IPredictionModel.cs
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction; // ← IMPORTANTE: namespace correto para ValidationResult
+using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -58,7 +59,7 @@ public interface IPredictionModel : IDisposable
     /// </summary>
     /// <param name="testData">Dados para validação</param>
     /// <returns>Resultado da validação</returns>
-    Task<LotoLibrary.Models.Prediction.ValidationResult> ValidateAsync(Lances testData);
+    Task<ValidationResult> ValidateAsync(Lances testData);
 
     /// <summary>
     /// Atualiza parâmetros do modelo

@@ -1,121 +1,174 @@
+// Dashboard/ViewModels/Specialized/PredictionModelsViewModel.cs
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
-using Dashboard.ViewModels.Services;
-using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
-using ServiceInfra = LotoLibrary.Utilities.Infra;
 
 namespace Dashboard.ViewModels.Specialized
 {
-    public class PredictionModel
-    {
-        public string ModelName { get; set; }
-        public string Description { get; set; }
-        public DateTime LastUpdated { get; set; }
-        public double Accuracy { get; set; }
-    }
-
+    /// <summary>
+    /// ViewModel especializado para gerenciar modelos de predição
+    /// Responsabilidade única: operações relacionadas a predições
+    /// </summary>
     public partial class PredictionModelsViewModel : ModelOperationBase
     {
-        #region Private Fields
-        private readonly Lances _historico;
-        private readonly List<IPredictionModel> _availableModels = new();
-        private readonly ServiceInfra _infraService;
-        private readonly UINotificationService _notificationService;
-        #endregion
-
         #region Observable Properties
         [ObservableProperty]
-        private ObservableCollection<PredictionModel> _models = new();
+        private string _lastPredictionResult = "";
 
         [ObservableProperty]
-        private IPredictionModel? _selectedModel;
+        private double _selectedModelConfidence = 0.0;
 
         [ObservableProperty]
-        private bool _isLoading;
+        private ObservableCollection<string> _predictionHistory = new();
 
-        public IReadOnlyList<IPredictionModel> AvailableModels => _availableModels;
-        public Lances Historico => _historico;
+        [ObservableProperty]
+        private string _selectedModelName = "";
+
+        [ObservableProperty]
+        private bool _isModelLoaded = false;
+
+        [ObservableProperty]
+        private string _modelConfigurationPath = "";
         #endregion
 
-        public PredictionModelsViewModel(Lances historico, UINotificationService notificationService)
-            : base(historico)
+        #region Constructor
+        public PredictionModelsViewModel(Lances historicalData) : base(historicalData)
         {
-            _historico = historico;
-            _infraService = new ServiceInfra();
-            _notificationService = notificationService;
+            PredictionHistory = new ObservableCollection<string>();
+        }
+        #endregion
+
+        #region Initialization Override
+        protected override async Task InitializeSpecificAsync()
+        {
+            SetStatus("✅ PredictionModelsViewModel inicializado");
+            await LoadAvailableModelsAsync();
+        }
+        #endregion
+
+        #region Commands
+        [RelayCommand]
+        private async Task LoadModelConfiguration()
+        {
+            await ExecuteWithLoadingAsync(async () =>
+            {
+                try
+                {
+                    // Simular carregamento de configuração de modelo
+                    await Task.Delay(1000);
+
+                    if (!string.IsNullOrEmpty(ModelConfigurationPath))
+                    {
+                        IsModelLoaded = true;
+                        SelectedModelConfidence = 85.5;
+                        // CORREÇÃO: Usar método da classe base
+                        await ShowSuccessMessageAsync($"Configuração carregada: {ModelConfigurationPath}");
+                    }
+                    else
+                    {
+                        SetStatus("Caminho de configuração não especificado", true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // CORREÇÃO: Usar SetStatus em vez de ShowErrorMessageAsync 
+                    SetStatus($"Erro ao carregar configuração: {ex.Message}", true);
+                    LogError(ex);
+                }
+            }, "Carregando configuração do modelo...");
+        }
+
+        [RelayCommand(CanExecute = nameof(CanExecuteQuickPredict))]
+        private async Task QuickPredict()
+        {
+            await ExecuteWithLoadingAsync(async () =>
+            {
+                try
+                {
+                    // Gerar predição rápida
+                    // CORREÇÃO: Usar _historicalData em vez de HistoricalData
+                    var concurso = _historicalData?.Max(l => l.Id) ?? 3000;
+                    var result = await GeneratePredictionAsync(concurso + 1);
+
+                    LastPredictionResult = result;
+                    SelectedModelConfidence = Random.Shared.NextDouble() * 100;
+
+                    // Adicionar ao histórico
+                    var historyEntry = $"[{DateTime.Now:HH:mm:ss}] {result} (Confiança: {SelectedModelConfidence:F1}%)";
+                    PredictionHistory.Add(historyEntry);
+
+                    await ShowSuccessMessageAsync("Predição rápida gerada com sucesso!");
+                }
+                catch (Exception ex)
+                {
+                    // CORREÇÃO: Usar SetStatus e LogError
+                    SetStatus($"Erro na predição: {ex.Message}", true);
+                    LogError(ex);
+                }
+            }, "Gerando predição rápida...");
         }
 
         [RelayCommand]
-        public async Task LoadModelsAsync()
+        private void ClearHistory()
+        {
+            PredictionHistory.Clear();
+            LastPredictionResult = "";
+            SelectedModelConfidence = 0.0;
+            SetStatus("Histórico de predições limpo");
+        }
+        #endregion
+
+        #region Can Execute Methods
+        private bool CanExecuteQuickPredict()
+        {
+            // CORREÇÃO: Usar _historicalData
+            return CanExecute() && IsModelLoaded && _historicalData != null;
+        }
+        #endregion
+
+        #region Private Methods
+        private async Task LoadAvailableModelsAsync()
         {
             try
             {
-                IsLoading = true;
-                _notificationService.ShowInfo("Carregando modelos...");
-
-                // Simular carregamento de modelos
-                await Task.Delay(500);
-
-                _availableModels.Clear();
-                // Adicionar modelos disponíveis aqui
-
-                _notificationService.ShowSuccess("Modelos carregados com sucesso!");
+                await Task.Delay(500); // Simular carregamento
+                SelectedModelName = "Modelo Padrão";
+                IsModelLoaded = true; // Permitir uso imediato
+                SetStatus("Modelos disponíveis carregados");
             }
             catch (Exception ex)
             {
-                _notificationService.ShowError($"Erro ao carregar modelos: {ex.Message}");
-            }
-            finally
-            {
-                IsLoading = false;
+                SetStatus($"Erro ao carregar modelos: {ex.Message}", true);
+                LogError(ex);
             }
         }
 
-        [RelayCommand]
-        public async Task PredictAsync()
+        private async Task<string> GeneratePredictionAsync(int concurso)
         {
-            if (SelectedModel == null)
+            // Simulação de predição - substituir pela lógica real
+            await Task.Delay(1500);
+
+            var numeros = new List<int>();
+            var random = Random.Shared;
+
+            while (numeros.Count < 15)
             {
-                _notificationService.ShowWarning("Nenhum modelo selecionado");
-                return;
+                var numero = random.Next(1, 26);
+                if (!numeros.Contains(numero))
+                {
+                    numeros.Add(numero);
+                }
             }
 
-            try
-            {
-                IsLoading = true;
-                _notificationService.ShowInfo($"Executando previsão com {SelectedModel.ModelName}...");
-
-                var result = await SelectedModel.ValidateAsync(Historico);
-
-                _notificationService.ShowSuccess($"Previsão concluída: {result}");
-            }
-            catch (Exception ex)
-            {
-                _notificationService.ShowError($"Erro na previsão: {ex.Message}");
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            numeros.Sort();
+            return string.Join(", ", numeros);
         }
-
-        public override async Task InitializeAsync()
-        {
-            await base.InitializeAsync();
-            await LoadModelsAsync();
-            _notificationService.ShowInfo("PredictionModelsViewModel inicializado");
-        }
-
-        public override async Task Cleanup()
-        {
-            await base.Cleanup();
-            _notificationService.ShowInfo("PredictionModelsViewModel finalizado");
-        }
+        #endregion
     }
 }

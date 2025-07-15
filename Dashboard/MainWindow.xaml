@@ -172,7 +172,7 @@
                                 <ComboBox
                                     Margin="0,5"
                                     DisplayMemberPath="Name"
-                                    IsEnabled="{Binding PredictionModels.IsLoading, Converter={StaticResource InverseBoolConverter}}"
+                                    IsEnabled="{Binding PredictionModels.IsLoading, Converter={StaticResource InverseBooleanConverter}}"
                                     ItemsSource="{Binding PredictionModels.AvailableModels}"
                                     SelectedItem="{Binding PredictionModels.SelectedModel}"
                                     />
@@ -190,7 +190,7 @@
                             <StackPanel>
                                 <TextBox
                                     Margin="0,5"
-                                    IsEnabled="{Binding PredictionModels.IsLoading, Converter={StaticResource InverseBoolConverter}}"
+                                    IsEnabled="{Binding PredictionModels.IsLoading, Converter={StaticResource InverseBooleanConverter}}"
                                     Text="{Binding TextoConcurso, UpdateSourceTrigger=PropertyChanged}"
                                     />
                             </StackPanel>

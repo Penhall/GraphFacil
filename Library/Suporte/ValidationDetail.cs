@@ -1,9 +1,10 @@
 // D:\PROJETOS\GraphFacil\Library\Models\Prediction\ValidationDetail.cs - REESCRITO para nova arquitetura
+using LotoLibrary.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
-namespace LotoLibrary.Models.Prediction;
+namespace LotoLibrary.Suporte;
 
 /// <summary>
 /// Detalhe individual de um teste de validação - REESCRITO

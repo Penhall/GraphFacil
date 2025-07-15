@@ -1,5 +1,6 @@
 // D:\PROJETOS\GraphFacil\Library\Services\Analysis\PerformanceComparer.cs - Comparador de performance entre modelos
 using LotoLibrary.Models.Prediction;
+using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LotoLibrary.Models.Prediction;
+namespace LotoLibrary.Suporte;
 
 /// <summary>
 /// Resultado de validação de modelos - VERSÃO ÚNICA PADRONIZADA

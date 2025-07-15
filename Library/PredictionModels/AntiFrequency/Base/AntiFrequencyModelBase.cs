@@ -4,6 +4,7 @@ using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Base;
 using LotoLibrary.Models.Prediction;
+using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -154,7 +155,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Base
             }
         }
 
-        protected override async Task<LotoLibrary.Models.Prediction.ValidationResult> DoValidateAsync(Lances testData)
+        protected override async Task<ValidationResult> DoValidateAsync(Lances testData)
         {
             try
             {
@@ -168,7 +169,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Base
             catch (Exception ex)
             {
                 Status = AntiFrequencyStatus.Error;
-                return new LotoLibrary.Models.Prediction.ValidationResult
+                return new ValidationResult
                 {
                     IsValid = false,
                     Accuracy = 0.0,
@@ -201,7 +202,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Base
         // ===== MÉTODOS ABSTRATOS PARA IMPLEMENTAÇÃO ESPECÍFICA =====
         protected abstract Task<bool> DoAntiFrequencyInitializeAsync(Lances historicalData);
         protected abstract Task<bool> DoAntiFrequencyTrainAsync(Lances trainingData);
-        protected abstract Task<LotoLibrary.Models.Prediction.ValidationResult> DoAntiFrequencyValidateAsync(Lances testData);
+        protected abstract Task<ValidationResult> DoAntiFrequencyValidateAsync(Lances testData);
         protected abstract Task<PredictionResult> DoAntiFrequencyPredictAsync(int concurso);
 
         // ===== MÉTODOS UTILITÁRIOS =====

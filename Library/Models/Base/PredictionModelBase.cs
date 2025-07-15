@@ -1,6 +1,7 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Models\Base\PredictionModelBase.cs
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models.Prediction; // ← IMPORTANTE: usar namespace correto
+using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -86,13 +87,13 @@ public abstract class PredictionModelBase : IPredictionModel
     public abstract Task<PredictionResult> PredictAsync(int concurso);
 
     // ✅ CORRIGIDO: Usando ValidationResult qualificado do namespace correto
-    public virtual async Task<LotoLibrary.Models.Prediction.ValidationResult> ValidateAsync(Lances testData)
+    public virtual async Task<ValidationResult> ValidateAsync(Lances testData)
     {
         try
         {
             if (!IsInitialized || testData == null)
             {
-                return new LotoLibrary.Models.Prediction.ValidationResult
+                return new ValidationResult
                 {
                     IsValid = false,
                     Message = "Modelo não inicializado ou dados inválidos"
@@ -103,7 +104,7 @@ public abstract class PredictionModelBase : IPredictionModel
         }
         catch (Exception ex)
         {
-            return new LotoLibrary.Models.Prediction.ValidationResult
+            return new ValidationResult
             {
                 IsValid = false,
                 Message = $"Erro na validação: {ex.Message}"
@@ -138,7 +139,7 @@ public abstract class PredictionModelBase : IPredictionModel
     protected abstract Task<bool> DoTrainAsync(Lances trainingData);
 
     // ✅ CORRIGIDO: Retorno usando ValidationResult qualificado
-    protected abstract Task<LotoLibrary.Models.Prediction.ValidationResult> DoValidateAsync(Lances testData);
+    protected abstract Task<ValidationResult> DoValidateAsync(Lances testData);
 
     // ===== MÉTODOS VIRTUAIS PARA OVERRIDE =====
     protected virtual double CalculateConfidence()

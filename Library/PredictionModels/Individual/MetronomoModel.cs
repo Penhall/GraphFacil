@@ -4,6 +4,7 @@ using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Base;
 using LotoLibrary.Models.Prediction;
+using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -136,7 +137,7 @@ namespace LotoLibrary.PredictionModels.Individual
             }
         }
 
-        protected override async Task<LotoLibrary.Models.Prediction.ValidationResult> DoValidateAsync(Lances testData)
+        protected override async Task<ValidationResult> DoValidateAsync(Lances testData)
         {
             try
             {
@@ -145,7 +146,7 @@ namespace LotoLibrary.PredictionModels.Individual
                 var accuracy = IsInitialized ? 0.75 : 0.0;
                 var totalTests = testData?.Count ?? 0;
 
-                return new LotoLibrary.Models.Prediction.ValidationResult
+                return new ValidationResult
                 {
                     IsValid = IsInitialized && totalTests > 0,
                     Accuracy = accuracy,
@@ -157,7 +158,7 @@ namespace LotoLibrary.PredictionModels.Individual
             }
             catch (Exception ex)
             {
-                return new LotoLibrary.Models.Prediction.ValidationResult
+                return new ValidationResult
                 {
                     IsValid = false,
                     Accuracy = 0.0,

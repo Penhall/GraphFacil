@@ -7,7 +7,6 @@ using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.Individual;
 using LotoLibrary.Services;
-using LotoLibrary.Services.Auxiliar;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

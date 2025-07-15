@@ -3,6 +3,7 @@ using LotoLibrary.Enums;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.AntiFrequency.Base;
+using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,7 +68,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
             }
         }
 
-        protected override async Task<LotoLibrary.Models.Prediction.ValidationResult> DoAntiFrequencyValidateAsync(Lances testData)
+        protected override async Task<ValidationResult> DoAntiFrequencyValidateAsync(Lances testData)
         {
             try
             {
@@ -76,7 +77,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
                 var accuracy = IsInitialized ? 0.63 : 0.0;
                 var totalTests = testData?.Count ?? 0;
 
-                return new LotoLibrary.Models.Prediction.ValidationResult
+                return new ValidationResult
                 {
                     IsValid = IsInitialized && totalTests > 0,
                     Accuracy = accuracy,
@@ -88,7 +89,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
             }
             catch (Exception ex)
             {
-                return new LotoLibrary.Models.Prediction.ValidationResult
+                return new ValidationResult
                 {
                     IsValid = false,
                     Accuracy = 0.0,
