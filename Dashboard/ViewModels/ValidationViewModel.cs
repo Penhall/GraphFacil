@@ -60,6 +60,12 @@ namespace Dashboard.ViewModels
 
         [ObservableProperty]
         private TimeSpan _lastValidationDuration;
+
+        [ObservableProperty]
+        private ObservableCollection<LotoLibrary.Models.Prediction.ModelInfo> _availableModelInfos = new();
+
+        [ObservableProperty]
+        private int _totalAvailableModels = 0;
         #endregion
 
         #region Public Properties
@@ -75,6 +81,7 @@ namespace Dashboard.ViewModels
             _historico = historico;
 
             ValidationResults = new ObservableCollection<ValidationResult>();
+            AvailableModelInfos = new ObservableCollection<LotoLibrary.Models.Prediction.ModelInfo>();
         }
         #endregion
 
@@ -191,8 +198,8 @@ namespace Dashboard.ViewModels
                 IsLoading = true;
                 _notificationService.ShowInfo("Carregando modelos...");
 
-                await Task.Delay(500);
-                _availableModels.Clear();
+                // CORREÇÃO: Implementar carregamento real de modelos
+                await LoadAvailableModelsAsync();
 
                 _notificationService.ShowSuccess($"{_availableModels.Count} modelos carregados");
             }
@@ -217,6 +224,78 @@ namespace Dashboard.ViewModels
             TotalTests = 0;
             PassedTests = 0;
         }
+
+        [RelayCommand]
+        private async Task RefreshModels()
+        {
+            await LoadModelsAsync();
+        }
+
+        [RelayCommand]
+        private async Task ValidateAllModels()
+        {
+            if (_availableModels.Count == 0)
+            {
+                _notificationService.ShowWarning("Nenhum modelo disponível para validação");
+                return;
+            }
+
+            await ExecuteWithLoadingAsync(async () =>
+            {
+                IsValidationRunning = true;
+                ValidationProgress = 0;
+                ValidationResults.Clear();
+
+                var totalModels = _availableModels.Count;
+                var currentModel = 0;
+
+                foreach (var model in _availableModels)
+                {
+                    try
+                    {
+                        currentModel++;
+                        CurrentValidationStep = $"Validando modelo {model.ModelName} ({currentModel}/{totalModels})";
+                        ValidationProgress = (currentModel * 100) / totalModels;
+
+                        // Inicializar e treinar modelo se necessário
+                        if (!model.IsInitialized)
+                        {
+                            await model.InitializeAsync(_historicalData);
+                            await model.TrainAsync(_historicalData);
+                        }
+
+                        // Executar validação
+                        var validationResult = await model.ValidateAsync(_historicalData);
+
+                        // Adicionar aos resultados
+                        validationResult.AddMetric("ModelName", model.ModelName);
+                        validationResult.AddMetric("Status", validationResult.IsValid ? "✅ Validado" : "❌ Falhou");
+                        validationResult.AddMetric("TestName", $"Validação do modelo {model.ModelName}");
+
+                        ValidationResults.Add(validationResult);
+
+                        await Task.Delay(500); // Dar tempo para UI atualizar
+                    }
+                    catch (Exception ex)
+                    {
+                        var errorResult = new ValidationResult(false, 0.0, $"Erro: {ex.Message}");
+                        errorResult.AddMetric("ModelName", model.ModelName);
+                        errorResult.AddMetric("Status", "❌ Erro");
+                        errorResult.AddMetric("TestName", $"Validação do modelo {model.ModelName}");
+
+                        ValidationResults.Add(errorResult);
+                        LogError(ex);
+                    }
+                }
+
+                TotalTests = ValidationResults.Count;
+                PassedTests = ValidationResults.Count(r => r.IsValid);
+                OverallAccuracy = CalculateOverallAccuracy();
+                LastValidationSummary = $"Validação de todos os modelos concluída - {PassedTests}/{TotalTests} modelos válidos";
+
+                await ShowSuccessMessageAsync($"Validação completa: {PassedTests}/{TotalTests} modelos válidos");
+            }, "Validando todos os modelos...");
+        }
         #endregion
 
         #region Can Execute Methods
@@ -227,6 +306,61 @@ namespace Dashboard.ViewModels
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// CORREÇÃO: Carrega modelos reais usando o ModelFactory
+        /// </summary>
+        private async Task LoadAvailableModelsAsync()
+        {
+            try
+            {
+                await Task.Delay(500); // Simular carregamento
+
+                _availableModels.Clear();
+                AvailableModelInfos.Clear();
+
+                // CORREÇÃO: Usar ModelFactory para obter tipos disponíveis
+                var availableTypes = _modelFactory.GetAvailableModelTypes();
+
+                foreach (var modelType in availableTypes)
+                {
+                    try
+                    {
+                        // Obter informações do modelo
+                        var modelInfo = _modelFactory.GetModelInfo(modelType);
+                        if (modelInfo != null)
+                        {
+                            AvailableModelInfos.Add(modelInfo);
+                        }
+
+                        // Criar instância do modelo
+                        var model = _modelFactory.CreateModel(modelType);
+                        if (model != null)
+                        {
+                            _availableModels.Add(model);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError(ex);
+                        // Continuar com outros modelos mesmo se um falhar
+                    }
+                }
+
+                // Selecionar primeiro modelo se disponível
+                if (_availableModels.Any())
+                {
+                    SelectedModel = _availableModels.First();
+                }
+
+                TotalAvailableModels = _availableModels.Count;
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                TotalAvailableModels = 0;
+            }
+        }
+
         private async Task RunValidationStepsAsync()
         {
             var steps = new[]

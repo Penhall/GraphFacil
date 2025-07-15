@@ -1,10 +1,12 @@
-using Dashboard.Services;
+// Dashboard/ViewModels/Base/ModelOperationBase.cs
+using Dashboard.ViewModels.Services;
 using LotoLibrary.Engines;
 using LotoLibrary.Enums;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -49,8 +51,15 @@ namespace Dashboard.ViewModels.Base
         {
             if (!_predictionEngine.IsInitialized)
             {
-                await _predictionEngine.InitializeAsync(_historicalData);
-                SetStatus("PredictionEngine inicializado");
+                var success = await _predictionEngine.InitializeAsync(_historicalData);
+                if (success)
+                {
+                    SetStatus("PredictionEngine inicializado com sucesso");
+                }
+                else
+                {
+                    SetStatus("Erro ao inicializar PredictionEngine", true);
+                }
             }
         }
 
@@ -70,8 +79,62 @@ namespace Dashboard.ViewModels.Base
         protected async Task<IPredictionModel> CreateAndTrainModelAsync(ModelType modelType)
         {
             var model = _modelFactory.CreateModel(modelType);
+
+            if (!model.IsInitialized)
+            {
+                await model.InitializeAsync(_historicalData);
+            }
+
             await model.TrainAsync(_historicalData);
             return model;
+        }
+
+        /// <summary>
+        /// Obtém todos os tipos de modelos disponíveis
+        /// </summary>
+        protected List<ModelType> GetAvailableModelTypes()
+        {
+            try
+            {
+                return _modelFactory.GetAvailableModelTypes();
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return new List<ModelType>();
+            }
+        }
+
+        /// <summary>
+        /// Obtém informações sobre um modelo específico
+        /// </summary>
+        protected ModelInfo GetModelInfo(ModelType modelType)
+        {
+            try
+            {
+                return _modelFactory.GetModelInfo(modelType);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Cria instância de um modelo sem treinar
+        /// </summary>
+        protected IPredictionModel CreateModel(ModelType modelType, Dictionary<string, object> parameters = null)
+        {
+            try
+            {
+                return _modelFactory.CreateModel(modelType, parameters);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return null;
+            }
         }
 
         /// <summary>
@@ -81,7 +144,7 @@ namespace Dashboard.ViewModels.Base
         {
             if (_historicalData == null || _historicalData.Count < minimumRequired)
             {
-                SetStatus($"Dados insuficientes. Mínimo: {minimumRequired}, Atual: {_historicalData?.Count ?? 0}");
+                SetStatus($"Dados insuficientes. Mínimo: {minimumRequired}, Atual: {_historicalData?.Count ?? 0}", true);
                 return false;
             }
             return true;
@@ -94,16 +157,114 @@ namespace Dashboard.ViewModels.Base
         {
             return _modelFactory.GetModelInfo(modelType);
         }
+
+        /// <summary>
+        /// Verifica se um modelo está disponível
+        /// </summary>
+        protected bool IsModelAvailable(ModelType modelType)
+        {
+            try
+            {
+                var availableTypes = _modelFactory.GetAvailableModelTypes();
+                return availableTypes.Contains(modelType);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Registra um modelo no PredictionEngine
+        /// </summary>
+        protected async Task<bool> RegisterModelInEngineAsync(string name, IPredictionModel model)
+        {
+            try
+            {
+                if (!_predictionEngine.IsInitialized)
+                {
+                    await _predictionEngine.InitializeAsync(_historicalData);
+                }
+
+                return await _predictionEngine.RegisterModelAsync(name, model);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Obtém modelos registrados no engine
+        /// </summary>
+        protected Dictionary<string, IPredictionModel> GetRegisteredModels()
+        {
+            try
+            {
+                return _predictionEngine.Models.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return new Dictionary<string, IPredictionModel>();
+            }
+        }
+
+        /// <summary>
+        /// Cria múltiplos modelos de uma vez
+        /// </summary>
+        protected async Task<List<IPredictionModel>> CreateMultipleModelsAsync(List<ModelType> modelTypes)
+        {
+            var models = new List<IPredictionModel>();
+
+            foreach (var modelType in modelTypes)
+            {
+                try
+                {
+                    var model = CreateModel(modelType);
+                    if (model != null)
+                    {
+                        if (!model.IsInitialized)
+                        {
+                            await model.InitializeAsync(_historicalData);
+                        }
+                        models.Add(model);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    SetStatus($"Erro ao criar modelo {modelType}: {ex.Message}", true);
+                }
+            }
+
+            return models;
+        }
         #endregion
 
         #region Common Methods
         /// <summary>
         /// Exibe mensagem de sucesso
+        /// CORREÇÃO: Usar método síncrono ShowSuccess em vez de ShowSuccessAsync
         /// </summary>
         protected virtual async Task ShowSuccessMessageAsync(string message)
         {
             SetStatus(message);
-            await UINotificationService.Instance.ShowSuccessAsync(message);
+            UINotificationService.Instance.ShowSuccess(message); // CORREÇÃO: Método síncrono
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Exibe mensagem de erro
+        /// CORREÇÃO: Usar método síncrono ShowError em vez de ShowErrorAsync
+        /// </summary>
+        protected virtual async Task ShowErrorMessageAsync(string message)
+        {
+            SetStatus(message, true);
+            UINotificationService.Instance.ShowError(message); // CORREÇÃO: Método síncrono
+            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -111,7 +272,7 @@ namespace Dashboard.ViewModels.Base
         /// </summary>
         protected virtual bool CanExecute()
         {
-            return _historicalData != null && _historicalData.Count > 0;
+            return _historicalData != null && _historicalData.Count > 0 && !IsLoading;
         }
 
         /// <summary>
@@ -129,6 +290,34 @@ namespace Dashboard.ViewModels.Base
         {
             Console.WriteLine($"ERRO: {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"ERRO: {ex}");
+        }
+
+        /// <summary>
+        /// Obtém estatísticas dos dados históricos
+        /// </summary>
+        protected string GetDataStatistics()
+        {
+            if (_historicalData == null || !_historicalData.Any())
+                return "Nenhum dado disponível";
+
+            var firstConcurso = _historicalData.Min(l => l.Id);
+            var lastConcurso = _historicalData.Max(l => l.Id);
+            var totalConcursos = _historicalData.Count;
+
+            return $"Dados: {totalConcursos} concursos ({firstConcurso} a {lastConcurso})";
+        }
+
+        /// <summary>
+        /// Força atualização de status do PredictionEngine
+        /// </summary>
+        protected void RefreshEngineStatus()
+        {
+            if (_predictionEngine != null)
+            {
+                var status = _predictionEngine.IsInitialized ? "✅ Inicializado" : "⏳ Aguardando";
+                var modelCount = _predictionEngine.Models?.Count ?? 0;
+                SetStatus($"Engine: {status} | Modelos: {modelCount}");
+            }
         }
         #endregion
 
