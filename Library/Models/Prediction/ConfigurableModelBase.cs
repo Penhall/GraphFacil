@@ -1,8 +1,7 @@
 // D:\PROJETOS\GraphFacil\Library\Models\Prediction\ConfigurableModelBase.cs - Implementação base para modelos configuráveis
-using System.Collections.Generic;
-using System.Linq;
-using System;
 using LotoLibrary.Interfaces;
+using System;
+using System.Collections.Generic;
 
 namespace LotoLibrary.Models.Prediction
 {
@@ -26,17 +25,17 @@ namespace LotoLibrary.Models.Prediction
             _defaultParameters = new Dictionary<string, object>();
             _parameterDescriptions = new Dictionary<string, string>();
             _allowedValues = new Dictionary<string, List<object>>();
-            
+
             InitializeParameters();
             ResetToDefaults();
         }
         #endregion
 
         #region IConfigurableModel Implementation
-        public virtual Dictionary<string, object> CurrentParameters => 
+        public virtual Dictionary<string, object> CurrentParameters =>
             new Dictionary<string, object>(_currentParameters);
 
-        public virtual Dictionary<string, object> DefaultParameters => 
+        public virtual Dictionary<string, object> DefaultParameters =>
             new Dictionary<string, object>(_defaultParameters);
 
         public virtual void UpdateParameters(Dictionary<string, object> parameters)
@@ -92,15 +91,15 @@ namespace LotoLibrary.Models.Prediction
 
         public virtual string GetParameterDescription(string parameterName)
         {
-            return _parameterDescriptions.TryGetValue(parameterName, out var description) 
-                ? description 
+            return _parameterDescriptions.TryGetValue(parameterName, out var description)
+                ? description
                 : $"Parâmetro {parameterName}";
         }
 
         public virtual List<object> GetAllowedValues(string parameterName)
         {
-            return _allowedValues.TryGetValue(parameterName, out var values) 
-                ? new List<object>(values) 
+            return _allowedValues.TryGetValue(parameterName, out var values)
+                ? new List<object>(values)
                 : null;
         }
 
@@ -111,7 +110,7 @@ namespace LotoLibrary.Models.Prediction
             {
                 _currentParameters[param.Key] = param.Value;
             }
-            
+
             OnParametersUpdated();
         }
         #endregion
@@ -145,7 +144,7 @@ namespace LotoLibrary.Models.Prediction
         {
             _defaultParameters[name] = defaultValue;
             _parameterDescriptions[name] = description;
-            
+
             if (allowedValues != null)
             {
                 _allowedValues[name] = allowedValues;
@@ -174,6 +173,11 @@ namespace LotoLibrary.Models.Prediction
                 _currentParameters[name] = value;
                 OnParametersUpdated();
             }
+        }
+
+        void IConfigurableModel.SetParameter(string parameterName, object value)
+        {
+            SetParameter(parameterName, value);
         }
         #endregion
     }

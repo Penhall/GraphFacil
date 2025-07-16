@@ -4,10 +4,19 @@ using LotoLibrary.Interfaces;
 
 namespace LotoLibrary.Models.Base;
 
-public abstract class ConfigurableModelBase : IConfigurableModel
-{
-    protected Dictionary<string, object> _currentParameters = new();
-    protected Dictionary<string, object> _defaultParameters = new();
+    public abstract class ConfigurableModelBase : IConfigurableModel
+    {
+        protected Dictionary<string, object> _currentParameters = new();
+        protected Dictionary<string, object> _defaultParameters = new();
+
+        public virtual void SetParameter(string parameterName, object value)
+        {
+            if (_currentParameters.ContainsKey(parameterName))
+            {
+                _currentParameters[parameterName] = value;
+                OnParametersUpdated();
+            }
+        }
 
     public virtual Dictionary<string, object> CurrentParameters => _currentParameters;
     public virtual Dictionary<string, object> DefaultParameters => _defaultParameters;
@@ -45,5 +54,10 @@ public abstract class ConfigurableModelBase : IConfigurableModel
     {
         _defaultParameters["WindowSize"] = 50;
         _defaultParameters["Threshold"] = 0.5;
+    }
+
+    protected virtual void OnParametersUpdated()
+    {
+        // Implementação padrão vazia
     }
 }

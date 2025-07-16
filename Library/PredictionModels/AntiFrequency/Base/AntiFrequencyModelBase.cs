@@ -20,6 +20,8 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Base
     {
         // ===== PROPRIEDADES ABSTRATAS =====
         public abstract string Name { get; }
+        public abstract string ModelType { get; }
+        public abstract ModelType ModelTypeEnum { get; }
         public abstract AntiFrequencyStrategy Strategy { get; }
 
         // ===== IMPLEMENTAÇÃO OBRIGATÓRIA IPredictionModel =====
@@ -255,6 +257,15 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Base
         protected virtual void OnParametersUpdated()
         {
             // Implementação específica pode sobrescrever
+        }
+
+        public void SetParameter(string parameterName, object value)
+        {
+            if (_currentParameters.ContainsKey(parameterName))
+            {
+                _currentParameters[parameterName] = value;
+                OnParametersUpdated();
+            }
         }
 
         protected List<int> SelectTopAntiFrequencyNumbers(int count = 15)

@@ -1,5 +1,5 @@
-// D:\PROJETOS\GraphFacil\Library\PredictionModels\AntiFrequency\Simple\AntiFrequencySimpleModel.cs
 using LotoLibrary.Enums;
+using LotoLibrary.Extensions;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.AntiFrequency.Base;
@@ -14,19 +14,15 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
     /// <summary>
     /// Modelo Anti-Frequência Simples
     /// Implementação concreta do AntiFrequencyModelBase
-    /// Demonstra como usar a classe base corretamente
     /// </summary>
     public class AntiFrequencySimpleModel : AntiFrequencyModelBase
     {
         // ===== IMPLEMENTAÇÃO DAS PROPRIEDADES ABSTRATAS =====
         public override string Name => "Anti-Frequência Simples";
-        public override AntiFrequencyStrategy Strategy => AntiFrequencyStrategy.Simple;
-
-         #region Properties
-        public override string ModelName => "AntiFrequencySimpleModel";
-        public override string ModelType => "AntiFrequency";
+        public override string ModelType => "AntiFrequencySimple";
         public override ModelType ModelTypeEnum => ModelType.AntiFrequencySimple;
-        #endregion
+        public override bool IsModelType(string modelType) => ModelType.IsModelType(modelType);
+        public override AntiFrequencyStrategy Strategy => AntiFrequencyStrategy.Simple;
 
         // ===== CAMPOS ESPECÍFICOS =====
         private double _inversionFactor = 1.0;
@@ -43,11 +39,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
             try
             {
                 await Task.Delay(50);
-
-                // Inicialização específica do modelo simples
                 _inversionFactor = 1.0;
-
-                // Verificar se temos dados suficientes
                 return historicalData.Count >= 20;
             }
             catch (Exception)
@@ -61,11 +53,8 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
             try
             {
                 await Task.Delay(100);
-
-                // Treinamento simples: ajustar fator de inversão
                 var avgFrequency = _frequencyData.Values.Average();
                 _inversionFactor = avgFrequency > 0.5 ? 1.2 : 0.8;
-
                 return true;
             }
             catch (Exception)
@@ -79,7 +68,6 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
             try
             {
                 await Task.Delay(30);
-
                 var accuracy = IsInitialized ? 0.63 : 0.0;
                 var totalTests = testData?.Count ?? 0;
 
@@ -110,9 +98,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
             {
                 await Task.Delay(80);
 
-                // Algoritmo simples: inverter frequências e selecionar top 15
                 var adjustedScores = new Dictionary<int, double>();
-
                 foreach (var kvp in _antiFrequencyScores)
                 {
                     adjustedScores[kvp.Key] = kvp.Value * _inversionFactor;
@@ -146,27 +132,14 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
             }
         }
 
-        // ===== MÉTODOS ESPECÍFICOS =====
-        protected override double CalculateConfidence()
-        {
-            if (!IsInitialized || Status != AntiFrequencyStatus.Ready)
-                return 0.0;
-
-            // Confiança baseada na qualidade dos dados de frequência
-            var dataQuality = _frequencyData.Values.Any() ?
-                1.0 - _frequencyData.Values.StandardDeviation() : 0.0;
-
-            return Math.Max(0.5, Math.Min(0.75, dataQuality));
-        }
-
         // ===== OVERRIDE DE PARÂMETROS =====
         public override sealed Dictionary<string, object> DefaultParameters => new()
         {
-            { "JanelaAnalise", 50 },         // Janela menor para modelo simples
-            { "FatorDecaimento", 0.05 },     // Decaimento suave
-            { "ThresholdMinimo", 0.001 },    // Threshold baixo
-            { "PesoTemporal", 0.9 },         // Peso temporal alto
-            { "InversionFactor", 1.0 },      // Fator de inversão
+            { "JanelaAnalise", 50 },
+            { "FatorDecaimento", 0.05 },
+            { "ThresholdMinimo", 0.001 },
+            { "PesoTemporal", 0.9 },
+            { "InversionFactor", 1.0 },
             { "Strategy", AntiFrequencyStrategy.Simple }
         };
 
@@ -181,7 +154,6 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
 
         public override bool ValidateParameters(Dictionary<string, object> parameters)
         {
-            // Validação adicional específica
             if (parameters.ContainsKey("InversionFactor"))
             {
                 if (parameters["InversionFactor"] is double factor && (factor < 0.5 || factor > 2.0))
@@ -190,19 +162,5 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
 
             return base.ValidateParameters(parameters);
         }
-    }
-}
-
-// ===== EXTENSÃO PARA CÁLCULO DE DESVIO PADRÃO =====
-public static class DoubleExtensions
-{
-    public static double StandardDeviation(this IEnumerable<double> values)
-    {
-        var array = values.ToArray();
-        if (array.Length <= 1) return 0.0;
-
-        var mean = array.Average();
-        var sumOfSquares = array.Sum(x => Math.Pow(x - mean, 2));
-        return Math.Sqrt(sumOfSquares / (array.Length - 1));
     }
 }

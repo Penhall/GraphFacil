@@ -4,8 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
-using LotoLibrary.Services.Validation;
-using LotoLibrary.Services.Diagnostic;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -79,7 +77,6 @@ namespace Dashboard.ViewModels.Specialized
                 }
                 catch (Exception ex)
                 {
-                    // CORREÇÃO: Usar SetStatus em vez de ShowErrorMessageAsync
                     SetStatus($"Erro na validação: {ex.Message}", true);
                     LogError(ex);
                 }
@@ -105,7 +102,6 @@ namespace Dashboard.ViewModels.Specialized
         #region Can Execute Methods
         private bool CanExecuteValidation()
         {
-            // CORREÇÃO: Usar _historicalData em vez de HistoricalData
             return CanExecute() && !IsValidationRunning && _historicalData != null;
         }
         #endregion
@@ -113,9 +109,8 @@ namespace Dashboard.ViewModels.Specialized
         #region Private Methods
         private async Task RunValidationStepsAsync()
         {
-            // Instanciar e executar a suíte de validação real
             var validationSuite = _validationService.GetValidationSuite();
-            int totalSteps = validationSuite.Count;
+            int totalSteps = validationSuite.Count(); // Corrigido para usar o método Count()
             int currentStep = 0;
 
             foreach (var testCase in validationSuite)
@@ -124,22 +119,18 @@ namespace Dashboard.ViewModels.Specialized
                 CurrentValidationStep = testCase.Name;
                 ValidationProgress = (int)Math.Round((double)currentStep / totalSteps * 100);
 
-                // Executar o teste real
                 var testResult = await testCase.ExecuteAsync(_historicalData);
 
-                // Mapear o resultado do backend para o ViewModel da UI
                 var result = new ValidationResult
                 {
                     TestName = testResult.TestName,
                     Status = testResult.Success ? "✅ Passou" : "❌ Falhou",
-                    // A acurácia pode não se aplicar a todos os testes, ajuste conforme necessário
-                    Accuracy = testResult.Success ? 100 : 0, 
+                    Accuracy = testResult.Success ? 100 : 0,
                     Details = testResult.Details
                 };
 
                 ValidationResults.Add(result);
 
-                // Se um teste crítico falhar, podemos optar por parar
                 if (!testResult.Success && testCase.IsCritical)
                 {
                     SetStatus($"Teste crítico '{testCase.Name}' falhou. Abortando.", true);

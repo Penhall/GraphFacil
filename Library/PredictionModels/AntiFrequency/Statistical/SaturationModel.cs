@@ -1,5 +1,6 @@
 // D:\PROJETOS\GraphFacil\Library\PredictionModels\AntiFrequency\Statistical\SaturationModel.cs
 using LotoLibrary.Enums;
+using LotoLibrary.Extensions;
 using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.AntiFrequency.Base;
@@ -20,6 +21,9 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Statistical
         // ===== IMPLEMENTAÇÃO DAS PROPRIEDADES ABSTRATAS =====
         public override string Name => "Modelo de Saturação Estatística";
         public override AntiFrequencyStrategy Strategy => AntiFrequencyStrategy.StatisticalSaturation;
+        public override string ModelType => "StatisticalSaturation";
+        public override ModelType ModelTypeEnum => ModelType.AntiFrequency;
+        public override bool IsModelType(string modelType) => ModelType.IsModelType(modelType);
 
         // ===== CAMPOS ESPECÍFICOS =====
         private Dictionary<int, double> _saturationIndex;

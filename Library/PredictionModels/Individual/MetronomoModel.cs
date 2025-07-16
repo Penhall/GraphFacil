@@ -25,8 +25,16 @@ namespace LotoLibrary.PredictionModels.Individual
         public int TotalMetronomos => 25;
 
         // ===== CAMPOS PRIVADOS PARA ICONFIGURABLEMODEL =====
-        private Dictionary<string, object> _currentParameters;
-        private Dictionary<string, object> _defaultParameters;
+        private Dictionary<string, object> _currentParameters = new();
+        private Dictionary<string, object> _defaultParameters = new();
+
+        public void SetParameter(string parameterName, object value)
+        {
+            if (_currentParameters.ContainsKey(parameterName))
+            {
+                _currentParameters[parameterName] = value;
+            }
+        }
         private Dictionary<int, object> _metronomos;
 
         // ===== CONSTRUTOR =====

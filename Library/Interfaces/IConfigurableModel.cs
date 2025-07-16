@@ -1,4 +1,3 @@
-// D:\PROJETOS\GraphFacil\Library\Interfaces\IConfigurableModel.cs - Interface para modelos configuráveis
 using System.Collections.Generic;
 
 namespace LotoLibrary.Interfaces
@@ -17,6 +16,13 @@ namespace LotoLibrary.Interfaces
         /// Parâmetros padrão do modelo
         /// </summary>
         Dictionary<string, object> DefaultParameters { get; }
+
+        /// <summary>
+        /// Atualiza um parâmetro específico
+        /// </summary>
+        /// <param name="parameterName">Nome do parâmetro</param>
+        /// <param name="value">Novo valor</param>
+        void SetParameter(string parameterName, object value);
 
         /// <summary>
         /// Atualiza os parâmetros do modelo
