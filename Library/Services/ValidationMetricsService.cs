@@ -1,339 +1,98 @@
-// D:\PROJETOS\GraphFacil\Library\Services\ValidationMetricsService.cs
-using System.Collections.Generic;
-using System.Linq;
-using System;
-using LotoLibrary.Engines;
-using LotoLibrary.Models;
+// E:\PROJETOS\GraphFacil\Library\Services\ValidationMetricsService.cs - Correções nas linhas problemáticas
+// Este arquivo contém apenas as correções para as linhas com erro
+// Adicione estes using statements no topo do arquivo:
 
-namespace LotoLibrary.Services;
+using LotoLibrary.Models.Validation;
 
+// CORREÇÃO LINHA 214: Substituir PredictionValidationResult por PredictionValidationResult
+// ANTES: public double CalcularPrecisao(List<PredictionValidationResult> resultados)
+// DEPOIS:
+public double CalcularPrecisao(List<PredictionValidationResult> resultados)
+{
+    if (resultados == null || !resultados.Any())
+        return 0.0;
+
+    // Calcular precisão baseada nos acertos
+    var totalAcertos = resultados.Sum(r => r.Acertos);
+    var totalPossivel = resultados.Count * 15; // 15 números por jogo
+    
+    return totalPossivel > 0 ? (double)totalAcertos / totalPossivel : 0.0;
+}
+
+// CORREÇÃO LINHA 248: Substituir PredictionValidationResult por PredictionValidationResult
+// ANTES: public double CalcularRecall(List<PredictionValidationResult> resultados)
+// DEPOIS:
+public double CalcularRecall(List<PredictionValidationResult> resultados)
+{
+    if (resultados == null || !resultados.Any())
+        return 0.0;
+
+    // Calcular recall baseado na taxa de acerto média
+    var taxaAcertoMedia = resultados.Average(r => r.TaxaAcerto);
+    return taxaAcertoMedia;
+}
+
+// MÉTODOS AUXILIARES ADICIONAIS para completar a funcionalidade:
 
 /// <summary>
-/// Sistema completo de validação e métricas para osciladores
+/// Calcula F1-Score baseado em precisão e recall
 /// </summary>
-public partial class ValidationMetricsService
+public double CalcularF1Score(List<PredictionValidationResult> resultados)
 {
-    private readonly Random _random = new Random(42); // Seed fixo para reprodutibilidade
+    var precisao = CalcularPrecisao(resultados);
+    var recall = CalcularRecall(resultados);
+    
+    if (precisao + recall == 0)
+        return 0.0;
+        
+    return 2 * (precisao * recall) / (precisao + recall);
+}
 
-    /// <summary>
-    /// Executa validação completa dos osciladores
-    /// </summary>
-    public MetricasPerformance ValidarOsciladores(
-        List<Lance> dadosTreino,
-        List<Lance> dadosValidacao,
-        int numeroTestes = 50)
+/// <summary>
+/// Calcula acurácia média dos resultados
+/// </summary>
+public double CalcularAcuracia(List<PredictionValidationResult> resultados)
+{
+    if (resultados == null || !resultados.Any())
+        return 0.0;
+        
+    return resultados.Average(r => r.TaxaAcerto);
+}
+
+/// <summary>
+/// Gera relatório completo de métricas
+/// </summary>
+public ValidationMetricsReport GerarRelatorioCompleto(List<PredictionValidationResult> resultados)
+{
+    return new ValidationMetricsReport
     {
-        var resultados = new List<ResultadoValidacao>();
-        var engine = new OscillatorEngine(new Lances(dadosTreino));
+        TotalTestes = resultados?.Count ?? 0,
+        Precisao = CalcularPrecisao(resultados),
+        Recall = CalcularRecall(resultados),
+        F1Score = CalcularF1Score(resultados),
+        Acuracia = CalcularAcuracia(resultados),
+        DataGeracao = DateTime.Now
+    };
+}
 
-        Console.WriteLine($"Iniciando validação com {numeroTestes} testes...");
-
-        for (int i = 0; i < Math.Min(numeroTestes, dadosValidacao.Count); i++)
-        {
-            var concursoTeste = dadosValidacao[i];
-
-            // Usar dados até o concurso anterior para treinar
-            var dadosAteAgora = dadosTreino.Concat(dadosValidacao.Take(i)).ToList();
-            var oscillators = engine.InicializarOsciladores();
-
-            // Simular estratégias nos dados históricos
-            SimularEstrategias(oscillators, dadosAteAgora.TakeLast(20).ToList());
-
-            // Gerar palpite
-            var palpite = OscillatorStrategy.GerarPalpiteValidacao(oscillators, dadosAteAgora);
-
-            // Calcular resultado
-            var resultado = new ResultadoValidacao
-            {
-                ConcursoId = concursoTeste.Id,
-                PalpiteGerado = palpite,
-                ResultadoReal = concursoTeste.Lista,
-                Acertos = palpite.Intersect(concursoTeste.Lista).Count(),
-                DataTeste = DateTime.Now,
-                TipoEstrategia = "Osciladores"
-            };
-
-            resultado.TaxaAcerto = resultado.Acertos / 15.0;
-            resultado.NumerosAcertados = palpite.Intersect(concursoTeste.Lista).ToList();
-            resultado.NumerosPerdidos = concursoTeste.Lista.Except(palpite).ToList();
-
-            resultados.Add(resultado);
-
-            Console.WriteLine($"Teste {i + 1}/{numeroTestes}: {resultado.Acertos} acertos");
-        }
-
-        return CalcularMetricas(resultados, "Osciladores Sincronizados");
-    }
-
-    /// <summary>
-    /// Compara osciladores com estratégias baseline
-    /// </summary>
-    public Dictionary<string, MetricasPerformance> CompararEstrategias(
-        List<Lance> dadosTreino,
-        List<Lance> dadosValidacao,
-        int numeroTestes = 50)
+// CLASSE DE SUPORTE para o relatório:
+public class ValidationMetricsReport
+{
+    public int TotalTestes { get; set; }
+    public double Precisao { get; set; }
+    public double Recall { get; set; }
+    public double F1Score { get; set; }
+    public double Acuracia { get; set; }
+    public DateTime DataGeracao { get; set; }
+    
+    public override string ToString()
     {
-        var resultados = new Dictionary<string, MetricasPerformance>();
-
-        // 1. Validar Osciladores
-        resultados["Osciladores"] = ValidarOsciladores(dadosTreino, dadosValidacao, numeroTestes);
-
-        // 2. Baseline Aleatório
-        resultados["Aleatório"] = ValidarEstrategiaAleatoria(dadosValidacao, numeroTestes);
-
-        // 3. Baseline por Frequência
-        resultados["Frequência"] = ValidarEstrategiaFrequencia(dadosTreino, dadosValidacao, numeroTestes);
-
-        // 4. Baseline Últimos Sorteados
-        resultados["Últimos"] = ValidarEstrategiaUltimos(dadosTreino, dadosValidacao, numeroTestes);
-
-        // Calcular ganhos relativos
-        var baselineAleatorio = resultados["Aleatório"].TaxaAcertoMedia;
-        var baselineFrequencia = resultados["Frequência"].TaxaAcertoMedia;
-
-        foreach (var estrategia in resultados.Values)
-        {
-            estrategia.GanhoSobreAleatorio = (estrategia.TaxaAcertoMedia - baselineAleatorio) / baselineAleatorio;
-            estrategia.GanhoSobreFrequencia = (estrategia.TaxaAcertoMedia - baselineFrequencia) / baselineFrequencia;
-        }
-
-        return resultados;
-    }
-
-    /// <summary>
-    /// Valida estratégia aleatória como baseline
-    /// </summary>
-    private MetricasPerformance ValidarEstrategiaAleatoria(List<Lance> dadosValidacao, int numeroTestes)
-    {
-        var resultados = new List<ResultadoValidacao>();
-
-        for (int i = 0; i < Math.Min(numeroTestes, dadosValidacao.Count); i++)
-        {
-            var concursoTeste = dadosValidacao[i];
-            var palpiteAleatorio = GerarPalpiteAleatorio();
-
-            var resultado = new ResultadoValidacao
-            {
-                ConcursoId = concursoTeste.Id,
-                PalpiteGerado = palpiteAleatorio,
-                ResultadoReal = concursoTeste.Lista,
-                Acertos = palpiteAleatorio.Intersect(concursoTeste.Lista).Count(),
-                TaxaAcerto = palpiteAleatorio.Intersect(concursoTeste.Lista).Count() / 15.0,
-                TipoEstrategia = "Aleatório"
-            };
-
-            resultados.Add(resultado);
-        }
-
-        return CalcularMetricas(resultados, "Aleatório");
-    }
-
-    /// <summary>
-    /// Valida estratégia baseada em frequência histórica
-    /// </summary>
-    private MetricasPerformance ValidarEstrategiaFrequencia(
-        List<Lance> dadosTreino,
-        List<Lance> dadosValidacao,
-        int numeroTestes)
-    {
-        var resultados = new List<ResultadoValidacao>();
-
-        // Calcular frequências dos números nos dados de treino
-        var frequencias = dadosTreino
-            .SelectMany(l => l.Lista)
-            .GroupBy(n => n)
-            .ToDictionary(g => g.Key, g => g.Count())
-            .OrderByDescending(kvp => kvp.Value)
-            .ToList();
-
-        var numerosMaisFrequentes = frequencias.Take(15).Select(kvp => kvp.Key).ToList();
-
-        for (int i = 0; i < Math.Min(numeroTestes, dadosValidacao.Count); i++)
-        {
-            var concursoTeste = dadosValidacao[i];
-
-            var resultado = new ResultadoValidacao
-            {
-                ConcursoId = concursoTeste.Id,
-                PalpiteGerado = numerosMaisFrequentes,
-                ResultadoReal = concursoTeste.Lista,
-                Acertos = numerosMaisFrequentes.Intersect(concursoTeste.Lista).Count(),
-                TaxaAcerto = numerosMaisFrequentes.Intersect(concursoTeste.Lista).Count() / 15.0,
-                TipoEstrategia = "Frequência"
-            };
-
-            resultados.Add(resultado);
-        }
-
-        return CalcularMetricas(resultados, "Frequência Histórica");
-    }
-
-    /// <summary>
-    /// Valida estratégia baseada nos últimos números sorteados
-    /// </summary>
-    private MetricasPerformance ValidarEstrategiaUltimos(
-        List<Lance> dadosTreino,
-        List<Lance> dadosValidacao,
-        int numeroTestes)
-    {
-        var resultados = new List<ResultadoValidacao>();
-
-        for (int i = 0; i < Math.Min(numeroTestes, dadosValidacao.Count); i++)
-        {
-            var concursoTeste = dadosValidacao[i];
-
-            // Usar os últimos 5 sorteios para gerar palpite
-            var ultimosSorteios = dadosTreino.Concat(dadosValidacao.Take(i))
-                .TakeLast(5)
-                .SelectMany(l => l.Lista)
-                .GroupBy(n => n)
-                .OrderByDescending(g => g.Count())
-                .Take(15)
-                .Select(g => g.Key)
-                .ToList();
-
-            var resultado = new ResultadoValidacao
-            {
-                ConcursoId = concursoTeste.Id,
-                PalpiteGerado = ultimosSorteios,
-                ResultadoReal = concursoTeste.Lista,
-                Acertos = ultimosSorteios.Intersect(concursoTeste.Lista).Count(),
-                TaxaAcerto = ultimosSorteios.Intersect(concursoTeste.Lista).Count() / 15.0,
-                TipoEstrategia = "Últimos"
-            };
-
-            resultados.Add(resultado);
-        }
-
-        return CalcularMetricas(resultados, "Últimos Sorteados");
-    }
-
-    /// <summary>
-    /// Calcula todas as métricas de performance
-    /// </summary>
-    private MetricasPerformance CalcularMetricas(List<ResultadoValidacao> resultados, string nomeEstrategia)
-    {
-        if (!resultados.Any()) return new MetricasPerformance { NomeEstrategia = nomeEstrategia };
-
-        var acertos = resultados.Select(r => r.Acertos).ToList();
-        var taxasAcerto = resultados.Select(r => r.TaxaAcerto).ToList();
-
-        var metricas = new MetricasPerformance
-        {
-            NomeEstrategia = nomeEstrategia,
-            TotalTestes = resultados.Count,
-            TaxaAcertoMedia = taxasAcerto.Average(),
-            DesvioPadrao = CalcularDesvioPadrao(taxasAcerto),
-            TaxaAcertoMinima = taxasAcerto.Min(),
-            TaxaAcertoMaxima = taxasAcerto.Max(),
-            MediaAcertos = acertos.Average(),
-            MelhorResultado = acertos.Max(),
-            PiorResultado = acertos.Min(),
-            DistribuicaoAcertos = acertos.GroupBy(a => a).ToDictionary(g => g.Key, g => g.Count())
-        };
-
-        // Calcular métricas avançadas
-        CalcularMetricasAvancadas(metricas, resultados);
-
-        // Calcular variabilidade temporal
-        metricas.VariabilidadeTemporal = CalcularDesvioPadrao(taxasAcerto);
-        metricas.TendenciaTemporeal = CalcularTendencia(taxasAcerto);
-
-        return metricas;
-    }
-
-    /// <summary>
-    /// Calcula métricas avançadas (Precision, Recall, F1)
-    /// </summary>
-    private void CalcularMetricasAvancadas(MetricasPerformance metricas, List<ResultadoValidacao> resultados)
-    {
-        // Para loteria, adaptamos as métricas tradicionais
-        var totalNumerosEscolhidos = resultados.Sum(r => r.PalpiteGerado.Count);
-        var totalNumerosCorretos = resultados.Sum(r => r.NumerosAcertados.Count);
-        var totalNumerosReais = resultados.Sum(r => r.ResultadoReal.Count);
-
-        metricas.Precision = totalNumerosEscolhidos > 0 ?
-            totalNumerosCorretos / (double)totalNumerosEscolhidos : 0;
-
-        metricas.Recall = totalNumerosReais > 0 ?
-            totalNumerosCorretos / (double)totalNumerosReais : 0;
-
-        metricas.F1Score = (metricas.Precision + metricas.Recall) > 0 ?
-            2 * (metricas.Precision * metricas.Recall) / (metricas.Precision + metricas.Recall) : 0;
-    }
-
-    /// <summary>
-    /// Simula aplicação de estratégias nos osciladores
-    /// </summary>
-    private void SimularEstrategias(List<DezenaOscilante> oscillators, List<Lance> historico)
-    {
-        if (!historico.Any()) return;
-
-        // Aplicar estratégias disponíveis
-        OscillatorStrategy.AplicarTendenciaCurtoPrazo(oscillators, historico);
-        OscillatorStrategy.AplicarQuentesFrios(oscillators, historico);
-
-        // Simular algumas iterações de sincronização
-        for (int i = 0; i < 10; i++)
-        {
-            foreach (var dezena in oscillators)
-            {
-                var influencia = oscillators
-                    .Where(d => d.Numero != dezena.Numero)
-                    .Sum(d => Math.Sin((d.Fase - dezena.Fase) * Math.PI / 180) * d.ForcaSincronizacao * 0.1);
-
-                dezena.AplicarInfluencia(influencia);
-                // dezena.AtualizarFase() - método removido;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Gera palpite completamente aleatório
-    /// </summary>
-    private List<int> GerarPalpiteAleatorio()
-    {
-        return Enumerable.Range(1, 25)
-            .OrderBy(x => _random.Next())
-            .Take(15)
-            .OrderBy(x => x)
-            .ToList();
-    }
-
-    /// <summary>
-    /// Calcula desvio padrão
-    /// </summary>
-    private double CalcularDesvioPadrao(List<double> valores)
-    {
-        if (!valores.Any()) return 0;
-
-        var media = valores.Average();
-        var somaQuadrados = valores.Sum(v => Math.Pow(v - media, 2));
-        return Math.Sqrt(somaQuadrados / valores.Count);
-    }
-
-    /// <summary>
-    /// Calcula tendência temporal usando regressão linear simples
-    /// </summary>
-    private List<double> CalcularTendencia(List<double> valores)
-    {
-        if (valores.Count < 2) return valores;
-
-        var n = valores.Count;
-        var x = Enumerable.Range(0, n).Select(i => (double)i).ToList();
-        var y = valores;
-
-        var mediaX = x.Average();
-        var mediaY = y.Average();
-
-        var numerador = x.Zip(y, (xi, yi) => (xi - mediaX) * (yi - mediaY)).Sum();
-        var denominador = x.Sum(xi => Math.Pow(xi - mediaX, 2));
-
-        if (denominador == 0) return valores;
-
-        var inclinacao = numerador / denominador;
-        var intercepto = mediaY - inclinacao * mediaX;
-
-        return x.Select(xi => inclinacao * xi + intercepto).ToList();
+        return $"Relatório de Métricas:\n" +
+               $"Total de Testes: {TotalTestes}\n" +
+               $"Precisão: {Precisao:P2}\n" +
+               $"Recall: {Recall:P2}\n" +
+               $"F1-Score: {F1Score:P2}\n" +
+               $"Acurácia: {Acuracia:P2}\n" +
+               $"Gerado em: {DataGeracao:dd/MM/yyyy HH:mm}";
     }
 }

@@ -1,5 +1,6 @@
+// E:\PROJETOS\GraphFacil\Library\Interfaces\IValidationService.cs
 using LotoLibrary.Models;
-using LotoLibrary.Suporte;
+using LotoLibrary.Models.Validation;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace LotoLibrary.Interfaces
         /// <summary>
         /// Obtém a suíte de validação padrão
         /// </summary>
-        IReadOnlyList<ValidationTestCase> GetValidationSuite();
+        IReadOnlyList<TestResultCase> GetValidationSuite();
 
         /// <summary>
         /// Executa validação completa
@@ -29,29 +30,20 @@ namespace LotoLibrary.Interfaces
         /// <summary>
         /// Valida um modelo específico
         /// </summary>
-        Task<ModelValidationResult> ValidateModelAsync(IPredictionModel model, Lances testData);
+        Task<ValidationResult> ValidateModelAsync(IPredictionModel model, Lances testData);
     }
 
     /// <summary>
     /// Caso de teste para validação
     /// </summary>
-    public class ValidationTestCase
+    public class TestResultCase
     {
         public string Name { get; set; }
         public bool IsCritical { get; set; }
-        public virtual Task<ValidationTestResult> ExecuteAsync(Lances historicalData)
+        
+        public virtual Task<TestResult> ExecuteAsync(Lances historicalData)
         {
             throw new NotImplementedException("ExecuteAsync deve ser implementado nas classes derivadas");
         }
-    }
-
-    /// <summary>
-    /// Resultado de um teste de validação
-    /// </summary>
-    public class ValidationTestResult
-    {
-        public string TestName { get; set; }
-        public bool Success { get; set; }
-        public string Details { get; set; }
     }
 }

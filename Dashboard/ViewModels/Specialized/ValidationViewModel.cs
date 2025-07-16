@@ -1,167 +1,141 @@
 // Dashboard/ViewModels/Specialized/ValidationViewModel.cs
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Dashboard.ViewModels.Base;
+using Dashboard.Models;
+using Dashboard.Suporte;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
+using LotoLibrary.Services.Analysis;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Dashboard.ViewModels.Specialized
 {
-    /// <summary>
-    /// ViewModel para validações e testes do sistema
-    /// </summary>
-    public partial class ValidationViewModel : ModelOperationBase
+    public class ValidationViewModel : ObservableObject
     {
-        #region Observable Properties
-        [ObservableProperty]
-        private string _lastValidationSummary = "Nenhuma validação executada";
-
-        [ObservableProperty]
-        private double _overallAccuracy = 0.0;
-
-        [ObservableProperty]
-        private ObservableCollection<ValidationResult> _validationResults = new();
-
-        [ObservableProperty]
-        private bool _isValidationRunning = false;
-
-        [ObservableProperty]
-        private string _currentValidationStep = "";
-
-        [ObservableProperty]
-        private int _validationProgress = 0;
-        #endregion
-
-        #region Dependency Injection
+        private Lances _historicalData;
         private readonly IValidationService _validationService;
-        private readonly IModelFactory _modelFactory;
-        #endregion
 
-        #region Constructor
-        public ValidationViewModel(Lances historicalData, IValidationService validationService, IModelFactory modelFactory) : base(historicalData)
+        public ValidationViewModel(Lances historicalData, IValidationService validationService)
         {
-            _validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
-            _modelFactory = modelFactory ?? throw new ArgumentNullException(nameof(modelFactory));
-        }
-        #endregion
+            _historicalData = historicalData;
+            _validationService = validationService;
 
-        #region Initialization Override
-        protected override async Task InitializeSpecificAsync()
-        {
-            SetStatus("✅ ValidationViewModel inicializado");
-            await Task.CompletedTask;
-        }
-        #endregion
+            ValidationResults = new ObservableCollection<ValidationResultViewModel>();
+            LastValidationSummary = "Nenhuma validação executada";
 
-        #region Commands
-        [RelayCommand(CanExecute = nameof(CanExecuteValidation))]
-        private async Task RunQuickValidation()
-        {
-            await ExecuteWithLoadingAsync(async () =>
-            {
-                IsValidationRunning = true;
-                ValidationProgress = 0;
-                ValidationResults.Clear();
-
-                try
-                {
-                    await RunValidationStepsAsync();
-
-                    LastValidationSummary = $"Validação concluída - {ValidationResults.Count} testes executados";
-                    OverallAccuracy = CalculateOverallAccuracy();
-
-                    await ShowSuccessMessageAsync("Validação rápida concluída com sucesso!");
-                }
-                catch (Exception ex)
-                {
-                    SetStatus($"Erro na validação: {ex.Message}", true);
-                    LogError(ex);
-                }
-                finally
-                {
-                    IsValidationRunning = false;
-                    ValidationProgress = 100;
-                }
-            }, "Executando validação rápida...");
+            RunQuickValidationCommand = new AsyncRelayCommand(RunQuickValidationAsync, CanRunValidation);
+            RunFullValidationCommand = new AsyncRelayCommand(RunFullValidationAsync, CanRunValidation);
+            CompareModelsCommand = new AsyncRelayCommand(CompareModelsAsync, CanCompareModels);
         }
 
-        [RelayCommand]
-        private void ClearValidationResults()
+        private bool _isValidationRunning;
+        public bool IsValidationRunning
         {
-            ValidationResults.Clear();
-            LastValidationSummary = "Resultados de validação limpos";
-            OverallAccuracy = 0.0;
+            get => _isValidationRunning;
+            set => SetProperty(ref _isValidationRunning, value);
+        }
+
+        private ObservableCollection<ValidationResultViewModel> _validationResults;
+        public ObservableCollection<ValidationResultViewModel> ValidationResults
+        {
+            get => _validationResults;
+            set => SetProperty(ref _validationResults, value);
+        }
+
+        private string _lastValidationSummary;
+        public string LastValidationSummary
+        {
+            get => _lastValidationSummary;
+            set => SetProperty(ref _lastValidationSummary, value);
+        }
+
+        private double _overallAccuracy;
+        public double OverallAccuracy
+        {
+            get => _overallAccuracy;
+            set => SetProperty(ref _overallAccuracy, value);
+        }
+
+        private int _validationProgress;
+        public int ValidationProgress
+        {
+            get => _validationProgress;
+            set => SetProperty(ref _validationProgress, value);
+        }
+
+        private bool _isComparisonRunning;
+        public bool IsComparisonRunning
+        {
+            get => _isComparisonRunning;
+            set => SetProperty(ref _isComparisonRunning, value);
+        }
+
+        private ObservableCollection<ModelComparisonResult> _comparisonResults;
+        public ObservableCollection<ModelComparisonResult> ComparisonResults
+        {
+            get => _comparisonResults;
+            set => SetProperty(ref _comparisonResults, value);
+        }
+
+        public IAsyncRelayCommand RunQuickValidationCommand { get; }
+        public IAsyncRelayCommand RunFullValidationCommand { get; }
+        public IAsyncRelayCommand CompareModelsCommand { get; }
+
+        private bool CanRunValidation() => !IsValidationRunning && _historicalData != null && _historicalData.Any();
+
+        private bool CanCompareModels() => !IsComparisonRunning && _comparisonResults != null && _comparisonResults.Count > 1;
+
+        private async Task RunValidationAsync(Func<Lances, Task<ValidationResult>> validationMethod)
+        {
+            if (!CanRunValidation()) return;
+
+            IsValidationRunning = true;
             ValidationProgress = 0;
-            SetStatus("Resultados de validação limpos");
-        }
-        #endregion
 
-        #region Can Execute Methods
-        private bool CanExecuteValidation()
-        {
-            return CanExecute() && !IsValidationRunning && _historicalData != null;
-        }
-        #endregion
-
-        #region Private Methods
-        private async Task RunValidationStepsAsync()
-        {
-            var validationSuite = _validationService.GetValidationSuite();
-            int totalSteps = validationSuite.Count(); // Corrigido para usar o método Count()
-            int currentStep = 0;
-
-            foreach (var testCase in validationSuite)
+            try
             {
-                currentStep++;
-                CurrentValidationStep = testCase.Name;
-                ValidationProgress = (int)Math.Round((double)currentStep / totalSteps * 100);
-
-                var testResult = await testCase.ExecuteAsync(_historicalData);
-
-                var result = new ValidationResult
-                {
-                    TestName = testResult.TestName,
-                    Status = testResult.Success ? "✅ Passou" : "❌ Falhou",
-                    Accuracy = testResult.Success ? 100 : 0,
-                    Details = testResult.Details
-                };
-
-                ValidationResults.Add(result);
-
-                if (!testResult.Success && testCase.IsCritical)
-                {
-                    SetStatus($"Teste crítico '{testCase.Name}' falhou. Abortando.", true);
-                    break;
-                }
+                var result = await validationMethod(_historicalData);
+                ValidationResults = new ObservableCollection<ValidationResultViewModel>(result.Tests.Select(t => new ValidationResultViewModel { TestName = t.TestName, Status = t.Success ? "✅ Passou" : "❌ Falhou", Details = t.Details }));
+                LastValidationSummary = $"Validação: {result.TotalTests} testes, {result.Tests.Count(t => t.Success)} passaram, Acurácia: {result.Accuracy:P2}";
+                OverallAccuracy = result.Accuracy;
+            }
+            catch (Exception ex)
+            {
+                // Trate exceções (log, notificação ao usuário, etc.)
+                Console.WriteLine($"Erro durante validação: {ex.Message}");
+            }
+            finally
+            {
+                IsValidationRunning = false;
+                ValidationProgress = 100;
             }
         }
 
-        private double CalculateOverallAccuracy()
+        private async Task RunQuickValidationAsync() => await RunValidationAsync(_validationService.RunQuickValidationAsync);
+
+        private async Task RunFullValidationAsync() => await RunValidationAsync(_validationService.RunFullValidationAsync);
+
+        private async Task CompareModelsAsync()
         {
-            if (ValidationResults.Count == 0) return 0.0;
-
-            double total = 0;
-            foreach (var result in ValidationResults)
+            //  Implementação da comparação de modelos
+            IsComparisonRunning = true;
+            try
             {
-                total += result.Accuracy;
+                var performanceComparer = new PerformanceComparer();
+                var results = await performanceComparer.CompareModelsAsync(_comparisonResults.Select(x => x.ModelValidationResult).ToList());
+                ComparisonResults = new ObservableCollection<ModelComparisonResult>(results);
             }
-
-            return total / ValidationResults.Count;
+            catch (Exception ex)
+            {
+                // Tratar exceções
+                Console.WriteLine($"Erro ao comparar modelos: {ex.Message}");
+            }
+            finally
+            {
+                IsComparisonRunning = false;
+            }
         }
-        #endregion
-    }
-
-    /// <summary>
-    /// Representa o resultado de um teste de validação
-    /// </summary>
-    public class ValidationResult
-    {
-        public string TestName { get; set; } = "";
-        public string Status { get; set; } = "";
-        public double Accuracy { get; set; }
-        public string Details { get; set; } = "";
     }
 }
+

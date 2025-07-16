@@ -1,3 +1,4 @@
+using LotoLibrary.Enums;
 using System;
 
 namespace LotoLibrary.Models.Configuration;

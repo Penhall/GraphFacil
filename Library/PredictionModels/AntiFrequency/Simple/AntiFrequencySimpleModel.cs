@@ -1,166 +1,337 @@
-using LotoLibrary.Enums;
-using LotoLibrary.Extensions;
-using LotoLibrary.Models;
-using LotoLibrary.Models.Prediction;
-using LotoLibrary.PredictionModels.AntiFrequency.Base;
-using LotoLibrary.Suporte;
+// E:\PROJETOS\GraphFacil\Library\PredictionModels\AntiFrequency\Simple\AntiFrequencySimpleModel.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LotoLibrary.Models;
+using LotoLibrary.Models.Validation;
+using LotoLibrary.Models.Base;
+using LotoLibrary.Enums;
 
 namespace LotoLibrary.PredictionModels.AntiFrequency.Simple
 {
     /// <summary>
-    /// Modelo Anti-Frequência Simples
-    /// Implementação concreta do AntiFrequencyModelBase
+    /// Modelo Anti-Frequência Simples - prioriza números menos sorteados
     /// </summary>
-    public class AntiFrequencySimpleModel : AntiFrequencyModelBase
+    public class AntiFrequencySimpleModel : PredictionModelBase
     {
-        // ===== IMPLEMENTAÇÃO DAS PROPRIEDADES ABSTRATAS =====
-        public override string Name => "Anti-Frequência Simples";
-        public override string ModelType => "AntiFrequencySimple";
-        public override ModelType ModelTypeEnum => ModelType.AntiFrequencySimple;
-        public override bool IsModelType(string modelType) => ModelType.IsModelType(modelType);
-        public override AntiFrequencyStrategy Strategy => AntiFrequencyStrategy.Simple;
+        #region Fields
+        private Dictionary<int, int> _numberFrequencies;
+        private Dictionary<int, DateTime> _lastAppearances;
+        private int _analysisWindow;
+        #endregion
 
-        // ===== CAMPOS ESPECÍFICOS =====
-        private double _inversionFactor = 1.0;
+        #region Properties
+        public Dictionary<int, int> NumberFrequencies => new Dictionary<int, int>(_numberFrequencies);
+        public int AnalysisWindow => _analysisWindow;
+        #endregion
 
-        // ===== CONSTRUTOR =====
-        public AntiFrequencySimpleModel()
+        #region Constructor
+        public AntiFrequencySimpleModel() : base("Anti-Frequency Simple", ModelType.AntiFrequencySimple)
         {
-            Complexity = ModelComplexity.Low;
-        }
-
-        // ===== IMPLEMENTAÇÃO DOS MÉTODOS ABSTRATOS =====
-        protected override async Task<bool> DoAntiFrequencyInitializeAsync(Lances historicalData)
-        {
-            try
+            _numberFrequencies = new Dictionary<int, int>();
+            _lastAppearances = new Dictionary<int, DateTime>();
+            _analysisWindow = 50; // Analisar últimos 50 concursos por padrão
+            
+            // Inicializar contadores
+            for (int i = 1; i <= 25; i++)
             {
-                await Task.Delay(50);
-                _inversionFactor = 1.0;
-                return historicalData.Count >= 20;
-            }
-            catch (Exception)
-            {
-                return false;
+                _numberFrequencies[i] = 0;
+                _lastAppearances[i] = DateTime.MinValue;
             }
         }
+        #endregion
 
-        protected override async Task<bool> DoAntiFrequencyTrainAsync(Lances trainingData)
+        #region Abstract Methods Implementation
+
+        protected override async Task InitializeModelSpecificAsync(Lances historicalData)
         {
+            LogInfo("Inicializando modelo Anti-Frequência Simples...");
+            
+            // Calcular frequências iniciais
+            CalculateFrequencies(historicalData);
+            
+            // Calcular última aparição de cada número
+            CalculateLastAppearances(historicalData);
+            
+            // Métricas iniciais
+            AddMetric("TotalConcursos", historicalData.Count);
+            AddMetric("JanelaAnalise", _analysisWindow);
+            AddMetric("NumeroMenosFrequente", GetLeastFrequentNumber());
+            AddMetric("NumeroMaisFrequente", GetMostFrequentNumber());
+            
+            LogInfo($"Modelo inicializado com {historicalData.Count} concursos");
+            
+            await Task.CompletedTask;
+        }
+
+        protected override async Task<bool> TrainModelSpecificAsync(Lances historicalData)
+        {
+            LogInfo("Treinando modelo Anti-Frequência Simples...");
+            
             try
             {
-                await Task.Delay(100);
-                var avgFrequency = _frequencyData.Values.Average();
-                _inversionFactor = avgFrequency > 0.5 ? 1.2 : 0.8;
+                // Recalcular frequências com dados de treinamento
+                CalculateFrequencies(historicalData);
+                
+                // Atualizar última aparição
+                CalculateLastAppearances(historicalData);
+                
+                // Calcular métricas de treinamento
+                var averageFrequency = _numberFrequencies.Values.Average();
+                var standardDeviation = CalculateStandardDeviation(_numberFrequencies.Values);
+                
+                AddMetric("FrequenciaMedia", averageFrequency);
+                AddMetric("DesvioPadrao", standardDeviation);
+                AddMetric("CoeficienteVariacao", standardDeviation / averageFrequency);
+                
+                LogInfo($"Treinamento concluído. Frequência média: {averageFrequency:F2}");
+                
+                await Task.CompletedTask;
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogError($"Erro durante treinamento: {ex.Message}");
                 return false;
             }
         }
 
-        protected override async Task<ValidationResult> DoAntiFrequencyValidateAsync(Lances testData)
+        protected override async Task<List<int>> PredictModelSpecificAsync(int concurso)
         {
+            LogInfo($"Gerando predição para concurso {concurso}...");
+            
             try
             {
-                await Task.Delay(30);
-                var accuracy = IsInitialized ? 0.63 : 0.0;
-                var totalTests = testData?.Count ?? 0;
-
-                return new ValidationResult
-                {
-                    IsValid = IsInitialized && totalTests > 0,
-                    Accuracy = accuracy,
-                    Message = "Validação anti-frequência simples concluída",
-                    TotalTests = totalTests,
-                    ValidationMethod = "Anti-Frequency Simple Cross-Validation",
-                    ValidationTime = TimeSpan.FromMilliseconds(30)
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ValidationResult
-                {
-                    IsValid = false,
-                    Accuracy = 0.0,
-                    Message = $"Erro na validação: {ex.Message}"
-                };
-            }
-        }
-
-        protected override async Task<PredictionResult> DoAntiFrequencyPredictAsync(int concurso)
-        {
-            try
-            {
-                await Task.Delay(80);
-
-                var adjustedScores = new Dictionary<int, double>();
-                foreach (var kvp in _antiFrequencyScores)
-                {
-                    adjustedScores[kvp.Key] = kvp.Value * _inversionFactor;
-                }
-
-                var selectedNumbers = adjustedScores
-                    .OrderByDescending(kvp => kvp.Value)
-                    .Take(15)
-                    .Select(kvp => kvp.Key)
-                    .OrderBy(x => x)
+                var prediction = new List<int>();
+                
+                // Obter números ordenados por frequência (menor para maior)
+                var numbersByFrequency = _numberFrequencies
+                    .OrderBy(kvp => kvp.Value)
+                    .ThenBy(kvp => _lastAppearances[kvp.Key])
                     .ToList();
-
-                return new PredictionResult
+                
+                // Estratégia 1: Pegar os 10 números menos frequentes
+                for (int i = 0; i < Math.Min(10, numbersByFrequency.Count); i++)
                 {
-                    ModelName = ModelName,
-                    TargetConcurso = concurso,
-                    PredictedNumbers = selectedNumbers,
-                    Confidence = Confidence,
-                    OverallConfidence = Confidence,
-                    GeneratedAt = DateTime.Now,
-                    ModelParameters = new Dictionary<string, object>(_parameters)
+                    prediction.Add(numbersByFrequency[i].Key);
+                }
+                
+                // Estratégia 2: Pegar números que não aparecem há mais tempo
+                var numbersNotSeen = GetNumbersNotSeenRecently(5);
+                foreach (var number in numbersNotSeen)
+                {
+                    if (!prediction.Contains(number) && prediction.Count < 15)
                     {
-                        { "InversionFactor", _inversionFactor },
-                        { "Strategy", Strategy.ToString() }
+                        prediction.Add(number);
                     }
-                };
+                }
+                
+                // Estratégia 3: Completar com números de frequência média-baixa
+                if (prediction.Count < 15)
+                {
+                    var mediumFrequencyNumbers = numbersByFrequency
+                        .Skip(10)
+                        .Take(10)
+                        .Select(kvp => kvp.Key)
+                        .ToList();
+                    
+                    foreach (var number in mediumFrequencyNumbers)
+                    {
+                        if (!prediction.Contains(number) && prediction.Count < 15)
+                        {
+                            prediction.Add(number);
+                        }
+                    }
+                }
+                
+                // Garantir que temos exatamente 15 números
+                var finalPrediction = ValidatePrediction(prediction);
+                
+                LogInfo($"Predição gerada: {string.Join(", ", finalPrediction)}");
+                
+                await Task.CompletedTask;
+                return finalPrediction;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Erro na predição anti-frequência simples: {ex.Message}", ex);
+                LogError($"Erro durante predição: {ex.Message}");
+                return GenerateRandomPrediction();
             }
         }
 
-        // ===== OVERRIDE DE PARÂMETROS =====
-        public override sealed Dictionary<string, object> DefaultParameters => new()
+        protected override string GetModelDescription()
         {
-            { "JanelaAnalise", 50 },
-            { "FatorDecaimento", 0.05 },
-            { "ThresholdMinimo", 0.001 },
-            { "PesoTemporal", 0.9 },
-            { "InversionFactor", 1.0 },
-            { "Strategy", AntiFrequencyStrategy.Simple }
-        };
-
-        public override string GetParameterDescription(string parameterName)
-        {
-            return parameterName switch
-            {
-                "InversionFactor" => "Fator de inversão da frequência (0.5 a 2.0)",
-                _ => base.GetParameterDescription(parameterName)
-            };
+            return "Modelo que prioriza números menos sorteados historicamente, " +
+                   "baseado na teoria de que números menos frequentes têm maior " +
+                   "probabilidade de serem sorteados em concursos futuros.";
         }
 
-        public override bool ValidateParameters(Dictionary<string, object> parameters)
+        #endregion
+
+        #region Private Methods
+
+        private void CalculateFrequencies(Lances historicalData)
         {
-            if (parameters.ContainsKey("InversionFactor"))
+            // Resetar contadores
+            for (int i = 1; i <= 25; i++)
             {
-                if (parameters["InversionFactor"] is double factor && (factor < 0.5 || factor > 2.0))
-                    return false;
+                _numberFrequencies[i] = 0;
             }
-
-            return base.ValidateParameters(parameters);
+            
+            // Considerar apenas a janela de análise
+            var recentData = historicalData
+                .OrderByDescending(l => l.Id)
+                .Take(_analysisWindow)
+                .ToList();
+            
+            // Contar frequências
+            foreach (var lance in recentData)
+            {
+                foreach (var number in lance.Lista)
+                {
+                    if (number >= 1 && number <= 25)
+                    {
+                        _numberFrequencies[number]++;
+                    }
+                }
+            }
+            
+            LogInfo($"Frequências calculadas para {recentData.Count} concursos");
         }
+
+        private void CalculateLastAppearances(Lances historicalData)
+        {
+            // Resetar últimas aparições
+            for (int i = 1; i <= 25; i++)
+            {
+                _lastAppearances[i] = DateTime.MinValue;
+            }
+            
+            // Calcular última aparição de cada número
+            var sortedData = historicalData.OrderByDescending(l => l.Data).ToList();
+            
+            foreach (var lance in sortedData)
+            {
+                foreach (var number in lance.Lista)
+                {
+                    if (number >= 1 && number <= 25 && _lastAppearances[number] == DateTime.MinValue)
+                    {
+                        _lastAppearances[number] = lance.Data;
+                    }
+                }
+            }
+        }
+
+        private int GetLeastFrequentNumber()
+        {
+            return _numberFrequencies.OrderBy(kvp => kvp.Value).First().Key;
+        }
+
+        private int GetMostFrequentNumber()
+        {
+            return _numberFrequencies.OrderByDescending(kvp => kvp.Value).First().Key;
+        }
+
+        private double CalculateStandardDeviation(IEnumerable<int> values)
+        {
+            var average = values.Average();
+            var sumOfSquares = values.Sum(v => Math.Pow(v - average, 2));
+            return Math.Sqrt(sumOfSquares / values.Count());
+        }
+
+        private List<int> GetNumbersNotSeenRecently(int count)
+        {
+            var cutoffDate = DateTime.Now.AddDays(-30); // Números não vistos em 30 dias
+            
+            return _lastAppearances
+                .Where(kvp => kvp.Value < cutoffDate)
+                .OrderBy(kvp => kvp.Value)
+                .Take(count)
+                .Select(kvp => kvp.Key)
+                .ToList();
+        }
+
+        #endregion
+
+        #region Override Methods
+
+        protected override void UpdateConfidence()
+        {
+            // Confiança baseada na variância das frequências
+            var frequencies = _numberFrequencies.Values.ToList();
+            var average = frequencies.Average();
+            var variance = frequencies.Sum(f => Math.Pow(f - average, 2)) / frequencies.Count;
+            
+            // Maior variância = maior confiança no modelo anti-frequência
+            _confidence = Math.Min(0.95, Math.Max(0.45, variance / (average * average)));
+            
+            AddMetric("Confianca", _confidence);
+            
+            LogInfo($"Confiança atualizada para {_confidence:P2}");
+        }
+
+        public override bool IsModelType(string modelType)
+        {
+            return modelType.Equals("AntiFrequencySimple", StringComparison.OrdinalIgnoreCase) ||
+                   modelType.Equals("AntiFrequency", StringComparison.OrdinalIgnoreCase) ||
+                   base.IsModelType(modelType);
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Obtém relatório de frequências
+        /// </summary>
+        public string GetFrequencyReport()
+        {
+            var report = "RELATÓRIO DE FREQUÊNCIAS\n";
+            report += "========================\n\n";
+            
+            var sortedFrequencies = _numberFrequencies.OrderBy(kvp => kvp.Value).ToList();
+            
+            report += "NÚMEROS MENOS FREQUENTES:\n";
+            for (int i = 0; i < Math.Min(5, sortedFrequencies.Count); i++)
+            {
+                var item = sortedFrequencies[i];
+                report += $"{item.Key:D2}: {item.Value} vezes\n";
+            }
+            
+            report += "\nNÚMEROS MAIS FREQUENTES:\n";
+            for (int i = sortedFrequencies.Count - 5; i < sortedFrequencies.Count; i++)
+            {
+                if (i >= 0)
+                {
+                    var item = sortedFrequencies[i];
+                    report += $"{item.Key:D2}: {item.Value} vezes\n";
+                }
+            }
+            
+            return report;
+        }
+
+        /// <summary>
+        /// Define a janela de análise
+        /// </summary>
+        public void SetAnalysisWindow(int window)
+        {
+            _analysisWindow = Math.Max(10, Math.Min(200, window));
+            LogInfo($"Janela de análise definida para {_analysisWindow} concursos");
+        }
+
+        #endregion
+
+        #region Dispose
+
+        public override void Dispose()
+        {
+            _numberFrequencies?.Clear();
+            _lastAppearances?.Clear();
+            base.Dispose();
+        }
+
+        #endregion
     }
 }
