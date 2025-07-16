@@ -1,5 +1,6 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Models\Base\PredictionModelBase.cs
 using LotoLibrary.Interfaces;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Prediction; // ← IMPORTANTE: usar namespace correto
 using LotoLibrary.Suporte;
 using System;

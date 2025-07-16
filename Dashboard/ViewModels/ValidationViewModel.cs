@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
 using Dashboard.ViewModels.Services;
 using LotoLibrary.Interfaces;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;

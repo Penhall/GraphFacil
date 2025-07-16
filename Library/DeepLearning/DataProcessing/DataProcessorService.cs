@@ -1,7 +1,5 @@
-using LotoLibrary.Models;
-using System;
+using LotoLibrary.Models.Core;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LotoLibrary.DeepLearning.DataProcessing
 {

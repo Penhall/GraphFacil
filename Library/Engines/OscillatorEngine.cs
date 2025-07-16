@@ -4,6 +4,7 @@ using System.Linq;
 using System;
 using LotoLibrary.Models;
 using LotoLibrary.Services;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.Engines
 {

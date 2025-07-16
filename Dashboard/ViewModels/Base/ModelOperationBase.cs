@@ -3,7 +3,7 @@ using Dashboard.ViewModels.Services;
 using LotoLibrary.Engines;
 using LotoLibrary.Enums;
 using LotoLibrary.Interfaces;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Prediction;
 using System;
 using System.Collections.Generic;

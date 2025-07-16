@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Prediction;
 using System;
 using System.Collections.ObjectModel;

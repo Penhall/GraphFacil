@@ -2,7 +2,7 @@
 using Dashboard.Models;
 using Dashboard.Suporte;
 using LotoLibrary.Interfaces;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Services.Analysis;
 using System;
 using System.Collections.ObjectModel;

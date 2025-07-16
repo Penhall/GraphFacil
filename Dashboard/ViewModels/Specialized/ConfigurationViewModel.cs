@@ -3,12 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
 using LotoLibrary.Models.Configuration;
 using LotoLibrary.Interfaces;
-using LotoLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using LotoLibrary.Models.Core;
 
 namespace Dashboard.ViewModels.Specialized
 {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
-using LotoLibrary.Models;
 using LotoLibrary.PredictionModels.AntiFrequency.Base;
 using LotoLibrary.Suporte;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.Utilities.AntiFrequency;
 

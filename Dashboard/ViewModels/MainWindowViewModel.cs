@@ -6,6 +6,7 @@ using Dashboard.ViewModels.Services;
 using Dashboard.ViewModels.Specialized;
 using LotoLibrary.Engines;
 using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;

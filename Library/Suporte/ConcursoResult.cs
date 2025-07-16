@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.Suporte
 {
@@ -161,7 +162,7 @@ namespace LotoLibrary.Suporte
         /// <summary>
         /// Cria ConcursoResult a partir de um Lance existente
         /// </summary>
-        public static ConcursoResult FromLance(Models.Lance lance)
+        public static ConcursoResult FromLance(Lance lance)
         {
             return new ConcursoResult
             {
@@ -196,7 +197,7 @@ namespace LotoLibrary.Suporte
         /// Cria lista de ConcursoResult para validação de modelo
         /// </summary>
         public static List<ConcursoResult> CreateValidationResults(
-            List<Models.Lance> historico, 
+            List<Lance> historico, 
             Dictionary<int, List<int>> predicoes, 
             string modelName)
         {

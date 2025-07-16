@@ -12,6 +12,7 @@ using LotoLibrary.Services;
 using Newtonsoft.Json;
 
 ﻿using LotoLibrary.Constantes;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.Utilities
 {

@@ -1,6 +1,6 @@
 ﻿// Dashboard/ViewModels/Services/ViewModelFactory.cs
 using Dashboard.ViewModels.Specialized;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using System;
 using System.Linq;
 

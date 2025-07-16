@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LotoLibrary.Models;
 using LotoLibrary.Models.Validation;
 using LotoLibrary.Models.Base;
 using LotoLibrary.Enums;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.PredictionModels.AntiFrequency.Statistical
 {

@@ -1,6 +1,7 @@
 // E:\PROJETOS\GraphFacil\Library\Services\Validation\ValidationService.cs
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Validation;
 using System;
 using System.Collections.Generic;

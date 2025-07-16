@@ -1,8 +1,8 @@
 // D:\PROJETOS\GraphFacil\Library\PredictionModels\AntiFrequency\Base\AntiFrequencyModelBase.cs
 using LotoLibrary.Enums;
 using LotoLibrary.Interfaces;
-using LotoLibrary.Models;
 using LotoLibrary.Models.Base;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.Suporte;
 using System;

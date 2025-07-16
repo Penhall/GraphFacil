@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LotoLibrary.Models;
 using LotoLibrary.Models.Validation;
 using LotoLibrary.Enums;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.Interfaces
 {

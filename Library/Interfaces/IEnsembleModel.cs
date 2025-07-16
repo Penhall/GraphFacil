@@ -1,5 +1,5 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\IEnsembleModel.cs
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Prediction;
 using System.Collections.Generic;
 using System.Threading.Tasks;

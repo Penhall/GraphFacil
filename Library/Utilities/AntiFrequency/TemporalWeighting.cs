@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.Utilities.AntiFrequency;
 

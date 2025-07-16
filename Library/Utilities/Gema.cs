@@ -1,8 +1,7 @@
 // D:\PROJETOS\GraphFacil\Library\Utilities\Gema.cs
 using System.Collections.Generic;
 using System;
-
-﻿using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.Utilities
 {

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using LotoLibrary.Models.Core;
 
-﻿// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\OscillatorStrategy.cs
+// D:\PROJETOS\GraphFacil\Dashboard\ViewModel\OscillatorStrategy.cs
 namespace LotoLibrary.Models
 {
     /// <summary>

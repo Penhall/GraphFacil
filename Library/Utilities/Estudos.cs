@@ -1,5 +1,5 @@
 // D:\PROJETOS\GraphFacil\Library\Utilities\Estudos.cs
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

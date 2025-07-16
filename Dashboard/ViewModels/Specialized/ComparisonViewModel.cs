@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using Dashboard.ViewModels.Base;
 using Dashboard.ViewModels.Services;
 using LotoLibrary.Enums;
-using LotoLibrary.Models;
 using LotoLibrary.Models.Prediction;
 using Dashboard.Utilities;
 using System;
@@ -12,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using LotoLibrary.Models.Core;
 
 namespace Dashboard.ViewModels.Specialized
 {

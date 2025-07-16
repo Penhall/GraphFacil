@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 
 // Library/Models/LanceStructureReference.cs
 // REFERÊNCIA DE USO - Estrutura correta da classe Lance

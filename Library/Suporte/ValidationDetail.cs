@@ -1,5 +1,5 @@
 // D:\PROJETOS\GraphFacil\Library\Models\Prediction\ValidationDetail.cs - REESCRITO para nova arquitetura
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

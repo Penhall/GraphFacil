@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LotoLibrary.Enums;
 using LotoLibrary.Interfaces;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.Individual;
 using LotoLibrary.Services;

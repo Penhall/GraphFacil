@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LotoLibrary.Models.Prediction;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.Interfaces
 {

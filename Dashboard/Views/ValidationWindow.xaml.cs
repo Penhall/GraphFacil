@@ -1,6 +1,6 @@
 ﻿using Dashboard.ViewModels;
 using Dashboard.ViewModels.Services;
-using LotoLibrary.Models;
+using LotoLibrary.Models.Core;
 using System.Windows;
 
 namespace Dashboard.Views

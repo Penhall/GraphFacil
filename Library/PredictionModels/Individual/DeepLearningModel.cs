@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LotoLibrary.Interfaces;
-using LotoLibrary.Models;
 using LotoLibrary.Models.Validation;
 using LotoLibrary.DeepLearning.Architectures;
 using LotoLibrary.DeepLearning.Training;
 using LotoLibrary.Enums;
+using LotoLibrary.Models.Core;
 
 namespace LotoLibrary.PredictionModels.Individual
 {
