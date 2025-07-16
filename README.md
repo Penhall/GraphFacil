@@ -15,6 +15,54 @@
 
 ---
 
+## 🗺️ **Arquitetura da Documentação (Visual)**
+
+O diagrama a seguir ilustra como os diferentes perfis de usuário interagem com os documentos principais para obter as informações de que necessitam.
+
+```mermaid
+graph TD
+    subgraph "Perfis de Usuário"
+        direction LR
+        U[👤 Usuário Final]
+        D[👨‍💻 Desenvolvedor]
+        M[📊 Gestor/Analista]
+        A[🏗️ Arquiteto]
+    end
+
+    subgraph "Documentos Principais"
+        SO[1. SYSTEM_OVERVIEW.md]
+        TA[2. TECHNICAL_ARCHITECTURE.md]
+        UG[3. USER_GUIDE.md]
+        DG[4. DEVELOPER_GUIDE.md]
+        PM[5. PERFORMANCE_METRICS.md]
+        RM[6. ROADMAP.md]
+        TG[7. TROUBLESHOOTING_GUIDE.md]
+    end
+
+    U --> SO
+    U --> UG
+    U --> TG
+
+    D --> SO
+    D --> TA
+    D --> DG
+    D --> PM
+    D --> TG
+
+    M --> SO
+    M --> PM
+    M --> RM
+    M --> UG
+
+    A --> SO
+    A --> TA
+    A --> PM
+    A --> RM
+    A --> DG
+```
+
+---
+
 ## 📖 **DOCUMENTAÇÃO PRINCIPAL**
 
 ### **🎯 1. SYSTEM_OVERVIEW.md**

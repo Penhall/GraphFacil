@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LotoLibrary.Models.Validation;
 using LotoLibrary.Enums;
 using LotoLibrary.Models.Core;
+using LotoLibrary.Models.Prediction;
 
 namespace LotoLibrary.Interfaces
 {
@@ -20,10 +21,11 @@ namespace LotoLibrary.Interfaces
 
         Task<bool> InitializeAsync(Lances historicalData);
         Task<bool> TrainAsync(Lances historicalData);
-        Task<List<int>> PredictAsync(int concurso);
+        Task<PredictionResult> PredictAsync(int concurso);
         Task<ValidationResult> ValidateAsync(Lances testData);
+        void Reset();
     }
-
+    
     public interface IConfigurableModel
     {
         Dictionary<string, object> Parameters { get; }
