@@ -81,6 +81,63 @@ namespace LotoLibrary.Models.Validation
         public string TestLog { get; set; } = string.Empty;
         public object MetaLearningMetrics { get; set; }
     }
+
+    /// <summary>
+    /// Resultado de validação de uma predição específica
+    /// </summary>
+    public class PredictionValidationResult
+    {
+        public int Concurso { get; set; }
+        public List<int> PredictedNumbers { get; set; } = new();
+        public List<int> ActualNumbers { get; set; } = new();
+        public int Acertos { get; set; }
+        public double TaxaAcerto { get; set; }
+        public double Confidence { get; set; }
+        public string TipoEstrategia { get; set; } = string.Empty;
+        public DateTime GeneratedAt { get; set; } = DateTime.Now;
+
+        public PredictionValidationResult() { }
+
+        public PredictionValidationResult(int concurso, List<int> predicted, List<int> actual)
+        {
+            Concurso = concurso;
+            PredictedNumbers = predicted ?? new();
+            ActualNumbers = actual ?? new();
+            CalculateAccuracy();
+        }
+
+        private void CalculateAccuracy()
+        {
+            if (PredictedNumbers?.Any() == true && ActualNumbers?.Any() == true)
+            {
+                Acertos = PredictedNumbers.Intersect(ActualNumbers).Count();
+                TaxaAcerto = (double)Acertos / Math.Max(PredictedNumbers.Count, ActualNumbers.Count);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Classe para dados de treinamento do TensorFlow.NET (mock)
+    /// </summary>
+    public class TrainingConfiguration
+    {
+        public int Epochs { get; set; } = 100;
+        public double LearningRate { get; set; } = 0.001;
+        public int BatchSize { get; set; } = 32;
+        public double ValidationSplit { get; set; } = 0.2;
+        public bool EarlyStopping { get; set; } = true;
+        public int Patience { get; set; } = 10;
+    }
+
+    /// <summary>
+    /// Classe para componentes Metronomo e Metronomo (mock)
+    /// </summary>
+    public class Metronomo
+    {
+        public int Interval { get; set; }
+        public bool IsActive { get; set; }
+        public string Pattern { get; set; } = string.Empty;
+    }
     #endregion
 
     #region Legacy Compatibility
@@ -93,12 +150,6 @@ namespace LotoLibrary.Models.Validation
             : base(testName, passed, "", details) { Score = score; }
     }
 
-    [Obsolete("Use TestResult instead")]
-    public class TestResult : TestResult
-    {
-        public string ErrorMessage { get => Success ? string.Empty : Message; set { if (!Success) Message = value; } }
-        public TestResult() { }
-        public TestResult(string testName, bool success, string message = "") : base(testName, success, message) { }
-    }
+    // Definição duplicada removida
     #endregion
 }

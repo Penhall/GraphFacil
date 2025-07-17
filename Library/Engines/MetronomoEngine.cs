@@ -1,4 +1,5 @@
 using LotoLibrary.Models.Core;
+using LotoLibrary.Models.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;

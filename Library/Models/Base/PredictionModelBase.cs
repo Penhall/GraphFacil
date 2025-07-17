@@ -1,7 +1,9 @@
 ﻿// D:\PROJETOS\GraphFacil\Library\Models\Base\PredictionModelBase.cs
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models.Core;
-using LotoLibrary.Models.Prediction; // ← IMPORTANTE: usar namespace correto
+using LotoLibrary.Models.Prediction;
+using LotoLibrary.Models.Validation;
+using LotoLibrary.Enums;
 using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;
@@ -17,8 +19,12 @@ public abstract class PredictionModelBase : IPredictionModel
 {
     // ===== PROPRIEDADES BÁSICAS =====
     public abstract string ModelName { get; }
+    public virtual string ModelVersion { get; protected set; } = "1.0.0";
+    public virtual ModelType ModelType { get; protected set; } = ModelType.Unknown;
     public virtual bool IsInitialized { get; protected set; }
+    public virtual bool IsTrained { get; protected set; }
     public virtual double Confidence { get; protected set; }
+    public virtual string Description { get; protected set; } = "Modelo de predição básico";
 
     // ===== CAMPOS PROTEGIDOS =====
     protected Lances _historicalData;
@@ -73,6 +79,7 @@ public abstract class PredictionModelBase : IPredictionModel
             if (trainResult)
             {
                 _lastTrainingTime = DateTime.Now;
+                IsTrained = true;
                 // Atualizar confiança após treinamento
                 Confidence = CalculateConfidence();
             }
@@ -125,6 +132,16 @@ public abstract class PredictionModelBase : IPredictionModel
             // Permitir implementação específica
             OnParametersUpdated();
         }
+    }
+
+    public virtual void Reset()
+    {
+        IsInitialized = false;
+        IsTrained = false;
+        Confidence = 0.0;
+        _lastTrainingTime = default;
+        _historicalData = null;
+        _parameters?.Clear();
     }
 
     public virtual string GetStatus()

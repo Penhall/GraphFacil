@@ -25,16 +25,4 @@ namespace LotoLibrary.Interfaces
         Task<ValidationResult> ValidateAsync(Lances testData);
         void Reset();
     }
-    
-    public interface IConfigurableModel
-    {
-        Dictionary<string, object> Parameters { get; }
-        object GetParameter(string name);
-        void SetParameter(string name, object value);
-        void UpdateParameters(Dictionary<string, object> newParameters);
-        bool ValidateParameters(Dictionary<string, object> parameters);
-        string GetParameterDescription(string name);
-        List<object> GetAllowedValues(string name);
-        void ResetToDefaults();
-    }
 }

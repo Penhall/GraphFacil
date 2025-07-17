@@ -4,6 +4,7 @@ using LotoLibrary.Interfaces;
 using LotoLibrary.Models.Base;
 using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Prediction;
+using LotoLibrary.Models.Validation;
 using LotoLibrary.Suporte;
 using System;
 using System.Collections.Generic;

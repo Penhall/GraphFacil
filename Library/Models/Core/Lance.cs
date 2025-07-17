@@ -7,6 +7,8 @@ namespace LotoLibrary.Models.Core;
 public class Lance
 {
     public int Id;
+    public int Concurso => Id; // Compatibilidade
+    public List<int> Dezenas => Lista; // Compatibilidade
 
     public int M = 0;
     public int N = 0;
@@ -97,19 +99,7 @@ public class Lance
 
 }
 
-public class Lances : List<Lance>
-{
-    public Lances() { }
-
-    public Lances(IEnumerable<Lance> collection) : base(collection)
-    {
-    }
-
-    public List<Lance> Lista { get; set; } = new List<Lance>();
-
-    public void LimpaXY() { foreach (Lance o in this) { o.X = 0; o.Y = 0; } }
-
-}
+// Classe Lances removida - usando a versão do arquivo Lances.cs
 
 public static class EnumerableExtensions
 {

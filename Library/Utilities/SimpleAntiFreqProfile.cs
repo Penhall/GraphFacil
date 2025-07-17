@@ -5,9 +5,9 @@ namespace LotoLibrary.Utilities;
 #region Supporting Data Classes
 
 /// <summary>
-/// Perfil simplificado para o modelo anti-frequencista simples
+/// Perfil de dados simplificado para análise anti-frequencista
 /// </summary>
-public class SimpleAntiFreqProfile
+public class AntiFreqDataProfile
 {
     public int Dezena { get; set; }
     public double CurrentFrequency { get; set; }

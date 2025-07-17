@@ -58,7 +58,7 @@
             Padding="15"
             Background="{DynamicResource MaterialDesignCardBackground}"
             CornerRadius="4"
-            Elevation="2"
+            Effect="{DynamicResource MaterialDesignShadowDepth2}"
             >
             <StackPanel>
                 <TextBlock
