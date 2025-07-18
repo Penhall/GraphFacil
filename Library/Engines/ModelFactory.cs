@@ -7,7 +7,9 @@ using LotoLibrary.Interfaces;
 using LotoLibrary.Models.Prediction;
 using LotoLibrary.PredictionModels.AntiFrequency.Simple;
 using LotoLibrary.PredictionModels.AntiFrequency;
+using LotoLibrary.PredictionModels.AntiFrequency.Statistical;
 using LotoLibrary.PredictionModels.Individual;
+using LotoLibrary.PredictionModels.Ensemble;
 
 namespace LotoLibrary.Engines
 {
@@ -131,6 +133,91 @@ namespace LotoLibrary.Engines
                     },
                     RequiredDataSize = 20,
                     EstimatedAccuracy = 0.63,
+                    IsConfigurable = true
+                }
+            );
+
+            RegisterModel(
+                ModelType.Saturation,
+                () => new SaturationModel(),
+                new ModelInfo
+                {
+                    Type = ModelType.Saturation,
+                    Name = "Saturation Model",
+                    Description = "Modelo baseado em análise de saturação estatística de dezenas",
+                    Category = ModelCategory.AntiFrequency,
+                    DefaultParameters = new Dictionary<string, object>
+                    {
+                        { "JanelaAnalise", 50 },
+                        { "LimiarSaturacao", 0.7 },
+                        { "FatorPonderacao", 0.6 }
+                    },
+                    RequiredDataSize = 30,
+                    EstimatedAccuracy = 0.65,
+                    IsConfigurable = true
+                }
+            );
+
+            RegisterModel(
+                ModelType.Statistical,
+                () => new StatisticalDebtModel(),
+                new ModelInfo
+                {
+                    Type = ModelType.Statistical,
+                    Name = "Statistical Debt Model",
+                    Description = "Modelo baseado em análise de débito estatístico de dezenas",
+                    Category = ModelCategory.AntiFrequency,
+                    DefaultParameters = new Dictionary<string, object>
+                    {
+                        { "PeriodoAnalise", 100 },
+                        { "PesoDebito", 0.8 },
+                        { "FatorCorrecao", 0.15 }
+                    },
+                    RequiredDataSize = 40,
+                    EstimatedAccuracy = 0.68,
+                    IsConfigurable = true
+                }
+            );
+
+            RegisterModel(
+                ModelType.DeepLearning,
+                () => new DeepLearningModel(),
+                new ModelInfo
+                {
+                    Type = ModelType.DeepLearning,
+                    Name = "Deep Learning Model",
+                    Description = "Modelo de aprendizado profundo para predição avançada",
+                    Category = ModelCategory.Individual,
+                    DefaultParameters = new Dictionary<string, object>
+                    {
+                        { "Epochs", 100 },
+                        { "LearningRate", 0.001 },
+                        { "BatchSize", 32 },
+                        { "HiddenLayers", 3 }
+                    },
+                    RequiredDataSize = 200,
+                    EstimatedAccuracy = 0.72,
+                    IsConfigurable = true
+                }
+            );
+
+            RegisterModel(
+                ModelType.MetaLearning,
+                () => new MetaLearningModel(),
+                new ModelInfo
+                {
+                    Type = ModelType.MetaLearning,
+                    Name = "Meta Learning Model",
+                    Description = "Modelo ensemble que combina múltiplos algoritmos de predição",
+                    Category = ModelCategory.Ensemble,
+                    DefaultParameters = new Dictionary<string, object>
+                    {
+                        { "NumModelos", 5 },
+                        { "StrategyBlending", "Weighted" },
+                        { "ConfiancaMinima", 0.6 }
+                    },
+                    RequiredDataSize = 100,
+                    EstimatedAccuracy = 0.75,
                     IsConfigurable = true
                 }
             );

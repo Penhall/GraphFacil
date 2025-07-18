@@ -1,6 +1,7 @@
 // Dashboard/ViewModels/Specialized/PredictionModelsViewModel.cs
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Dashboard.Models;
 using Dashboard.ViewModels.Base;
 using LotoLibrary.Models.Core;
 using LotoLibrary.Models.Prediction;
@@ -44,6 +45,24 @@ namespace Dashboard.ViewModels.Specialized
 
         [ObservableProperty]
         private int _totalAvailableModels = 0;
+
+        [ObservableProperty]
+        private ObservableCollection<DezenaPalpite> _lastPredictionNumbers = new();
+
+        [ObservableProperty]
+        private string _lastPredictionText = "";
+
+        [ObservableProperty]
+        private ObservableCollection<PalpiteCompleto> _palpitesGerados = new();
+
+        [ObservableProperty]
+        private PalpiteCompleto? _melhorPalpite;
+
+        [ObservableProperty]
+        private int _quantidadePalpites = 10;
+
+        [ObservableProperty]
+        private int _concursoAlvo = 3000;
         #endregion
 
         #region Constructor
@@ -116,11 +135,20 @@ namespace Dashboard.ViewModels.Specialized
                     }
 
                     // Gerar predição real
-                    var concurso = _historicalData?.Any() == true ? _historicalData.Max(l => l.Id) : 3000;
+                    var concurso = _historicalData?.Any() == true ? _historicalData.Max(l => l.Id) : ConcursoAlvo;
                     var predictionResult = await model.PredictAsync(concurso + 1);
 
                     LastPredictionResult = string.Join(", ", predictionResult.PredictedNumbers);
-                    SelectedModelConfidence = predictionResult.Confidence * 100;
+                    LastPredictionText = $"Palpite: {LastPredictionResult}";
+                    SelectedModelConfidence = predictionResult.Confidence;
+
+                    // Criar coleção visual das dezenas
+                    LastPredictionNumbers.Clear();
+                    foreach (var numero in predictionResult.PredictedNumbers.OrderBy(n => n))
+                    {
+                        var dezena = new DezenaPalpite(numero, predictionResult.Confidence);
+                        LastPredictionNumbers.Add(dezena);
+                    }
 
                     // Adicionar ao histórico
                     var historyEntry = $"[{DateTime.Now:HH:mm:ss}] {LastPredictionResult} (Confiança: {SelectedModelConfidence:F1}%)";
@@ -136,11 +164,100 @@ namespace Dashboard.ViewModels.Specialized
             }, "Gerando predição...");
         }
 
+        [RelayCommand(CanExecute = nameof(CanExecuteQuickPredict))]
+        private async Task GerarMultiplosPalpites()
+        {
+            await ExecuteWithLoadingAsync(async () =>
+            {
+                try
+                {
+                    if (SelectedModelInfo == null)
+                    {
+                        SetStatus("Nenhum modelo selecionado", true);
+                        return;
+                    }
+
+                    SetStatus($"Gerando {QuantidadePalpites} palpites...");
+                    PalpitesGerados.Clear();
+
+                    // Criar e usar o modelo real
+                    var model = _modelFactory.CreateModel(SelectedModelInfo.Type);
+                    if (!model.IsInitialized)
+                    {
+                        SetStatus("Inicializando modelo...");
+                        await model.InitializeAsync(_historicalData);
+                        await model.TrainAsync(_historicalData);
+                    }
+
+                    // Gerar múltiplos palpites
+                    for (int i = 0; i < QuantidadePalpites; i++)
+                    {
+                        SetStatus($"Gerando palpite {i + 1}/{QuantidadePalpites}...");
+                        
+                        var predictionResult = await model.PredictAsync(ConcursoAlvo + 1);
+                        var palpite = new PalpiteCompleto(
+                            predictionResult.PredictedNumbers.ToArray(), 
+                            predictionResult.Confidence,
+                            SelectedModelInfo.Name,
+                            ConcursoAlvo + 1
+                        );
+
+                        // Verificar acertos se concurso alvo tem resultado
+                        var concursoResultado = _historicalData?.FirstOrDefault(l => l.Id == ConcursoAlvo + 1);
+                        if (concursoResultado != null)
+                        {
+                            palpite.ValidarContraResultado(concursoResultado.Dezenas.ToArray());
+                        }
+
+                        PalpitesGerados.Add(palpite);
+                        
+                        // Pequeno delay para variar predições
+                        await Task.Delay(50);
+                    }
+
+                    // Ordenar por confiança (decrescente)
+                    var palpitesOrdenados = PalpitesGerados.OrderByDescending(p => p.Confianca).ToList();
+                    PalpitesGerados.Clear();
+                    foreach (var palpite in palpitesOrdenados)
+                    {
+                        PalpitesGerados.Add(palpite);
+                    }
+
+                    // Definir melhor palpite
+                    MelhorPalpite = PalpitesGerados.FirstOrDefault();
+                    if (MelhorPalpite != null)
+                    {
+                        // Atualizar interface principal com melhor palpite
+                        LastPredictionResult = MelhorPalpite.PalpiteTexto;
+                        LastPredictionText = $"Melhor Palpite: {MelhorPalpite.PalpiteTexto}";
+                        SelectedModelConfidence = MelhorPalpite.Confianca;
+
+                        LastPredictionNumbers.Clear();
+                        foreach (var dezena in MelhorPalpite.Dezenas)
+                        {
+                            LastPredictionNumbers.Add(dezena);
+                        }
+                    }
+
+                    await ShowSuccessMessageAsync($"{QuantidadePalpites} palpites gerados com sucesso!");
+                }
+                catch (Exception ex)
+                {
+                    SetStatus($"Erro ao gerar múltiplos palpites: {ex.Message}", true);
+                    LogError(ex);
+                }
+            }, "Gerando múltiplos palpites...");
+        }
+
         [RelayCommand]
         private void ClearHistory()
         {
             PredictionHistory.Clear();
             LastPredictionResult = "";
+            LastPredictionText = "";
+            LastPredictionNumbers.Clear();
+            PalpitesGerados.Clear();
+            MelhorPalpite = null;
             SelectedModelConfidence = 0.0;
             SetStatus("Histórico de predições limpo");
         }

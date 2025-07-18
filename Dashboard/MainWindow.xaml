@@ -118,15 +118,15 @@
                     Name="BtnFechar"
                     Width="30"
                     Height="25"
+                    Margin="5,2"
+                    Panel.ZIndex="100"
                     Background="#FFBF616A"
-                    BorderThickness="1"
                     BorderBrush="#FFBF616A"
+                    BorderThickness="1"
                     Click="BtnFechar_Click"
                     Content="✕"
                     FontWeight="Bold"
                     Foreground="White"
-                    Margin="5,2"
-                    Panel.ZIndex="100"
                     />
             </StackPanel>
         </Grid>
@@ -184,18 +184,45 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <!--  Concurso Alvo  -->
+                        <!--  Configurações de Palpite  -->
                         <GroupBox
                             Margin="0,0,0,15"
                             Foreground="White"
-                            Header="Concurso Alvo"
+                            Header="Configurações"
                             >
                             <StackPanel>
-                                <TextBox
-                                    Margin="0,5"
-                                    IsEnabled="{Binding PredictionModels.IsLoading, Converter={StaticResource InverseBooleanConverter}}"
-                                    Text="{Binding TextoConcurso, UpdateSourceTrigger=PropertyChanged}"
+                                <TextBlock
+                                    Margin="0,0,0,2"
+                                    FontSize="10"
+                                    Foreground="#FFECEFF4"
+                                    Text="Concurso Alvo:"
                                     />
+                                <TextBox
+                                    Margin="0,0,0,10"
+                                    IsEnabled="{Binding PredictionModels.IsLoading, Converter={StaticResource InverseBooleanConverter}}"
+                                    Text="{Binding PredictionModels.ConcursoAlvo, UpdateSourceTrigger=PropertyChanged}"
+                                    />
+
+                                <TextBlock
+                                    Margin="0,0,0,2"
+                                    FontSize="10"
+                                    Foreground="#FFECEFF4"
+                                    Text="Quantidade de Palpites:"
+                                    />
+                                <StackPanel Margin="0,0,0,5" Orientation="Horizontal">
+                                    <TextBox
+                                        Width="60"
+                                        IsEnabled="{Binding PredictionModels.IsLoading, Converter={StaticResource InverseBooleanConverter}}"
+                                        Text="{Binding PredictionModels.QuantidadePalpites, UpdateSourceTrigger=PropertyChanged}"
+                                        />
+                                    <TextBlock
+                                        Margin="5,0,0,0"
+                                        VerticalAlignment="Center"
+                                        FontSize="9"
+                                        Foreground="#FF616E88"
+                                        Text="(1-50)"
+                                        />
+                                </StackPanel>
                             </StackPanel>
                         </GroupBox>
 
@@ -228,6 +255,12 @@
                                 <Button
                                     Command="{Binding PredictionModels.QuickPredictCommand}"
                                     Content="⚡ Palpite Rápido"
+                                    Style="{StaticResource ModernButtonStyle}"
+                                    />
+
+                                <Button
+                                    Command="{Binding PredictionModels.GerarMultiplosPalpitesCommand}"
+                                    Content="🎯 Múltiplos Palpites"
                                     Style="{StaticResource ModernButtonStyle}"
                                     />
                             </StackPanel>
@@ -513,13 +546,239 @@
                         </StackPanel>
                     </TabItem>
 
+                    <!--  Tab: Melhor Palpite  -->
+                    <TabItem Header="🎯 Melhor Palpite">
+                        <Grid Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!--  Header com informações do palpite  -->
+                            <GroupBox
+                                Grid.Row="0"
+                                Margin="0,0,0,15"
+                                Foreground="White"
+                                Header="Melhor Palpite Gerado"
+                                >
+                                <StackPanel>
+                                    <TextBlock
+                                        Margin="0,5"
+                                        HorizontalAlignment="Center"
+                                        FontSize="16"
+                                        FontWeight="Bold"
+                                        Foreground="#FFA3BE8C"
+                                        Text="{Binding PredictionModels.LastPredictionText}"
+                                        />
+
+                                    <TextBlock
+                                        Margin="0,0,0,5"
+                                        HorizontalAlignment="Center"
+                                        FontSize="12"
+                                        Foreground="White"
+                                        Text="{Binding PredictionModels.SelectedModelConfidence, StringFormat=Confiança: {0:P1}}"
+                                        />
+
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="10"
+                                        Foreground="#FFECEFF4"
+                                        Text="{Binding PredictionModels.SelectedModelInfo.Name, StringFormat=Modelo: {0}}"
+                                        />
+                                </StackPanel>
+                            </GroupBox>
+
+                            <!--  Área visual das dezenas  -->
+                            <ScrollViewer Grid.Row="1">
+                                <Grid>
+                                    <ItemsControl ItemsSource="{Binding PredictionModels.LastPredictionNumbers}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    Columns="5"
+                                                    />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Viewbox Margin="5" Stretch="Uniform">
+                                                    <Border
+                                                        Width="110"
+                                                        Height="110"
+                                                        Background="{Binding BackgroundColor}"
+                                                        BorderBrush="{Binding BorderColor}"
+                                                        BorderThickness="3"
+                                                        CornerRadius="12"
+                                                        >
+                                                        <Grid>
+                                                            <Ellipse Fill="{Binding BorderColor}" Opacity="0.2" />
+                                                            <TextBlock
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
+                                                                FontSize="28"
+                                                                FontWeight="Bold"
+                                                                Foreground="{Binding ForegroundColor}"
+                                                                Text="{Binding Numero}"
+                                                                />
+                                                            <!--  Indicador de confiança  -->
+                                                            <Border
+                                                                Width="20"
+                                                                Height="20"
+                                                                Margin="3"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Top"
+                                                                Background="{Binding BorderColor}"
+                                                                CornerRadius="10"
+                                                                Opacity="0.8"
+                                                                >
+                                                                <TextBlock
+                                                                    HorizontalAlignment="Center"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="8"
+                                                                    FontWeight="Bold"
+                                                                    Foreground="White"
+                                                                    Text="{Binding Confianca, StringFormat=\{0:P0\}}"
+                                                                    />
+                                                            </Border>
+                                                        </Grid>
+                                                    </Border>
+                                                </Viewbox>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <!--  Placeholder quando não há palpite  -->
+                                    <StackPanel
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding PredictionModels.LastPredictionNumbers.Count, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        >
+                                        <TextBlock
+                                            Margin="0,20"
+                                            HorizontalAlignment="Center"
+                                            FontSize="18"
+                                            Foreground="#FF81A1C1"
+                                            Text="🎯 Nenhum palpite gerado ainda"
+                                            />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontSize="12"
+                                            Foreground="#FFECEFF4"
+                                            Text="Use os botões 'Gerar Palpite' ou 'Múltiplos Palpites' para gerar predições"
+                                            TextAlignment="Center"
+                                            TextWrapping="Wrap"
+                                            />
+                                    </StackPanel>
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+
+                    <!--  Tab: Tabela de Palpites  -->
+                    <TabItem Header="📊 Todos os Palpites">
+                        <Grid Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!--  Header com estatísticas  -->
+                            <GroupBox
+                                Grid.Row="0"
+                                Margin="0,0,0,15"
+                                Foreground="White"
+                                Header="Estatísticas dos Palpites"
+                                >
+                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                    <TextBlock
+                                        Margin="0,0,20,0"
+                                        FontSize="12"
+                                        Foreground="#FFA3BE8C"
+                                        Text="{Binding PredictionModels.PalpitesGerados.Count, StringFormat=Total: {0} palpites}"
+                                        />
+
+                                    <TextBlock
+                                        Margin="0,0,20,0"
+                                        FontSize="12"
+                                        Foreground="#FF88C0D0"
+                                        Text="{Binding PredictionModels.MelhorPalpite.Confianca, StringFormat=Melhor: {0:P1}}"
+                                        />
+
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="#FFECEFF4"
+                                        Text="{Binding PredictionModels.ConcursoAlvo, StringFormat=Concurso: {0}}"
+                                        />
+                                </StackPanel>
+                            </GroupBox>
+
+                            <!--  Tabela de palpites  -->
+                            <ScrollViewer Grid.Row="1">
+                                <DataGrid
+                                    AlternatingRowBackground="#FF434C5E"
+                                    AutoGenerateColumns="False"
+                                    Background="#FF2E3440"
+                                    CanUserReorderColumns="False"
+                                    CanUserResizeRows="False"
+                                    Foreground="White"
+                                    GridLinesVisibility="Horizontal"
+                                    HeadersVisibility="Column"
+                                    HorizontalGridLinesBrush="#FF4C566A"
+                                    IsReadOnly="True"
+                                    ItemsSource="{Binding PredictionModels.PalpitesGerados}"
+                                    RowBackground="#FF3B4252"
+                                    >
+
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn
+                                            Width="60"
+                                            Binding="{Binding Confianca, StringFormat=\{0:P0\}}"
+                                            Header="Rank"
+                                            />
+
+                                        <DataGridTextColumn
+                                            Width="220"
+                                            Binding="{Binding PalpiteTexto}"
+                                            Header="Palpite"
+                                            />
+
+                                        <DataGridTextColumn
+                                            Width="100"
+                                            Binding="{Binding Confianca, StringFormat=\{0:P2\}}"
+                                            Header="Confiança"
+                                            />
+
+                                        <DataGridTextColumn
+                                            Width="80"
+                                            Binding="{Binding QuantidadeAcertos}"
+                                            Header="Acertos"
+                                            />
+
+                                        <DataGridTextColumn
+                                            Width="*"
+                                            Binding="{Binding ModeloNome}"
+                                            Header="Modelo"
+                                            />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+
                     <!--  Tab: Osciladores (Compatibilidade)  -->
                     <TabItem Header="🔄 Osciladores">
                         <Grid Margin="10">
                             <ItemsControl ItemsSource="{Binding DezenasOscilantes}" Visibility="{Binding MostrarOsciladores, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Columns="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                                        <UniformGrid
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            Columns="5"
+                                            />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
 
@@ -529,10 +788,10 @@
                                             Width="100"
                                             Height="100"
                                             Margin="8"
+                                            Background="#FF434C5E"
                                             BorderBrush="{Binding EstaSincronizada, Converter={StaticResource BoolToColorConverter}}"
                                             BorderThickness="3"
                                             CornerRadius="8"
-                                            Background="#FF434C5E"
                                             >
                                             <Grid>
                                                 <Ellipse Fill="{Binding EstaSincronizada, Converter={StaticResource BoolToColorConverter}}" Opacity="0.4" />
@@ -548,24 +807,25 @@
                                                     Height="4"
                                                     Margin="5"
                                                     VerticalAlignment="Bottom"
+                                                    Foreground="#FFA3BE8C"
                                                     Maximum="360"
                                                     Value="{Binding Fase}"
-                                                    Foreground="#FFA3BE8C"
                                                     />
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            
-                            <!-- Placeholder quando não há osciladores -->
-                            <TextBlock 
-                                HorizontalAlignment="Center" 
+
+                            <!--  Placeholder quando não há osciladores  -->
+                            <TextBlock
+                                HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 FontSize="16"
                                 Foreground="White"
                                 Text="🔄 Carregando osciladores..."
-                                Visibility="{Binding MostrarOsciladores, Converter={StaticResource InverseBooleanConverter}}" />
+                                Visibility="{Binding MostrarOsciladores, Converter={StaticResource InverseBooleanConverter}}"
+                                />
                         </Grid>
                     </TabItem>
                 </TabControl>
