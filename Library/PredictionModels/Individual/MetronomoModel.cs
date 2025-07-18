@@ -162,7 +162,7 @@ namespace LotoLibrary.PredictionModels.Individual
                     Message = IsInitialized ? "Validação metrônomo concluída" : "Modelo não inicializado",
                     TotalTests = totalTests,
                     ValidationMethod = "Metrônomo Cross-Validation",
-                    ValidationTime = TimeSpan.FromMilliseconds(50)
+                    ExecutionTime = TimeSpan.FromMilliseconds(50)
                 };
             }
             catch (Exception ex)

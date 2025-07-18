@@ -1,6 +1,7 @@
 // D:\PROJETOS\GraphFacil\Library\Services\Analysis\ComprehensiveReport.cs - Comparador de performance entre modelos
 using System.Collections.Generic;
 using System;
+using LotoLibrary.Models.Prediction;
 
 namespace LotoLibrary.Services.Analysis;
 

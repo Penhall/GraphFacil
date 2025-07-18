@@ -57,6 +57,43 @@ namespace LotoLibrary.Models.Validation
             Accuracy = accuracy;
             ModelName = modelName;
         }
+
+        /// <summary>
+        /// Obtém uma métrica específica do resultado de validação
+        /// </summary>
+        /// <typeparam name="T">Tipo da métrica</typeparam>
+        /// <param name="key">Chave da métrica</param>
+        /// <param name="defaultValue">Valor padrão se a métrica não existir</param>
+        /// <returns>Valor da métrica ou valor padrão</returns>
+        public T GetMetric<T>(string key, T defaultValue = default(T))
+        {
+            if (AdditionalData.TryGetValue(key, out var value))
+            {
+                if (value is T typedValue)
+                    return typedValue;
+                
+                // Tentar conversão
+                try
+                {
+                    return (T)Convert.ChangeType(value, typeof(T));
+                }
+                catch
+                {
+                    return defaultValue;
+                }
+            }
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Adiciona uma métrica ao resultado de validação
+        /// </summary>
+        /// <param name="key">Chave da métrica</param>
+        /// <param name="value">Valor da métrica</param>
+        public void AddMetric(string key, object value)
+        {
+            AdditionalData[key] = value;
+        }
     }
 
     public class ModelMetrics

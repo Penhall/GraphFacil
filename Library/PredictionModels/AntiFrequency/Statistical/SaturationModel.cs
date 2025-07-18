@@ -124,7 +124,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Statistical
                     PredictedNumbers = predictedNumbers,
                     Confidence = confidence,
                     GeneratedAt = DateTime.Now,
-                    ModelType = ModelType.AntiFrequency.ToString()
+                    ModelType = ModelType.AntiFrequency
                 };
             }
             catch (Exception ex)

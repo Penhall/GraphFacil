@@ -20,5 +20,22 @@ namespace Dashboard.Views
         {
             Close();
         }
+
+        private async void ValidateButton_Click(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.ValidateAsync();
+        }
+
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implementar lógica para parar validação
+            ViewModel.IsValidationRunning = false;
+        }
+
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implementar exportação de resultados
+            UINotificationService.Instance.ShowInfo("Funcionalidade de exportação em desenvolvimento");
+        }
     }
 }

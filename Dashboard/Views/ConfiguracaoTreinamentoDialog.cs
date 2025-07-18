@@ -1,5 +1,6 @@
 // D:\PROJETOS\GraphFacil\Dashboard\Views\ConfiguracaoTreinamentoDialog.cs
 using LotoLibrary.Services;
+using LotoLibrary.Models.Configuration;
 using System;
 using System.Windows;
 using System.Windows.Controls;

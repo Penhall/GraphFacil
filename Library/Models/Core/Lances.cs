@@ -157,4 +157,14 @@ public class Lances : IEnumerable<Lance>
     {
         return new Lances(_lances.Where(predicate));
     }
+
+    public void Sort()
+    {
+        _lances.Sort((x, y) => x.Id.CompareTo(y.Id));
+    }
+
+    public void Insert(int index, Lance item)
+    {
+        _lances.Insert(index, item);
+    }
 }

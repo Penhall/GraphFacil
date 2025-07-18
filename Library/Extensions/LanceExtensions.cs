@@ -176,15 +176,15 @@ public static class LanceExtensions
         if (descending)
         {
             orderedLances = thenBySelector == null
-                ? lances.OrderByDescending(lance => lance.F1)
-                : lances.OrderByDescending(lance => lance.F1)
+                ? ((IEnumerable<Lance>)lances).OrderByDescending(lance => lance.F1)
+                : ((IEnumerable<Lance>)lances).OrderByDescending(lance => lance.F1)
                         .ThenBy(thenBySelector);
         }
         else
         {
             orderedLances = thenBySelector == null
-                ? lances.OrderBy(lance => lance.F1)
-                : lances.OrderBy(lance => lance.F1)
+                ? ((IEnumerable<Lance>)lances).OrderBy(lance => lance.F1)
+                : ((IEnumerable<Lance>)lances).OrderBy(lance => lance.F1)
                         .ThenBy(thenBySelector);
         }
 

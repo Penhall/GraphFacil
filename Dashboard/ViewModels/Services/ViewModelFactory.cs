@@ -1,7 +1,9 @@
 ﻿// Dashboard/ViewModels/Services/ViewModelFactory.cs
 using Dashboard.ViewModels.Specialized;
 using LotoLibrary.Models.Core;
+using LotoLibrary.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Dashboard.ViewModels.Services
@@ -85,7 +87,10 @@ namespace Dashboard.ViewModels.Services
         {
             try
             {
-                var viewModel = new ConfigurationViewModel(_historicalData);
+                // TODO: Implementar um modelo configurável padrão ou usar um modelo específico
+                // Por enquanto, vamos criar um modelo configurável mock
+                var mockConfigurableModel = new MockConfigurableModel();
+                var viewModel = new ConfigurationViewModel(_historicalData, mockConfigurableModel);
                 return viewModel;
             }
             catch (Exception ex)
@@ -131,5 +136,81 @@ namespace Dashboard.ViewModels.Services
                    $"Último concurso: {ultimoConcurso}";
         }
         #endregion
+    }
+
+    /// <summary>
+    /// Implementação mock de IConfigurableModel para testes
+    /// </summary>
+    public class MockConfigurableModel : IConfigurableModel
+    {
+        public Dictionary<string, object> CurrentParameters { get; private set; }
+        public Dictionary<string, object> DefaultParameters { get; private set; }
+
+        public MockConfigurableModel()
+        {
+            DefaultParameters = new Dictionary<string, object>
+            {
+                ["TestParameter"] = "DefaultValue",
+                ["NumericParameter"] = 42,
+                ["BooleanParameter"] = true,
+                ["DoubleParameter"] = 3.14
+            };
+            CurrentParameters = new Dictionary<string, object>(DefaultParameters);
+        }
+
+        public object GetParameter(string name)
+        {
+            return CurrentParameters.TryGetValue(name, out var value) ? value : null;
+        }
+
+        public void SetParameter(string name, object value)
+        {
+            CurrentParameters[name] = value;
+        }
+
+        public void UpdateParameters(Dictionary<string, object> newParameters)
+        {
+            if (newParameters != null)
+            {
+                foreach (var param in newParameters)
+                {
+                    CurrentParameters[param.Key] = param.Value;
+                }
+            }
+        }
+
+        public bool ValidateParameters(Dictionary<string, object> parameters)
+        {
+            return parameters != null;
+        }
+
+        public string GetParameterDescription(string name)
+        {
+            return name switch
+            {
+                "TestParameter" => "Parâmetro de teste",
+                "NumericParameter" => "Parâmetro numérico",
+                "BooleanParameter" => "Parâmetro booleano",
+                "DoubleParameter" => "Parâmetro decimal",
+                _ => "Parâmetro desconhecido"
+            };
+        }
+
+        public List<object> GetAllowedValues(string name)
+        {
+            return name switch
+            {
+                "TestParameter" => new List<object> { "Value1", "Value2", "Value3" },
+                "NumericParameter" => new List<object> { 10, 20, 30, 40, 50 },
+                "BooleanParameter" => new List<object> { true, false },
+                "DoubleParameter" => new List<object> { 1.0, 2.0, 3.14, 4.0, 5.0 },
+                _ => new List<object>()
+            };
+        }
+
+        public void ResetToDefaults()
+        {
+            CurrentParameters = new Dictionary<string, object>(DefaultParameters);
+        }
     }
 }

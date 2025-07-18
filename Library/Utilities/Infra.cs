@@ -29,7 +29,8 @@ namespace LotoLibrary.Utilities
         public static Lances AbrirArquivo(string nome)
         {
 
-            string path = Directory.Exists(Constante.PT) ? Constante.PT : Constante.PT1;
+            string path = Directory.Exists(Constante.PT) ? Constante.PT : 
+                         Directory.Exists(Constante.PT1) ? Constante.PT1 : Constante.PT2;
 
             DirectoryInfo pt1 = new(path);
 
@@ -99,7 +100,8 @@ namespace LotoLibrary.Utilities
         public static Lances AbrirArquivoJson(string nome)
         {
 
-            string path = Directory.Exists(Constante.PT) ? Constante.PT : Constante.PT1;
+            string path = Directory.Exists(Constante.PT) ? Constante.PT : 
+                         Directory.Exists(Constante.PT1) ? Constante.PT1 : Constante.PT2;
 
             DirectoryInfo pt1 = new(path);
 
@@ -137,13 +139,14 @@ namespace LotoLibrary.Utilities
 
         public static string NomeJson(string nome, int alvo)
         {
-            string path = Directory.Exists(Constante.PT) ? Constante.PT : Constante.PT1;
+            string path = Directory.Exists(Constante.PT) ? Constante.PT : 
+                         Directory.Exists(Constante.PT1) ? Constante.PT1 : Constante.PT2;
 
-            string caminho = path + "\\" + "Saida" + "\\" + alvo.ToString();
+            string caminho = Path.Combine(path, "Saida", alvo.ToString());
 
             if (!Directory.Exists(caminho)) { Directory.CreateDirectory(caminho); }
 
-            return Path.Combine(caminho + "\\" + nome + "-" + alvo.ToString() + ".json");
+            return Path.Combine(caminho, nome + "-" + alvo.ToString() + ".json");
         }
 
         #endregion
@@ -201,8 +204,12 @@ namespace LotoLibrary.Utilities
 
         private static void AtualizarConcursosDiretoDoSite(string nomeArq)
         {
-            string path = Directory.Exists(Constante.PT) ? Constante.PT : Constante.PT1;
+            string path = Directory.Exists(Constante.PT) ? Constante.PT : 
+                         Directory.Exists(Constante.PT1) ? Constante.PT1 : Constante.PT2;
             string fullPath = Path.Combine(path, nomeArq);
+
+            System.Diagnostics.Debug.WriteLine($"Tentando carregar de: {fullPath}");
+            System.Diagnostics.Debug.WriteLine($"Arquivo existe: {File.Exists(fullPath)}");
 
             List<Lotofacil> concursos;
 
@@ -210,14 +217,18 @@ namespace LotoLibrary.Utilities
             {
                 // O arquivo existe, vamos carregar e atualizar
                 concursos = CarregarConcursosDoArquivo(fullPath);
+                System.Diagnostics.Debug.WriteLine($"Concursos carregados: {concursos?.Count ?? 0}");
+                
                 var updater = new LotofacilUpdater();
                 concursos = updater.UpdateConcursos(concursos);
 
                 PreencheSorteios(concursos);
+                System.Diagnostics.Debug.WriteLine($"arLoto preenchido com: {arLoto?.Count ?? 0} itens");
             }
             else
             {
                 // O arquivo não existe, vamos extrair todos os concursos
+                System.Diagnostics.Debug.WriteLine("Arquivo não encontrado, tentando scraper...");
                 var scraper = new LotofacilScraper();
                 concursos = scraper.ExtractAllConcursos();
 
@@ -379,13 +390,14 @@ namespace LotoLibrary.Utilities
         public static string NomeSaida(string nome, int alvo)
         {
 
-            string path = Directory.Exists(Constante.PT) ? Constante.PT : Constante.PT1;
+            string path = Directory.Exists(Constante.PT) ? Constante.PT : 
+                         Directory.Exists(Constante.PT1) ? Constante.PT1 : Constante.PT2;
 
-            string caminho = path + "\\" + "Saida" + "\\" + alvo.ToString();
+            string caminho = Path.Combine(path, "Saida", alvo.ToString());
 
             if (!Directory.Exists(caminho)) { Directory.CreateDirectory(caminho); }
 
-            return Path.Combine(caminho + "\\" + nome + "-" + alvo.ToString() + ".txt");
+            return Path.Combine(caminho, nome + "-" + alvo.ToString() + ".txt");
         }
 
         public static Uvas DevolveMaisFrequentesUvas(Lances L, int T)

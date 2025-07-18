@@ -21,7 +21,7 @@ namespace Dashboard.ViewModels
     public partial class MainWindowViewModel : ViewModelBase
     {
         #region Private Fields
-        private readonly Lances _historicalData;
+        private readonly LotoLibrary.Models.Core.Lances _historicalData;
         private readonly ViewModelFactory _viewModelFactory;
         private readonly ServiceInfra _infraService;
         private readonly OscillatorEngine _oscillatorEngine;
@@ -61,9 +61,12 @@ namespace Dashboard.ViewModels
         #endregion
 
         #region Constructor
-        public MainWindowViewModel(Lances historico)
+        public MainWindowViewModel(LotoLibrary.Models.Core.Lances historico)
         {
             _historicalData = historico ?? throw new ArgumentNullException(nameof(historico));
+
+            // Debug - verificar se os dados foram carregados
+            System.Diagnostics.Debug.WriteLine($"MainWindowViewModel recebeu {_historicalData.Count} registros históricos");
 
             // Inicializar serviços
             _infraService = new ServiceInfra();
@@ -153,6 +156,43 @@ namespace Dashboard.ViewModels
                 LastUpdate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
 
             }, "Executando comparação principal...");
+        }
+
+        [RelayCommand(CanExecute = nameof(CanExecuteMainOperations))]
+        private async Task GerarPalpitePrincipal()
+        {
+            await ExecuteWithProgressAsync(async () =>
+            {
+                ApplicationStatus = "Gerando palpite principal...";
+
+                // Usar o comando QuickPredict do PredictionModels
+                if (PredictionModels.QuickPredictCommand.CanExecute(null))
+                {
+                    await PredictionModels.QuickPredictCommand.ExecuteAsync(null);
+                }
+
+                ApplicationStatus = "✅ Palpite principal gerado";
+                LastUpdate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+
+            }, "Gerando palpite principal...");
+        }
+
+        [RelayCommand]
+        private async Task PrimeiroCommand()
+        {
+            await ExecuteSimpleOperationAsync("Primeira operação executada", "Executando primeira operação...");
+        }
+
+        [RelayCommand]
+        private async Task SegundoCommand()
+        {
+            await ExecuteSimpleOperationAsync("Segunda operação executada", "Executando segunda operação...");
+        }
+
+        [RelayCommand]
+        private async Task TerceiroCommand()
+        {
+            await ExecuteSimpleOperationAsync("Terceira operação executada", "Executando terceira operação...");
         }
 
         [RelayCommand]
@@ -286,6 +326,16 @@ namespace Dashboard.ViewModels
             // Notificar mudanças nos comandos quando o processamento muda
             ExecutarValidacaoPrincipalCommand.NotifyCanExecuteChanged();
             ExecutarComparacaoPrincipalCommand.NotifyCanExecuteChanged();
+            GerarPalpitePrincipalCommand.NotifyCanExecuteChanged();
+            IniciarSincronizacaoCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnIsSystemReadyChanged(bool value)
+        {
+            // Notificar mudanças nos comandos quando o sistema fica pronto
+            ExecutarValidacaoPrincipalCommand.NotifyCanExecuteChanged();
+            ExecutarComparacaoPrincipalCommand.NotifyCanExecuteChanged();
+            GerarPalpitePrincipalCommand.NotifyCanExecuteChanged();
             IniciarSincronizacaoCommand.NotifyCanExecuteChanged();
         }
         #endregion

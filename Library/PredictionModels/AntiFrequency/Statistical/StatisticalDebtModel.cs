@@ -8,6 +8,7 @@ using LotoLibrary.Models.Prediction;
 using LotoLibrary.Models.Validation;
 using LotoLibrary.Enums;
 using LotoLibrary.Interfaces;
+using LotoLibrary.Extensions;
 
 namespace LotoLibrary.PredictionModels.AntiFrequency.Statistical
 {
@@ -215,7 +216,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Statistical
                     PredictedNumbers = predictedNumbers,
                     Confidence = confidence,
                     GeneratedAt = DateTime.Now,
-                    ModelType = ModelType.AntiFrequency.ToString()
+                    ModelType = ModelType.AntiFrequency
                 };
             }
             catch (Exception ex)
@@ -250,7 +251,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Statistical
             
             for (int i = 1; i <= 25; i++)
             {
-                _debtByNumber[i] = CalculateRealDebtForNumber(i, sortedData, windowSize);
+                _debtByNumber[i] = CalculateRealDebtForNumber(i, sortedData.ToLances(), windowSize);
                 
                 // Apply non-linear acceleration based on consecutive absences
                 var consecutiveAbsences = CalculateConsecutiveAbsences(i, sortedData.TakeLast(windowSize / 2));
@@ -398,7 +399,7 @@ namespace LotoLibrary.PredictionModels.AntiFrequency.Statistical
                 
                 for (int i = 1; i <= 25; i++)
                 {
-                    var debt = CalculateRealDebtForNumber(i, historicalUpToNow, windowSize);
+                    var debt = CalculateRealDebtForNumber(i, historicalUpToNow.ToLances(), windowSize);
                     tempDebtByNumber[i] = debt;
                     systemDebt += debt;
                 }

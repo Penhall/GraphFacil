@@ -37,7 +37,8 @@ namespace LotoLibrary.PredictionModels.Ensemble
         public override string ModelName => "Meta Learning Model";
         
         // IEnsembleModel properties
-        public Dictionary<string, IPredictionModel> ComponentModels => new Dictionary<string, IPredictionModel>(_registeredModels);
+        public List<IPredictionModel> ComponentModels => _registeredModels.Values.ToList();
+        public Dictionary<string, double> ModelWeights { get; private set; } = new Dictionary<string, double>();
         public string CombinationStrategy { get; set; } = "WeightedAverage";
         
         // IConfigurableModel properties
@@ -58,7 +59,6 @@ namespace LotoLibrary.PredictionModels.Ensemble
 
         #region IEnsembleModel Implementation
         public Dictionary<string, IPredictionModel> RegisteredModels => _registeredModels;
-        public Dictionary<string, double> ModelWeights { get; private set; }
 
         public bool RegisterModel(string name, IPredictionModel model)
         {
@@ -423,7 +423,7 @@ namespace LotoLibrary.PredictionModels.Ensemble
                     PredictedNumbers = predictedNumbers,
                     Confidence = confidence,
                     GeneratedAt = DateTime.Now,
-                    ModelType = ModelType.Ensemble.ToString()
+                    ModelType = ModelType.Ensemble
                 };
             }
             catch (Exception ex)
@@ -442,7 +442,7 @@ namespace LotoLibrary.PredictionModels.Ensemble
                 RegimeName = "Moderate",
                 Confidence = 0.8,
                 DetectedAt = DateTime.Now,
-                RecommendedStrategy = "Weighted Ensemble"
+                RecommendedStrategy = new StrategyRecommendation("Weighted Ensemble", "Meta-Learning", 0.8, "Balanced approach for moderate conditions")
             };
         }
 
@@ -491,7 +491,7 @@ namespace LotoLibrary.PredictionModels.Ensemble
                     RegimeName = _regimesDetected % 2 == 0 ? "Conservative" : "Aggressive",
                     Confidence = 0.85,
                     DetectedAt = DateTime.Now,
-                    RecommendedStrategy = "Adaptive Ensemble"
+                    RecommendedStrategy = new StrategyRecommendation("Adaptive Ensemble", "Meta-Learning", 0.85, "Adaptive approach based on regime detection")
                 };
             }
         }

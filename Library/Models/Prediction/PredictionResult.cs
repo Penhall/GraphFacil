@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LotoLibrary.Enums;
 
 namespace LotoLibrary.Models.Prediction;
 
@@ -14,6 +15,7 @@ public class PredictionResult
     public double OverallConfidence { get => Confidence; set => Confidence = value; }
     public string ModelName { get; set; } = string.Empty;
     public string ModelUsed { get => ModelName; set => ModelName = value; }
+    public ModelType ModelType { get; set; } = ModelType.Unknown;
     public DateTime GeneratedAt { get; set; } = DateTime.Now;
     public DateTime Timestamp { get; set; } = DateTime.Now;
     public string Strategy { get; set; } = string.Empty;

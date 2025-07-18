@@ -1,4 +1,5 @@
 // D:\PROJETOS\GraphFacil\Library\Interfaces\RegimeDetectionResult.cs - Interface para modelos de meta-aprendizado
+using System;
 using System.Collections.Generic;
 
 namespace LotoLibrary.Suporte;
@@ -13,4 +14,6 @@ public class RegimeDetectionResult
     public string Description { get; set; }
     public Dictionary<string, double> RegimeScores { get; set; }
     public string OptimalModel { get; set; }
+    public DateTime DetectedAt { get; set; } = DateTime.Now;
+    public StrategyRecommendation RecommendedStrategy { get; set; }
 }

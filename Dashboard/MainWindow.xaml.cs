@@ -28,12 +28,13 @@ namespace Dashboard
                 // Carregar dados históricos
                 Infra.CarregarConcursos();
 
-
                 var historico = Infra.arLoto;
+
+                System.Diagnostics.Debug.WriteLine($"Dados carregados: {historico?.Count ?? 0} registros");
 
                 if (historico == null || historico.Count == 0)
                 {
-                    MessageBox.Show("Erro ao carregar dados históricos!", "Erro Crítico",
+                    MessageBox.Show($"Erro ao carregar dados históricos! Contagem: {historico?.Count ?? 0}", "Erro Crítico",
                                   MessageBoxButton.OK, MessageBoxImage.Error);
                     Application.Current.Shutdown();
                     return;

@@ -9,7 +9,7 @@ namespace LotoLibrary.Engines
     public class MetronomoEngine
     {
         // Métodos sem modificadores explicitos (padrão é private)
-        List<PredictionValidationResult> ValidarMetronomo(Metronomo metronomo, Lances dados, int startIndex = 0)
+        private List<PredictionValidationResult> ValidarMetronomo(Metronomo metronomo, Lances dados, int startIndex = 0)
         {
             var resultados = new List<PredictionValidationResult>();
 
@@ -17,7 +17,7 @@ namespace LotoLibrary.Engines
             return resultados;
         }
 
-        PredictionValidationResult CriarPredictionValidationResult(int concursoId, List<int> predicao, Lance resultado)
+        private PredictionValidationResult CriarPredictionValidationResult(int concursoId, List<int> predicao, Lance resultado)
         {
             var validationResult = new PredictionValidationResult(concursoId, predicao, resultado.Lista)
             {
@@ -28,7 +28,7 @@ namespace LotoLibrary.Engines
             return validationResult;
         }
 
-        void CalcularEstatisticas(List<PredictionValidationResult> resultados)
+        private void CalcularEstatisticas(List<PredictionValidationResult> resultados)
         {
             if (!resultados.Any()) return;
 
@@ -45,7 +45,7 @@ namespace LotoLibrary.Engines
             Console.WriteLine($"Média de confiança: {mediaConfianca:F2}");
         }
 
-        double CalcularDesvio(List<double> valores)
+        private double CalcularDesvio(List<double> valores)
         {
             if (!valores.Any()) return 0.0;
 

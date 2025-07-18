@@ -8,7 +8,7 @@ namespace LotoLibrary.Services
     public class ValidationMetricsService
     {
         // Métodos sem modificadores explicitos (padrão é private)
-        double CalcularPrecisao(List<PredictionValidationResult> resultados)
+        private double CalcularPrecisao(List<PredictionValidationResult> resultados)
         {
             if (resultados == null || !resultados.Any())
                 return 0.0;
@@ -18,7 +18,7 @@ namespace LotoLibrary.Services
             return totalPossivel > 0 ? (double)totalAcertos / totalPossivel : 0.0;
         }
 
-        double CalcularRecall(List<PredictionValidationResult> resultados)
+        private double CalcularRecall(List<PredictionValidationResult> resultados)
         {
             if (resultados == null || !resultados.Any())
                 return 0.0;
@@ -26,14 +26,14 @@ namespace LotoLibrary.Services
             return resultados.Average(r => r.TaxaAcerto);
         }
 
-        double CalcularF1Score(List<PredictionValidationResult> resultados)
+        private double CalcularF1Score(List<PredictionValidationResult> resultados)
         {
             var precisao = CalcularPrecisao(resultados);
             var recall = CalcularRecall(resultados);
             return precisao + recall == 0 ? 0.0 : 2 * (precisao * recall) / (precisao + recall);
         }
 
-        double CalcularAcuracia(List<PredictionValidationResult> resultados)
+        private double CalcularAcuracia(List<PredictionValidationResult> resultados)
         {
             if (resultados == null || !resultados.Any())
                 return 0.0;
@@ -41,7 +41,7 @@ namespace LotoLibrary.Services
             return resultados.Average(r => r.TaxaAcerto);
         }
 
-        ValidationMetricsReport GerarRelatorioCompleto(List<PredictionValidationResult> resultados)
+        public ValidationMetricsReport GerarRelatorioCompleto(List<PredictionValidationResult> resultados)
         {
             return new ValidationMetricsReport
             {

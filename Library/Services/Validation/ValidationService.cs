@@ -160,7 +160,7 @@ namespace LotoLibrary.Services.Validation
                     ModelName = model.ModelName,
                     IsValid = true,
                     Message = string.Empty,
-                    Metrics = new ModelMetrics
+                    Metrics = new LotoLibrary.Models.Validation.ModelMetrics
                     {
                         Accuracy = 0.70,
                         Precision = 0.68,

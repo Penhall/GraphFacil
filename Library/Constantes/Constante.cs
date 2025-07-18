@@ -10,6 +10,8 @@ namespace LotoLibrary.Constantes
         public const string PT = "D:\\Projetos\\GraphFacil";
 
         public static string PT1 = "C:\\Users\\Reginaldo.souza\\Downloads\\Projetos\\GraphFacil";
+        
+        public static string PT2 = "/mnt/e/PROJETOS/GraphFacil";
 
         public const string ArqLoto = "Lotofacil";
 

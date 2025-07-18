@@ -1,9 +1,12 @@
 // Dashboard/ViewModels/Specialized/ValidationViewModel.cs
-using Dashboard.Models;
-using Dashboard.Suporte;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LotoLibrary.Interfaces;
 using LotoLibrary.Models.Core;
+using LotoLibrary.Models.Validation;
 using LotoLibrary.Services.Analysis;
+using LotoLibrary.Suporte;
+using ValidationResult = LotoLibrary.Models.Validation.ValidationResult;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -21,7 +24,7 @@ namespace Dashboard.ViewModels.Specialized
             _historicalData = historicalData;
             _validationService = validationService;
 
-            ValidationResults = new ObservableCollection<ValidationResultViewModel>();
+            ValidationResults = new ObservableCollection<ValidationResult>();
             LastValidationSummary = "Nenhuma validação executada";
 
             RunQuickValidationCommand = new AsyncRelayCommand(RunQuickValidationAsync, CanRunValidation);
@@ -36,8 +39,8 @@ namespace Dashboard.ViewModels.Specialized
             set => SetProperty(ref _isValidationRunning, value);
         }
 
-        private ObservableCollection<ValidationResultViewModel> _validationResults;
-        public ObservableCollection<ValidationResultViewModel> ValidationResults
+        private ObservableCollection<ValidationResult> _validationResults;
+        public ObservableCollection<ValidationResult> ValidationResults
         {
             get => _validationResults;
             set => SetProperty(ref _validationResults, value);
@@ -71,16 +74,16 @@ namespace Dashboard.ViewModels.Specialized
             set => SetProperty(ref _isComparisonRunning, value);
         }
 
-        private ObservableCollection<ModelComparisonResult> _comparisonResults;
-        public ObservableCollection<ModelComparisonResult> ComparisonResults
+        private ObservableCollection<LotoLibrary.Suporte.ModelComparisonResult> _comparisonResults;
+        public ObservableCollection<LotoLibrary.Suporte.ModelComparisonResult> ComparisonResults
         {
             get => _comparisonResults;
             set => SetProperty(ref _comparisonResults, value);
         }
 
-        public IAsyncRelayCommand RunQuickValidationCommand { get; }
-        public IAsyncRelayCommand RunFullValidationCommand { get; }
-        public IAsyncRelayCommand CompareModelsCommand { get; }
+        public AsyncRelayCommand RunQuickValidationCommand { get; }
+        public AsyncRelayCommand RunFullValidationCommand { get; }
+        public AsyncRelayCommand CompareModelsCommand { get; }
 
         private bool CanRunValidation() => !IsValidationRunning && _historicalData != null && _historicalData.Any();
 
@@ -96,8 +99,8 @@ namespace Dashboard.ViewModels.Specialized
             try
             {
                 var result = await validationMethod(_historicalData);
-                ValidationResults = new ObservableCollection<ValidationResultViewModel>(result.Tests.Select(t => new ValidationResultViewModel { TestName = t.TestName, Status = t.Success ? "✅ Passou" : "❌ Falhou", Details = t.Details }));
-                LastValidationSummary = $"Validação: {result.TotalTests} testes, {result.Tests.Count(t => t.Success)} passaram, Acurácia: {result.Accuracy:P2}";
+                ValidationResults = new ObservableCollection<ValidationResult> { result };
+                LastValidationSummary = $"Validação: {result.TotalTests} testes, {result.PassedTests} passaram, Acurácia: {result.Accuracy:P2}";
                 OverallAccuracy = result.Accuracy;
             }
             catch (Exception ex)
@@ -124,7 +127,7 @@ namespace Dashboard.ViewModels.Specialized
             {
                 var performanceComparer = new PerformanceComparer();
                 var results = await performanceComparer.CompareModelsAsync(_comparisonResults.Select(x => x.ModelValidationResult).ToList());
-                ComparisonResults = new ObservableCollection<ModelComparisonResult>(results);
+                ComparisonResults = new ObservableCollection<LotoLibrary.Suporte.ModelComparisonResult>(results);
             }
             catch (Exception ex)
             {

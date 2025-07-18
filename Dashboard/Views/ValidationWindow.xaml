@@ -8,7 +8,7 @@
     Title="Validação de Modelos"
     Width="800"
     Height="600"
-    Background="{DynamicResource MaterialDesignPaper}"
+    Background="#FAFAFA"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d"
     >
@@ -18,7 +18,7 @@
         <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}" />
+            <Setter Property="Foreground" Value="#333333" />
             <Setter Property="Margin" Value="0,0,0,10" />
         </Style>
 
@@ -56,9 +56,8 @@
             Grid.Row="1"
             Margin="0,0,0,20"
             Padding="15"
-            Background="{DynamicResource MaterialDesignCardBackground}"
+            Background="White"
             CornerRadius="4"
-            Effect="{DynamicResource MaterialDesignShadowDepth2}"
             >
             <StackPanel>
                 <TextBlock
@@ -80,7 +79,7 @@
                         Name="ModelSelector"
                         Grid.Column="0"
                         Margin="0,0,10,0"
-                        materialDesign:HintAssist.Hint="Selecionar Modelo"
+                        ToolTip="Selecionar Modelo"
                         >
                         <ComboBoxItem Content="Todos os Modelos" />
                         <ComboBoxItem Content="Modelo Metrônomo" />
@@ -96,7 +95,6 @@
                         Margin="0,0,10,0"
                         Click="ValidateButton_Click"
                         Content="Validar"
-                        Style="{StaticResource MaterialDesignRaisedButton}"
                         />
 
                     <!--  Botão Parar  -->
@@ -106,7 +104,6 @@
                         Click="StopButton_Click"
                         Content="Parar"
                         IsEnabled="False"
-                        Style="{StaticResource MaterialDesignOutlinedButton}"
                         />
                 </Grid>
 
@@ -115,7 +112,6 @@
                     Name="ValidationProgress"
                     Height="8"
                     Margin="0,15,0,0"
-                    Style="{StaticResource MaterialDesignLinearProgressBar}"
                     />
 
                 <!--  Status da Validação  -->
@@ -132,7 +128,7 @@
         <Border
             Grid.Row="2"
             Padding="15"
-            Background="{DynamicResource MaterialDesignCardBackground}"
+            Background="White"
             CornerRadius="4"
             >
             <Grid>
@@ -175,7 +171,6 @@
                     CanUserAddRows="False"
                     CanUserDeleteRows="False"
                     IsReadOnly="True"
-                    Style="{StaticResource MaterialDesignDataGrid}"
                     >
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="60" Header="Status">
@@ -238,7 +233,7 @@
             Grid.Row="3"
             Margin="0,20,0,0"
             Padding="15"
-            Background="{DynamicResource MaterialDesignCardBackground}"
+            Background="White"
             CornerRadius="4"
             >
             <Grid>
@@ -300,7 +295,6 @@
                     Grid.Column="3"
                     Click="ExportButton_Click"
                     Content="Exportar Resultados"
-                    Style="{StaticResource MaterialDesignFlatButton}"
                     />
             </Grid>
         </Border>

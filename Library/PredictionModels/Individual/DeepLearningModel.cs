@@ -21,6 +21,10 @@ namespace LotoLibrary.PredictionModels.Individual
         #region Fields
         private Dictionary<string, object> _configuration;
         private Lances _trainingData;
+        private IDisposable _network;
+        private object _trainer;
+        private bool _isInitialized;
+        private bool _isTrained;
         #endregion
 
         #region Properties
@@ -180,7 +184,7 @@ namespace LotoLibrary.PredictionModels.Individual
                     PredictedNumbers = predictedNumbers,
                     Confidence = confidence,
                     GeneratedAt = DateTime.Now,
-                    ModelType = ModelType.DeepLearning.ToString()
+                    ModelType = ModelType.DeepLearning
                 };
             }
             catch (Exception ex)
@@ -234,94 +238,6 @@ namespace LotoLibrary.PredictionModels.Individual
 
         #endregion
 
-        #region IConfigurableModel Implementation
-
-        public object GetParameter(string name)
-        {
-            return _parameters.GetValueOrDefault(name);
-        }
-
-        public void SetParameter(string name, object value)
-        {
-            if (_parameters.ContainsKey(name))
-            {
-                _parameters[name] = value;
-            }
-            else
-            {
-                _parameters.Add(name, value);
-            }
-        }
-
-        public void UpdateParameters(Dictionary<string, object> newParameters)
-        {
-            foreach (var param in newParameters)
-            {
-                SetParameter(param.Key, param.Value);
-            }
-        }
-
-        public bool ValidateParameters(Dictionary<string, object> parameters)
-        {
-            foreach (var param in parameters)
-            {
-                if (!ValidateParameter(param.Key, param.Value))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public string GetParameterDescription(string name)
-        {
-            return name switch
-            {
-                "SequenceLength" => "Comprimento da sequência de entrada para a rede neural",
-                "FeatureSize" => "Tamanho das características de entrada",
-                "Epochs" => "Número de épocas para treinamento",
-                "LearningRate" => "Taxa de aprendizado (0.0001 - 0.1)",
-                "BatchSize" => "Tamanho do lote para treinamento",
-                "ValidationSplit" => "Porcentagem dos dados para validação (0.0 - 0.5)",
-                "EarlyStopping" => "Ativar parada antecipada durante treinamento",
-                "Patience" => "Número de épocas sem melhoria antes da parada",
-                _ => "Parâmetro desconhecido"
-            };
-        }
-
-        public List<object> GetAllowedValues(string name)
-        {
-            return name switch
-            {
-                "SequenceLength" => new List<object> { 5, 10, 15, 20 },
-                "FeatureSize" => new List<object> { 25 }, // Fixo para Lotofácil
-                "Epochs" => new List<object> { 50, 100, 200, 500 },
-                "LearningRate" => new List<object> { 0.0001, 0.001, 0.01, 0.1 },
-                "BatchSize" => new List<object> { 16, 32, 64, 128 },
-                "ValidationSplit" => new List<object> { 0.1, 0.2, 0.3 },
-                "EarlyStopping" => new List<object> { true, false },
-                "Patience" => new List<object> { 5, 10, 15, 20 },
-                _ => new List<object>()
-            };
-        }
-
-        public void ResetToDefaults()
-        {
-            _parameters.Clear();
-            _parameters = new Dictionary<string, object>
-            {
-                ["SequenceLength"] = 10,
-                ["FeatureSize"] = 25,
-                ["Epochs"] = 100,
-                ["LearningRate"] = 0.001,
-                ["BatchSize"] = 32,
-                ["ValidationSplit"] = 0.2,
-                ["EarlyStopping"] = true,
-                ["Patience"] = 10
-            };
-        }
-
-        #endregion
 
         #region Private Methods
 
@@ -459,6 +375,12 @@ namespace LotoLibrary.PredictionModels.Individual
             }
             
             return numbers.OrderBy(n => n).ToList();
+        }
+
+        private List<int> GenerateDeepLearningPrediction(int concurso)
+        {
+            // Simular predição baseada em deep learning
+            return GenerateRandomPrediction();
         }
 
         private bool ValidateParameter(string name, object value)

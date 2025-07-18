@@ -1,5 +1,6 @@
 ﻿// Dashboard/Extensions/ValidationResultExtensions.cs - EXTENSÕES PARA COMPATIBILIDADE
 using LotoLibrary.Suporte;
+using LotoLibrary.Models.Validation;
 
 namespace Dashboard.Extensions
 {

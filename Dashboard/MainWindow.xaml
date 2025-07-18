@@ -117,13 +117,16 @@
                 <Button
                     Name="BtnFechar"
                     Width="30"
-                    Height="30"
-                    Background="Transparent"
-                    BorderThickness="0"
+                    Height="25"
+                    Background="#FFBF616A"
+                    BorderThickness="1"
+                    BorderBrush="#FFBF616A"
                     Click="BtnFechar_Click"
                     Content="✕"
                     FontWeight="Bold"
                     Foreground="White"
+                    Margin="5,2"
+                    Panel.ZIndex="100"
                     />
             </StackPanel>
         </Grid>
@@ -173,11 +176,11 @@
                                     Margin="0,5"
                                     DisplayMemberPath="Name"
                                     IsEnabled="{Binding PredictionModels.IsLoading, Converter={StaticResource InverseBooleanConverter}}"
-                                    ItemsSource="{Binding PredictionModels.AvailableModels}"
-                                    SelectedItem="{Binding PredictionModels.SelectedModel}"
+                                    ItemsSource="{Binding PredictionModels.AvailableModelInfos}"
+                                    SelectedItem="{Binding PredictionModels.SelectedModelInfo}"
                                     />
 
-                                <TextBlock Style="{StaticResource StatusTextStyle}" Text="{Binding PredictionModels.SelectedModel.Description}" />
+                                <TextBlock Style="{StaticResource StatusTextStyle}" Text="{Binding PredictionModels.SelectedModelInfo.Description}" />
                             </StackPanel>
                         </GroupBox>
 
@@ -512,47 +515,58 @@
 
                     <!--  Tab: Osciladores (Compatibilidade)  -->
                     <TabItem Header="🔄 Osciladores">
-                        <ScrollViewer>
+                        <Grid Margin="10">
                             <ItemsControl ItemsSource="{Binding DezenasOscilantes}" Visibility="{Binding MostrarOsciladores, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal" />
+                                        <UniformGrid Columns="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border
-                                            Width="50"
-                                            Height="50"
-                                            Margin="3"
+                                            Width="100"
+                                            Height="100"
+                                            Margin="8"
                                             BorderBrush="{Binding EstaSincronizada, Converter={StaticResource BoolToColorConverter}}"
-                                            BorderThickness="2"
-                                            CornerRadius="6"
+                                            BorderThickness="3"
+                                            CornerRadius="8"
+                                            Background="#FF434C5E"
                                             >
                                             <Grid>
-                                                <Ellipse Fill="{Binding EstaSincronizada, Converter={StaticResource BoolToColorConverter}}" Opacity="0.3" />
+                                                <Ellipse Fill="{Binding EstaSincronizada, Converter={StaticResource BoolToColorConverter}}" Opacity="0.4" />
                                                 <TextBlock
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    FontSize="14"
+                                                    FontSize="24"
                                                     FontWeight="Bold"
                                                     Foreground="White"
                                                     Text="{Binding Numero}"
                                                     />
                                                 <ProgressBar
-                                                    Height="3"
-                                                    Margin="3"
+                                                    Height="4"
+                                                    Margin="5"
                                                     VerticalAlignment="Bottom"
                                                     Maximum="360"
                                                     Value="{Binding Fase}"
+                                                    Foreground="#FFA3BE8C"
                                                     />
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                        </ScrollViewer>
+                            
+                            <!-- Placeholder quando não há osciladores -->
+                            <TextBlock 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                Foreground="White"
+                                Text="🔄 Carregando osciladores..."
+                                Visibility="{Binding MostrarOsciladores, Converter={StaticResource InverseBooleanConverter}}" />
+                        </Grid>
                     </TabItem>
                 </TabControl>
             </Grid>

@@ -5,8 +5,10 @@ namespace LotoLibrary.Models.Configuration
         Boolean,
         Integer,
         Double,
+        Decimal,
         String,
         Enum,
+        List,
         Complex
     }
 }

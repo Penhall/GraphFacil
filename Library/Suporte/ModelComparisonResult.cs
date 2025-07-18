@@ -1,5 +1,7 @@
 // D:\PROJETOS\GraphFacil\Library\Enums\AntiFrequencyEnums.cs - Enums específicos para modelos anti-frequencistas
 using LotoLibrary.Services.Analysis;
+using LotoLibrary.Models.Prediction;
+using LotoLibrary.Models.Validation;
 using System;
 
 namespace LotoLibrary.Suporte
@@ -15,6 +17,7 @@ namespace LotoLibrary.Suporte
         public double RecommendedWeight1 { get; set; }
         public double RecommendedWeight2 => 1.0 - RecommendedWeight1;
         public DateTime ComparisonTimestamp { get; set; }
+        public ValidationResult ModelValidationResult { get; set; }
     }
 
 }
